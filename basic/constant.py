@@ -1,7 +1,7 @@
 import os
 import logging
 
-ROOT_PATH=os.path.join('/usr/local/extstore01/gengyi/', 'VisualSearch')
+ROOT_PATH=os.path.join('/usr/local/data01/haoshu/', 'VisualSearch')
 
 logger = logging.getLogger(__file__)
 logging.basicConfig(
