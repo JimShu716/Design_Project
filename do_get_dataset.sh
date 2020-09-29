@@ -1,4 +1,4 @@
-ROOTPATH=$HOME/VisualSearch
+ROOTPATH=/usr/local/extstore01/gengyi/VisualSearch
 mkdir -p $ROOTPATH && cd $ROOTPATH
 
 # download and extract dataset
