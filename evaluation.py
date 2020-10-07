@@ -331,14 +331,10 @@ def save_results(label_matrix,filename1,filename2,ixt):
     ranks = np.zeros([label_matrix.shape[0],d])
     aps = np.zeros([label_matrix.shape[0],d])
 
-    v = False
+    
     for index in range(len(ranks)):
         rank = np.where(label_matrix[index]==1)[0] + 1
         for e in range(len(rank)):
-            if not v:
-                print("Type of e is :",type(e))
-                print(e)
-                v = True
             aps[index][e] = (e+1.)/rank[e]
             ranks[index][e] = rank[e]
     precision = pd.DataFrame(aps)
