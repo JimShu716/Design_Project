@@ -45,7 +45,7 @@ class dataprocessor():
         
         
     def read_all(self):
-        range_all = 10
+        range_all = 2
         self.init_env()
         video_ids = []
         v2fs = {}
@@ -141,9 +141,10 @@ if __name__ == '__main__':
     #frames = dp.extract_frame('video1','https://www.youtube.com/watch?v=9lZi22qLlEo',137.72,149.44)
     data = dp.getJson()
     # video_ids, v2fs, caps = dp.read_one(65,save = True)
-    video_ids, v2fs, caps = dp.read_one(2980,True)
-    sent = dp.getsentence(57849)
+    # video_ids, v2fs, caps = dp.read_one(2980,True)
+    # sent = dp.getsentence(57849)
     # video_ids, v2fs, caps = dp.read_one(147,save = True)
     # video_ids, v2fs, caps = dp.read_one(148,save = True)
     #video_ids, v2fs, caps = dp.read_one(2)
     #dp.init_env()
+    video_ids, v2fs, caps = dp.read_all()
