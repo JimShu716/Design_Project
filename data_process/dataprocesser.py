@@ -89,8 +89,12 @@ class dataprocessor():
         if not path.exists('.\\'+self.subset_name):
             try:
                 os.mkdir('.\\'+self.subset_name)
+                os.mkdir('.\\'+self.subset_name+'\\FeatureData')
                 os.mkdir('.\\'+self.subset_name+'\\FeatureData\\'+self.feature_name)
-                os.mkdir('.\\'+self.subset_name+'\\FeatureData\\'+self.feature_name)
+                os.mkdir('.\\'+self.subset_name+'\\TextData')
+            except:
+                raise 'create dir failed'
+        
        
 class NumpyArrayEncoder(JSONEncoder):
     def default(self, obj):
