@@ -119,7 +119,7 @@ class dataprocessor():
     def init_env(self):
         if not path.exists('.\\'+self.subset_name):
             try:
-                os.mkdir('.\\imgs)
+                os.mkdir('.\\imgs')
                 os.mkdir('.\\'+self.subset_name)
                 os.mkdir('.\\'+self.subset_name+'\\FeatureData')
                 os.mkdir('.\\'+self.subset_name+'\\FeatureData\\'+self.feature_name)
