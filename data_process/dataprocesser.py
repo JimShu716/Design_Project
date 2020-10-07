@@ -15,7 +15,13 @@ import cv2
 from os import path
 
 class dataprocessor():
-    
+    '''
+        README: you need to install pytube before using this pipeline
+                when use, please put videodatainfo_2017.json under the same directory 
+                if pytube has some cipher error, you need to manually go into pytube 
+                file and change the code. Details refer to https://github.com/nficano/pytube/pull/643/commits/10c57109f87fe864d8f38bbc8d76941e695de93a
+                
+    '''
     def __init__(self,jpath,subset_name = 'msrvtt201710k',feature_name = 'feature', every_x_frame = 15):
         
         # data
@@ -93,6 +99,7 @@ class dataprocessor():
                 break
             if frame_cnt % self.every_x_frame == 0:
                 frames[video_id+'_'+str(frame_cnt+start_fps)] = img
+                # Optional: save feature frames
                 if (save):
                     cv2.imwrite(".\\imgs\\%s_%d.jpg" % (video_id, frame_cnt+start_fps), img)
                 img_cnt += 1
@@ -112,6 +119,7 @@ class dataprocessor():
     def init_env(self):
         if not path.exists('.\\'+self.subset_name):
             try:
+                os.mkdir('.\\imgs)
                 os.mkdir('.\\'+self.subset_name)
                 os.mkdir('.\\'+self.subset_name+'\\FeatureData')
                 os.mkdir('.\\'+self.subset_name+'\\FeatureData\\'+self.feature_name)
@@ -133,7 +141,7 @@ if __name__ == '__main__':
     #frames = dp.extract_frame('video1','https://www.youtube.com/watch?v=9lZi22qLlEo',137.72,149.44)
     data = dp.getJson()
     # video_ids, v2fs, caps = dp.read_one(65,save = True)
-    video_ids, v2fs, caps = dp.read_one(2980,save = True)
+    video_ids, v2fs, caps = dp.read_one(2980,True)
     sent = dp.getsentence(57849)
     # video_ids, v2fs, caps = dp.read_one(147,save = True)
     # video_ids, v2fs, caps = dp.read_one(148,save = True)
