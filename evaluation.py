@@ -1,7 +1,8 @@
 from __future__ import print_function
 import os
+import sys
 import pickle
-
+import pandas as pd
 import numpy
 import time
 import numpy as np
@@ -112,7 +113,7 @@ def encode_text_or_vid(encoder, data_loader, return_ids=True):
         pbar.add(len(idxs))
 
     if return_ids == True:
-        return embeddings, ids,
+        return embeddings, ids
     else:
         return embeddings
 
@@ -283,6 +284,7 @@ def i2t_inv_rank_multi(c2i, n_caption=2):
 
 # the number of captions are various across videos
 def eval_varied(label_matrix):
+    print("eval shape:",label_matrix.shape)
     ranks = np.zeros(label_matrix.shape[0])
     aps = np.zeros(label_matrix.shape[0])
 
@@ -307,6 +309,7 @@ def t2i_varied(c2i_all_errors, caption_ids, video_ids):
     for index in range(inds.shape[0]):
         ind = inds[index][::-1]
         label_matrix[index][np.where(np.array(video_ids)[ind]==caption_ids[index].split('#')[0])[0]]=1
+    save_results(label_matrix,'t2i_ps.csv','t2i_ranks.csv',False)
     return eval_varied(label_matrix)
 
 
@@ -317,4 +320,32 @@ def i2t_varied(c2i_all_errors, caption_ids, video_ids):
     for index in range(inds.shape[0]):
         ind = inds[index][::-1]
         label_matrix[index][np.where(np.array(caption_ids)[ind]==video_ids[index])[0]]=1
+    save_results(label_matrix,'i2t_ps.csv','i2t_ranks.csv',True)
     return eval_varied(label_matrix)
+
+def save_results(label_matrix,filename1,filename2,ixt):
+    if ixt:
+        d = 20
+    else:
+        d =1
+    ranks = np.zeros([label_matrix.shape[0],d])
+    aps = np.zeros([label_matrix.shape[0],d])
+
+    v = False
+    for index in range(len(ranks)):
+        rank = np.where(label_matrix[index]==1)[0] + 1
+        for e in range(len(rank)):
+            if not v:
+                print("Type of e is :",type(e))
+                print(e)
+                v = True
+            aps[index][e] = (e+1.)/rank[e]
+            ranks[index][e] = rank[e]
+    precision = pd.DataFrame(aps)
+    r_id = pd.DataFrame(ranks)
+    precision.to_csv(filename1)
+    r_id.to_csv(filename2)
+    
+
+    
+

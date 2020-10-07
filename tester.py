@@ -14,6 +14,7 @@ from util.text2vec import get_text_encoder
 import logging
 import json
 import numpy as np
+import pandas as pd
 
 import argparse
 from basic.util import read_dict
@@ -98,7 +99,8 @@ def main():
     model.Eiters = checkpoint['Eiters']
     model.val_start()
     
-    if testCollection.startswith('msvd'):# or testCollection.startswith('msrvtt'):
+    if testCollection.startswith('msrvtt'):# or testCollection.startswith('msrvtt'):
+        print("Running MSRVTT")
         # set data loader
         video_ids_list = data.read_video_ids(caption_files['test'])
         vid_data_loader = data.get_vis_data_loader(visual_feats['test'], opt.batch_size, opt.workers, video2frames['test'], video_ids=video_ids_list)
@@ -121,8 +123,12 @@ def main():
     torch.save({'errors': c2i_all_errors, 'videos': video_ids, 'captions': caption_ids}, pred_error_matrix_file)    
     print("write into: %s" % pred_error_matrix_file)
 
+    
 
-    if testCollection.startswith('msvd'):# or testCollection.startswith('msrvtt'):
+
+
+    if testCollection.startswith('msrvtt'):# or testCollection.startswith('msrvtt'):
+        print("Running MSRVTT") 
         # caption retrieval
         (r1, r5, r10, medr, meanr, i2t_map_score) = evaluation.i2t_varied(c2i_all_errors, caption_ids, video_ids)
         # video retrieval
