@@ -8,11 +8,12 @@ Created on Tue Oct  6 16:34:16 2020
 import json
 from json import JSONEncoder
 from pytube import YouTube
-import pandas as pd
 import numpy as np
+import shutil
 import os
 import cv2
 from os import path
+import logging
 
 class dataprocessor():
     '''
@@ -45,7 +46,7 @@ class dataprocessor():
         
         
     def read_all(self):
-        range_all = 2
+        range_all = 10
         self.init_env()
         video_ids = []
         v2fs = {}
@@ -80,9 +81,14 @@ class dataprocessor():
         
         
     def extract_frame(self, video_id, url, start_time, end_time, save = False):
-        frames = {}
-        video = YouTube(url)
-        video.streams.filter(file_extension = "mp4").first().download(filename = video_id)
+        frames = []
+        try:
+            video = YouTube(url)
+            video.streams.filter(file_extension = "mp4").first().download(filename = video_id)
+        except:
+            print ("pytube download failed for video "+video_id)
+            return frames
+        os.mkdir('.\\imgs\\%s' % video_id)
         vid_cap = cv2.VideoCapture(video_id+'.mp4')
         fps = int(vid_cap.get(cv2.CAP_PROP_FPS))
         start_fps = int(start_time*fps)
@@ -98,11 +104,12 @@ class dataprocessor():
             if frame_cnt > end_fps-start_fps:
                 break
             if frame_cnt % self.every_x_frame == 0:
-                frames[video_id+'_'+str(frame_cnt+start_fps)] = img
+                #frames[video_id+'_'+str(frame_cnt+start_fps)] = img
                 # Optional: save feature frames
-                if (save):
-                    cv2.imwrite(".\\imgs\\%s_%d.jpg" % (video_id, frame_cnt+start_fps), img)
+                #if (save):
+                cv2.imwrite(".\\imgs\\%s\\%s_%d.jpg" % (video_id, video_id, frame_cnt+start_fps), img)
                 img_cnt += 1
+                frames.append(video_id+'_'+str(frame_cnt+start_fps))
             frame_cnt += 1
             
         vid_cap.release()
@@ -130,6 +137,17 @@ class dataprocessor():
     def getsentence(self, index):
         return self.sentences[index]['caption']
     
+    def download(vid, url, save_path):
+        name = vid+".mp4"
+        
+        if path.exists(path.join(save_path, name)):
+            return
+    
+        os.system("youtube-dl -f mp4 {} >> ./download_log.txt".format(url))
+        file = [x for x in os.listdir() if '.mp4' in x][0]
+        os.rename(file, name)
+        shutil.move(name, path.join(save_path, name))
+    
 class NumpyArrayEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.ndarray):
@@ -143,8 +161,8 @@ if __name__ == '__main__':
     # video_ids, v2fs, caps = dp.read_one(65,save = True)
     # video_ids, v2fs, caps = dp.read_one(2980,True)
     # sent = dp.getsentence(57849)
-    # video_ids, v2fs, caps = dp.read_one(147,save = True)
-    # video_ids, v2fs, caps = dp.read_one(148,save = True)
+    video_ids, v2fs, caps = dp.read_one(9615,save = True)
+    #video_ids, v2fs, caps = dp.read_one(8851,save = True)
     #video_ids, v2fs, caps = dp.read_one(2)
     #dp.init_env()
-    video_ids, v2fs, caps = dp.read_all()
+    #video_ids, v2fs, caps = dp.read_all()
