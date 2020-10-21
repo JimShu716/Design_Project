@@ -9,11 +9,9 @@ import json
 from json import JSONEncoder
 from pytube import YouTube
 import numpy as np
-import shutil
 import os
 import cv2
 from os import path
-import logging
 
 class dataprocessor():
     '''
@@ -44,6 +42,22 @@ class dataprocessor():
         
         # output
         
+    def do_all(self):
+        records,video_ids,v2fs,caps = self.read_all()
+        # record fps, frame_count, weight, height per video
+        video_meta_file = './imgs/id.videometa.txt'
+        fw = open(video_meta_file, 'a')
+        for video_id in video_ids:
+            if video_id in records:
+                fps, length, width, height = records[video_id]
+                fw.write('%s %d %d %d %d\n' % (video_id, fps, length, width, height))
+        fw.close()
+        # record caption
+        caption_file = './imgs/caption.txt'
+        fw = open(caption_file, 'a')
+        for cap in caps:
+            fw.write('%s\n' % cap)
+        fw.close()
         
     def read_all(self):
         range_all = 10
@@ -51,22 +65,29 @@ class dataprocessor():
         video_ids = []
         v2fs = {}
         caps = []
+        records = {}
         for i in range(range_all):
-            video_id, frames, captions = self.read_one(i)
+            record, video_id, frames, captions = self.read_one(i)
             video_ids.append(video_id)
-            v2fs[video_id] = list(frames.keys())
+            v2fs[video_id] = frames
+            if not record == ():
+                records[video_id]=record
             j = 0 
             for cap in captions:
                 caps.append(video_id+'#'+str(j)+' '+cap)
                 j+=1
-        return video_ids, v2fs, caps
+        return records,video_ids, v2fs, caps
             
         
     def read_one(self, index, save = False):
         video = self.videos[index]
         video_id = video['video_id']
-        print('getting frames...' + video['url'])
-        frames = self.extract_frame(video_id,video['url'],video['start time'],video['end time'],save)
+        print(':: %s [%s]...' % (video['video_id'], video['url']))
+        
+        
+        record,frames = self.extract_frame(video_id,video['url'],video['start time'],video['end time'],save)
+        
+        
         cap_cnt = 0
         captions = []
         print('getting captions...')
@@ -77,25 +98,49 @@ class dataprocessor():
             captions.append(self.sentences[cap_cnt]['caption'])
             cap_cnt+=1
             if (len(captions)==20): break
-        return video_id, frames, captions
+        
+        
+        return record, video_id, frames, captions
         
         
     def extract_frame(self, video_id, url, start_time, end_time, save = False):
         frames = []
+        record = ()
+        if (path.exists('.\\imgs\\%s'  % video_id )):
+            print('directory %s already exists, extraction cancelled.' % video_id)
+            return record,frames
         try:
             video = YouTube(url)
             video.streams.filter(file_extension = "mp4").first().download(filename = video_id)
         except:
             print ("pytube download failed for video "+video_id)
-            return frames
-        os.mkdir('.\\imgs\\%s' % video_id)
+            return record,frames
+
+        
         vid_cap = cv2.VideoCapture(video_id+'.mp4')
+        
+        
         fps = int(vid_cap.get(cv2.CAP_PROP_FPS))
         start_fps = int(start_time*fps)
         end_fps = int(end_time*fps)
         frame_cnt = 0
         img_cnt = 0
         vid_cap.set(cv2.CAP_PROP_POS_FRAMES, start_fps)
+        
+        if cv2.__version__.startswith('3'):
+            length  = int(vid_cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            width   = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            height  = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+            fps     = int(vid_cap.get(cv2.CAP_PROP_FPS))
+        else:
+            length  = int(vid_cap.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT))
+            width   = int(vid_cap.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH))
+            height  = int(vid_cap.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT))
+            fps     = int(vid_cap.get(cv2.cv.CV_CAP_PROP_FPS))
+            
+        record = (fps, length, width, height)
+        
+        os.mkdir('.\\imgs\\%s' % video_id)
         while vid_cap.isOpened():
             suc, img = vid_cap.read() 
             
@@ -115,10 +160,8 @@ class dataprocessor():
         vid_cap.release()
         cv2.destroyAllWindows()
         print('extract '+str(img_cnt)+' images with separation of '+str(self.every_x_frame)+' frames')
-        # with open(video_id+".json", "w") as write_file:
-        #     json.dump(frames, write_file, cls=NumpyArrayEncoder)
         os.remove(video_id+".mp4")
-        return frames
+        return record,frames
         
     def getJson(self):
         return self.data
@@ -137,16 +180,6 @@ class dataprocessor():
     def getsentence(self, index):
         return self.sentences[index]['caption']
     
-    def download(vid, url, save_path):
-        name = vid+".mp4"
-        
-        if path.exists(path.join(save_path, name)):
-            return
-    
-        os.system("youtube-dl -f mp4 {} >> ./download_log.txt".format(url))
-        file = [x for x in os.listdir() if '.mp4' in x][0]
-        os.rename(file, name)
-        shutil.move(name, path.join(save_path, name))
     
 class NumpyArrayEncoder(JSONEncoder):
     def default(self, obj):
@@ -155,14 +188,10 @@ class NumpyArrayEncoder(JSONEncoder):
         return JSONEncoder.default(self, obj)
     
 if __name__ == '__main__':
+    
     dp = dataprocessor('.\\videodatainfo_2017.json')
-    #frames = dp.extract_frame('video1','https://www.youtube.com/watch?v=9lZi22qLlEo',137.72,149.44)
     data = dp.getJson()
-    # video_ids, v2fs, caps = dp.read_one(65,save = True)
-    # video_ids, v2fs, caps = dp.read_one(2980,True)
+    
     # sent = dp.getsentence(57849)
-    video_ids, v2fs, caps = dp.read_one(9615,save = True)
-    #video_ids, v2fs, caps = dp.read_one(8851,save = True)
-    #video_ids, v2fs, caps = dp.read_one(2)
-    #dp.init_env()
-    #video_ids, v2fs, caps = dp.read_all()
+    # record,video_ids, v2fs, caps = dp.read_one(1,save = True)
+    dp.do_all()
