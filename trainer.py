@@ -16,7 +16,7 @@ from util.text2vec import get_text_encoder
 from model import get_model, get_we_parameter
 
 import logging
-import tensorboard_logger as tb_logger
+#import torch.utils.tensorboard as tb_logger
 
 import argparse
 
@@ -125,7 +125,7 @@ def main():
         sys.exit(0)
     makedirsforfile(os.path.join(opt.logger_name, 'val_metric.txt'))
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
-    tb_logger.configure(opt.logger_name, flush_secs=5)
+    #tb_logger.configure(opt.logger_name, flush_secs=5)
 
 
     opt.text_kernel_sizes = map(int, opt.text_kernel_sizes.split('-'))
@@ -322,11 +322,11 @@ def train(opt, train_loader, model, epoch):
         end = time.time()
 
         # Record logs in tensorboard
-        tb_logger.log_value('epoch', epoch, step=model.Eiters)
-        tb_logger.log_value('step', i, step=model.Eiters)
-        tb_logger.log_value('batch_time', batch_time.val, step=model.Eiters)
-        tb_logger.log_value('data_time', data_time.val, step=model.Eiters)
-        model.logger.tb_log(tb_logger, step=model.Eiters)
+        # tb_logger.log_value('epoch', epoch, step=model.Eiters)
+        # tb_logger.log_value('step', i, step=model.Eiters)
+        # tb_logger.log_value('batch_time', batch_time.val, step=model.Eiters)
+        # tb_logger.log_value('data_time', data_time.val, step=model.Eiters)
+        # model.logger.tb_log(tb_logger, step=model.Eiters)
 
 
 def validate(opt, val_loader, model, measure='cosine'):
@@ -368,23 +368,23 @@ def validate(opt, val_loader, model, measure='cosine'):
         print(" * "+'-'*10)
 
         # record metrics in tensorboard
-        tb_logger.log_value('r1', r1, step=model.Eiters)
-        tb_logger.log_value('r5', r5, step=model.Eiters)
-        tb_logger.log_value('r10', r10, step=model.Eiters)
-        tb_logger.log_value('medr', medr, step=model.Eiters)
-        tb_logger.log_value('meanr', meanr, step=model.Eiters)
-        tb_logger.log_value('r1i', r1i, step=model.Eiters)
-        tb_logger.log_value('r5i', r5i, step=model.Eiters)
-        tb_logger.log_value('r10i', r10i, step=model.Eiters)
-        tb_logger.log_value('medri', medri, step=model.Eiters)
-        tb_logger.log_value('meanri', meanri, step=model.Eiters)
+        # tb_logger.log_value('r1', r1, step=model.Eiters)
+        # tb_logger.log_value('r5', r5, step=model.Eiters)
+        # tb_logger.log_value('r10', r10, step=model.Eiters)
+        # tb_logger.log_value('medr', medr, step=model.Eiters)
+        # tb_logger.log_value('meanr', meanr, step=model.Eiters)
+        # tb_logger.log_value('r1i', r1i, step=model.Eiters)
+        # tb_logger.log_value('r5i', r5i, step=model.Eiters)
+        # tb_logger.log_value('r10i', r10i, step=model.Eiters)
+        # tb_logger.log_value('medri', medri, step=model.Eiters)
+        # tb_logger.log_value('meanri', meanri, step=model.Eiters)
 
 
     elif opt.val_metric == "map":
         i2t_map_score = evaluation.i2t_map(c2i_all_errors, n_caption=opt.n_caption)
         t2i_map_score = evaluation.t2i_map(c2i_all_errors, n_caption=opt.n_caption)
-        tb_logger.log_value('i2t_map', i2t_map_score, step=model.Eiters)
-        tb_logger.log_value('t2i_map', t2i_map_score, step=model.Eiters)
+        # tb_logger.log_value('i2t_map', i2t_map_score, step=model.Eiters)
+        # tb_logger.log_value('t2i_map', t2i_map_score, step=model.Eiters)
         print('i2t_map', i2t_map_score)
         print('t2i_map', t2i_map_score)
 
@@ -400,7 +400,7 @@ def validate(opt, val_loader, model, measure='cosine'):
         if opt.direction == 't2i' or opt.direction == 'all':
             currscore += t2i_map_score
 
-    tb_logger.log_value('rsum', currscore, step=model.Eiters)
+    # tb_logger.log_value('rsum', currscore, step=model.Eiters)
 
     return currscore
 
@@ -436,23 +436,23 @@ def validate_split(opt, vid_data_loader, text_data_loader, model, measure='cosin
         print(" * "+'-'*10)
 
         # record metrics in tensorboard
-        tb_logger.log_value('r1', r1, step=model.Eiters)
-        tb_logger.log_value('r5', r5, step=model.Eiters)
-        tb_logger.log_value('r10', r10, step=model.Eiters)
-        tb_logger.log_value('medr', medr, step=model.Eiters)
-        tb_logger.log_value('meanr', meanr, step=model.Eiters)
-        tb_logger.log_value('r1i', r1i, step=model.Eiters)
-        tb_logger.log_value('r5i', r5i, step=model.Eiters)
-        tb_logger.log_value('r10i', r10i, step=model.Eiters)
-        tb_logger.log_value('medri', medri, step=model.Eiters)
-        tb_logger.log_value('meanri', meanri, step=model.Eiters)
+        # tb_logger.log_value('r1', r1, step=model.Eiters)
+        # tb_logger.log_value('r5', r5, step=model.Eiters)
+        # tb_logger.log_value('r10', r10, step=model.Eiters)
+        # tb_logger.log_value('medr', medr, step=model.Eiters)
+        # tb_logger.log_value('meanr', meanr, step=model.Eiters)
+        # tb_logger.log_value('r1i', r1i, step=model.Eiters)
+        # tb_logger.log_value('r5i', r5i, step=model.Eiters)
+        # tb_logger.log_value('r10i', r10i, step=model.Eiters)
+        # tb_logger.log_value('medri', medri, step=model.Eiters)
+        # tb_logger.log_value('meanri', meanri, step=model.Eiters)
 
 
     elif opt.val_metric == "map":
         i2t_map_score = evaluation.i2t_map(c2i_all_errors, n_caption=opt.n_caption)
         t2i_map_score = evaluation.t2i_map(c2i_all_errors, n_caption=opt.n_caption)
-        tb_logger.log_value('i2t_map', i2t_map_score, step=model.Eiters)
-        tb_logger.log_value('t2i_map', t2i_map_score, step=model.Eiters)
+        # tb_logger.log_value('i2t_map', i2t_map_score, step=model.Eiters)
+        # tb_logger.log_value('t2i_map', t2i_map_score, step=model.Eiters)
         print('i2t_map', i2t_map_score)
         print('t2i_map', t2i_map_score)
 
@@ -468,7 +468,7 @@ def validate_split(opt, vid_data_loader, text_data_loader, model, measure='cosin
         if opt.direction == 't2i' or opt.direction == 'all':
             currscore += t2i_map_score
 
-    tb_logger.log_value('rsum', currscore, step=model.Eiters)
+    # tb_logger.log_value('rsum', currscore, step=model.Eiters)
 
     return currscore
 

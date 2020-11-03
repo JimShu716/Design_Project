@@ -6,3 +6,5 @@ data_process/videodatainfo_2017.json
 data_process/video1.json
 data_process/imgs/*
 data_process/untitled0.py
+env/*
+.idea/*

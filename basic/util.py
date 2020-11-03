@@ -4,6 +4,7 @@ import collections
 import numpy as np
 from collections import OrderedDict
 
+
 class AverageMeter(object):
     """Computes and stores the average and current value"""
 
@@ -49,7 +50,7 @@ class LogCollector(object):
         """Concatenate the meters in one log line
         """
         s = ''
-        for i, (k, v) in enumerate(self.meters.iteritems()):
+        for i, (k, v) in enumerate(self.meters.items()):
             if i > 0:
                 s += '  '
             s += k + ' ' + str(v)
@@ -58,21 +59,22 @@ class LogCollector(object):
     def tb_log(self, tb_logger, prefix='', step=None):
         """Log using tensorboard
         """
-        for k, v in self.meters.iteritems():
+        for k, v in self.meters.items():
             tb_logger.log_value(prefix + k, v.val, step=step)
 
+
 def read_dict(filepath):
-    f = open(filepath,'r')  
-    a = f.read()  
-    dict_data = eval(a)  
+    f = open(filepath, 'r')
+    a = f.read()
+    dict_data = eval(a)
     f.close()
     return dict_data
 
 
 def write_dict(filepath, dict_data):
-    f = open(filepath,'w')  
-    f.write(str(dict_data))  
-    f.close()  
+    f = open(filepath, 'w')
+    f.write(str(dict_data))
+    f.close()
 
 
 # get image id from caption id
@@ -81,7 +83,6 @@ def getVideoId(cap_id):
     if vid_id.endswith('.jpg') or vid_id.endswith('.mp4'):
         vid_id = vid_id[:-4]
     return vid_id
-
 
 
 class Progbar(object):

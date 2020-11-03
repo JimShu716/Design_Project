@@ -262,7 +262,7 @@ def has_arg(fn, name, accept_all=False):
         arg_spec = inspect.getargspec(fn)
         if accept_all and arg_spec.keywords is not None:
             return True
-        return (name in arg_spec.args)
+        return name in arg_spec.args
     elif sys.version_info < (3, 3):
         arg_spec = inspect.getfullargspec(fn)
         if accept_all and arg_spec.varkw is not None:

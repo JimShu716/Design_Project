@@ -1,16 +1,13 @@
 from __future__ import print_function
-import os
-import pickle
 
 import numpy
 import time
 import numpy as np
 from scipy.spatial import distance
-import torch
-from torch.autograd import Variable
 from basic.metric import getScorer
 from basic.util import AverageMeter, LogCollector
 from basic.generic_utils import Progbar
+
 
 def l2norm(X):
     """L2-normalize columns of X
@@ -18,16 +15,15 @@ def l2norm(X):
     norm = np.linalg.norm(X, axis=1, keepdims=True)
     return 1.0 * X / norm
 
+
 def cal_error(videos, captions, measure='cosine'):
     if measure == 'cosine':
         captions = l2norm(captions)
         videos = l2norm(videos)
-        errors = -1*numpy.dot(captions, videos.T)
+        errors = -1 * numpy.dot(captions, videos.T)
     elif measure == 'euclidean':
         errors = distance.cdist(captions, videos, 'euclidean')
     return errors
-
-
 
 
 def encode_data(model, data_loader, log_step=10, logging=print, return_ids=True):
@@ -44,8 +40,8 @@ def encode_data(model, data_loader, log_step=10, logging=print, return_ids=True)
     # numpy array to keep all the embeddings
     video_embs = None
     cap_embs = None
-    video_ids = ['']*len(data_loader.dataset)
-    caption_ids = ['']*len(data_loader.dataset)
+    video_ids = [''] * len(data_loader.dataset)
+    caption_ids = [''] * len(data_loader.dataset)
     for i, (videos, captions, idxs, cap_ids, vid_ids) in enumerate(data_loader):
         # make sure val logger is used
         model.logger = val_logger
@@ -74,9 +70,9 @@ def encode_data(model, data_loader, log_step=10, logging=print, return_ids=True)
             logging('Test: [{0:2d}/{1:2d}]\t'
                     '{e_log}\t'
                     'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
-                    .format(
-                        i, len(data_loader), batch_time=batch_time,
-                        e_log=str(model.logger)))
+                .format(
+                i, len(data_loader), batch_time=batch_time,
+                e_log=str(model.logger)))
         del videos, captions
 
     if return_ids == True:
@@ -85,13 +81,12 @@ def encode_data(model, data_loader, log_step=10, logging=print, return_ids=True)
         return video_embs, cap_embs
 
 
-
 def encode_text_or_vid(encoder, data_loader, return_ids=True):
     """Encode all videos and captions loadable by `data_loader`
     """
     # numpy array to keep all the embeddings
     embeddings = None
-    ids = ['']*len(data_loader.dataset)
+    ids = [''] * len(data_loader.dataset)
     pbar = Progbar(len(data_loader.dataset))
     for i, (datas, idxs, data_ids) in enumerate(data_loader):
 
@@ -132,7 +127,7 @@ def t2i(c2i, vis_details=False, n_caption=5):
         d_i = c2i[i]
         inds = np.argsort(d_i)
 
-        rank = np.where(inds == i/n_caption)[0][0]
+        rank = np.where(inds == i / n_caption)[0][0]
         ranks[i] = rank
 
     # Compute metrics
@@ -145,14 +140,13 @@ def t2i(c2i, vis_details=False, n_caption=5):
     return map(float, [r1, r5, r10, medr, meanr])
 
 
-
 # recall@k, Med r, Mean r for Video-to-Text Retrieval
 def i2t(c2i, n_caption=5):
     """
     Videos->Text (Video-to-Text Retrieval)
     c2i: (5N, N) matrix of caption to video errors
     """
-    #remove duplicate videos
+    # remove duplicate videos
     # print("errors matrix shape: ", c2i.shape)
     assert c2i.shape[0] / c2i.shape[1] == n_caption, c2i.shape
     ranks = np.zeros(c2i.shape[1])
@@ -161,7 +155,7 @@ def i2t(c2i, n_caption=5):
         d_i = c2i[:, i]
         inds = np.argsort(d_i)
 
-        rank = np.where(inds/n_caption == i)[0][0]
+        rank = np.where(inds / n_caption == i)[0][0]
         ranks[i] = rank
 
     # Compute metrics
@@ -186,8 +180,8 @@ def t2i_map(c2i, n_caption=5):
     perf_list = []
     for i in range(c2i.shape[0]):
         d_i = c2i[i, :]
-        labels = [0]*len(d_i)
-        labels[i/n_caption] = 1
+        labels = [0] * len(d_i)
+        labels[int(i / n_caption)] = 1
 
         sorted_labels = [labels[x] for x in np.argsort(d_i)]
         current_score = scorer.score(sorted_labels)
@@ -209,8 +203,8 @@ def i2t_map(c2i, n_caption=5):
     perf_list = []
     for i in range(c2i.shape[1]):
         d_i = c2i[:, i]
-        labels = [0]*len(d_i)
-        labels[i*n_caption:(i+1)*n_caption] = [1]*n_caption
+        labels = [0] * len(d_i)
+        labels[i * n_caption:(i + 1) * n_caption] = [1] * n_caption
 
         sorted_labels = [labels[x] for x in np.argsort(d_i)]
         current_score = scorer.score(sorted_labels)
@@ -229,14 +223,13 @@ def t2i_inv_rank(c2i, n_caption=1):
     inv_ranks = np.zeros(c2i.shape[0])
 
     for i in range(len(inv_ranks)):
-        d_i = c2i[i,:]
+        d_i = c2i[i, :]
         inds = np.argsort(d_i)
 
-        rank = np.where(inds == i/n_caption)[0]
-        inv_ranks[i] = sum(1.0 / (rank +1 ))
+        rank = np.where(inds == i / n_caption)[0]
+        inv_ranks[i] = sum(1.0 / (rank + 1))
 
     return np.mean(inv_ranks)
-
 
 
 def i2t_inv_rank(c2i, n_caption=1):
@@ -252,12 +245,10 @@ def i2t_inv_rank(c2i, n_caption=1):
         d_i = c2i[:, i]
         inds = np.argsort(d_i)
 
-        rank = np.where(inds/n_caption == i)[0]
-        inv_ranks[i] = sum(1.0 / (rank +1 ))
+        rank = np.where(inds / n_caption == i)[0]
+        inv_ranks[i] = sum(1.0 / (rank + 1))
 
     return np.mean(inv_ranks)
-
-
 
 
 def i2t_inv_rank_multi(c2i, n_caption=2):
@@ -279,20 +270,18 @@ def i2t_inv_rank_multi(c2i, n_caption=2):
     return result
 
 
-
-
 # the number of captions are various across videos
 def eval_varied(label_matrix):
     ranks = np.zeros(label_matrix.shape[0])
     aps = np.zeros(label_matrix.shape[0])
 
     for index in range(len(ranks)):
-        rank = np.where(label_matrix[index]==1)[0] + 1
+        rank = np.where(label_matrix[index] == 1)[0] + 1
         ranks[index] = rank[0]
 
-        aps[index] = np.mean([(i+1.)/rank[i] for i in range(len(rank))])
+        aps[index] = np.mean([(i + 1.) / rank[i] for i in range(len(rank))])
 
-    r1, r5, r10 = [100.0*np.mean([x <= k for x in ranks]) for k in [1, 5, 10]]
+    r1, r5, r10 = [100.0 * np.mean([x <= k for x in ranks]) for k in [1, 5, 10]]
     medr = np.floor(np.median(ranks))
     meanr = ranks.mean()
     # mir = (1.0/ranks).mean()
@@ -306,7 +295,7 @@ def t2i_varied(c2i_all_errors, caption_ids, video_ids):
     label_matrix = np.zeros(inds.shape)
     for index in range(inds.shape[0]):
         ind = inds[index][::-1]
-        label_matrix[index][np.where(np.array(video_ids)[ind]==caption_ids[index].split('#')[0])[0]]=1
+        label_matrix[index][np.where(np.array(video_ids)[ind] == caption_ids[index].split('#')[0])[0]] = 1
     return eval_varied(label_matrix)
 
 
@@ -316,5 +305,5 @@ def i2t_varied(c2i_all_errors, caption_ids, video_ids):
     caption_ids = [txt_id.split('#')[0] for txt_id in caption_ids]
     for index in range(inds.shape[0]):
         ind = inds[index][::-1]
-        label_matrix[index][np.where(np.array(caption_ids)[ind]==video_ids[index])[0]]=1
+        label_matrix[index][np.where(np.array(caption_ids)[ind] == video_ids[index])[0]] = 1
     return eval_varied(label_matrix)
