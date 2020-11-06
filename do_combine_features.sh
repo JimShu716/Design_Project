@@ -1,4 +1,4 @@
-rootpath=$HOME/VisualSearch3
+rootpath=/usr/local/extstore01/zhouh/VisualSearch
 set_style=ImageSets
 overwrite=0
 
