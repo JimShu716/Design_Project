@@ -22,7 +22,7 @@ def parse_result(res):
     for line in lines:
         elems = line.split()
         if 'infAP' in elems:
-            print line
+            print (line)
         if 'infAP' == elems[0] and 'all' in line:
             return float(elems[-1])
 
@@ -76,7 +76,7 @@ def process(opt, input_xml_file):
 
     resp = parse_result(res)
 
-    print '%s infAP: %.3f' % (opt.edition, resp)
+    print ('%s infAP: %.3f' % (opt.edition, resp))
 
 
 
