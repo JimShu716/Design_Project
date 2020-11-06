@@ -4,8 +4,7 @@ import numpy as np
 import json as jsonmod
 
 from basic.util import getVideoId
-from vocab import clean_str
-
+from util.vocab import *
 VIDEO_MAX_LEN=64
 
 
@@ -331,7 +330,6 @@ def get_txt_data_loader(cap_file, vocab, bow2vec, batch_size=100, num_workers=2)
                                               num_workers=num_workers,
                                               collate_fn=collate_text)
     return data_loader
-
 
 
 if __name__ == '__main__':
