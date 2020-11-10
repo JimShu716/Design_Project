@@ -119,16 +119,25 @@ def t2i(c2i, vis_details=False, n_caption=5):
     c2i: (5N, N) matrix of caption to video errors
     vis_details: if true, return a dictionary for ROC visualization purposes
     """
-    # print("errors matrix shape: ", c2i.shape)
+    print("errors matrix shape: ", c2i.shape)
     assert c2i.shape[0] / c2i.shape[1] == n_caption, c2i.shape
     ranks = np.zeros(c2i.shape[0])
 
     for i in range(len(ranks)):
-        d_i = c2i[i]
-        inds = np.argsort(d_i)
+        try:
+            d_i = c2i[i]
+            inds = np.argsort(d_i)
 
-        rank = np.where(inds == (i / n_caption))[0][0]
-        ranks[i] = rank
+
+            rank = np.where(inds == int(i / n_caption))[0][0]
+            ranks[i] = rank
+        except IndexError as e:
+            print("inds:",inds)
+            #print("rank:",rank)
+            print("index:",int(i/n_caption))
+            print("n_captions:",i/n_caption)
+            break
+
 
     # Compute metrics
     r1 = 100.0 * len(np.where(ranks < 1)[0]) / len(ranks)
