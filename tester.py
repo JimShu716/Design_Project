@@ -129,6 +129,8 @@ def main():
         (r1i, r5i, r10i, medri, meanri, t2i_map_score) = evaluation.t2i_varied(c2i_all_errors, caption_ids, video_ids)
     else:
         # caption retrieval
+        print(c2i_all_errors)
+        print(n_caption)
         (r1i, r5i, r10i, medri, meanri) = evaluation.t2i(c2i_all_errors, n_caption=n_caption)
         t2i_map_score = evaluation.t2i_map(c2i_all_errors, n_caption=n_caption)
 
