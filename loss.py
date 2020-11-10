@@ -56,9 +56,9 @@ class TripletLoss(nn.Module):
 
         # clear diagonals
         mask = torch.eye(scores.size(0)) > .5
-        I = Variable(mask)
-        if torch.cuda.is_available():
-            I = I.cuda()
+        with torch.no_grad():
+            if torch.cuda.is_available():
+                I = mask.cuda()
 
         cost_s = None
         cost_im = None
@@ -79,11 +79,11 @@ class TripletLoss(nn.Module):
                 cost_s = cost_s.max(1)[0]
             if cost_im is not None:
                 cost_im = cost_im.max(0)[0]
-
-        if cost_s is None:
-            cost_s = Variable(torch.zeros(1)).cuda()
-        if cost_im is None:
-            cost_im = Variable(torch.zeros(1)).cuda()
+        with torch.no_grad():
+            if cost_s is None:
+                cost_s = torch.zeros(1).cuda()
+            if cost_im is None:
+                cost_im = torch.zeros(1).cuda()
 
         if self.cost_style == 'sum':
             return cost_s.sum() + cost_im.sum()

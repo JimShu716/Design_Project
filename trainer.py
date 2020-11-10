@@ -128,8 +128,11 @@ def main():
     #tb_logger.configure(opt.logger_name, flush_secs=5)
 
 
-    opt.text_kernel_sizes = map(int, opt.text_kernel_sizes.split('-'))
-    opt.visual_kernel_sizes = map(int, opt.visual_kernel_sizes.split('-'))
+    # opt.text_kernel_sizes = map(int, opt.text_kernel_sizes.split('-'))
+    # opt.visual_kernel_sizes = map(int, opt.visual_kernel_sizes.split('-'))
+    opt.text_kernel_sizes = [int(a) for a in opt.text_kernel_sizes.split('-')]
+    opt.visual_kernel_sizes = [int(a) for a in opt.visual_kernel_sizes.split('-')]
+
     # collections: trian, val
     collections = {'train': trainCollection, 'val': valCollection}
     cap_file = {'train': '%s.caption.txt'%trainCollection, 
@@ -161,8 +164,12 @@ def main():
         opt.we_parameter = get_we_parameter(rnn_vocab, w2v_data_path)
 
     # mapping layer structure
-    opt.text_mapping_layers = map(int, opt.text_mapping_layers.split('-'))
-    opt.visual_mapping_layers = map(int, opt.visual_mapping_layers.split('-'))
+    # opt.text_mapping_layers = map(int, opt.text_mapping_layers.split('-'))
+    # opt.visual_mapping_layers = map(int, opt.visual_mapping_layers.split('-'))
+    opt.text_mapping_layers = [int(a) for a in opt.text_mapping_layers.split('-')]
+    opt.visual_mapping_layers = [int(a) for a in opt.visual_mapping_layers.split('-')]
+
+
     if opt.concate == 'full':
         opt.text_mapping_layers[0] = opt.bow_vocab_size + opt.text_rnn_size*2 + opt.text_kernel_num * len(opt.text_kernel_sizes) 
         opt.visual_mapping_layers[0] = opt.visual_feat_dim + opt.visual_rnn_size*2 + opt.visual_kernel_num * len(opt.visual_kernel_sizes)

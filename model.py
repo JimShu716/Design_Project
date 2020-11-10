@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.init
 import torchvision.models as models
-from torch.autograd import Variable
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 import torch.backends.cudnn as cudnn
 from torch.nn.utils.clip_grad import clip_grad_norm  # clip_grad_norm_ for 0.4.0, clip_grad_norm for 0.3.1
@@ -130,9 +129,10 @@ class Video_multilevel_encoding(nn.Module):
 
         # Level 2. Temporal-Aware Encoding by biGRU
         gru_init_out, _ = self.rnn(videos)
-        mean_gru = Variable(torch.zeros(gru_init_out.size(0), self.rnn_output_size)).cuda()
-        for i, batch in enumerate(gru_init_out):
-            mean_gru[i] = torch.mean(batch[:lengths[i]], 0)
+        with torch.no_grad():
+            mean_gru = torch.zeros(gru_init_out.size(0), self.rnn_output_size).cuda()
+            for i, batch in enumerate(gru_init_out):
+                mean_gru[i] = torch.mean(batch[:lengths[i]], 0)
         gru_out = mean_gru
         gru_out = self.dropout(gru_out)
 
@@ -222,10 +222,11 @@ class Text_multilevel_encoding(nn.Module):
         # Reshape *final* output to (batch_size, hidden_size)
         padded = pad_packed_sequence(gru_init_out, batch_first=True)
         gru_init_out = padded[0]
-        gru_out = Variable(torch.zeros(padded[0].size(0), self.rnn_output_size)).cuda()
-        for i, batch in enumerate(padded[0]):
-            gru_out[i] = torch.mean(batch[:lengths[i]], 0)
-        gru_out = self.dropout(gru_out)
+        with torch.no_grad():
+            gru_out = torch.zeros(padded[0].size(0), self.rnn_output_size).cuda()
+            for i, batch in enumerate(padded[0]):
+                gru_out[i] = torch.mean(batch[:lengths[i]], 0)
+            gru_out = self.dropout(gru_out)
 
         # Level 3. Local-Enhanced Encoding by biGRU-CNN
         con_out = gru_init_out.unsqueeze(1)
@@ -277,10 +278,7 @@ class BaseModel(object):
         """Compute the loss given pairs of video and caption embeddings
         """
         loss = self.criterion(cap_emb, vid_emb)
-        if torch.__version__ == '0.3.1':  # loss.item() for 0.4.0, loss.data[0] for 0.3.1
-            self.logger.update('Le', loss.data[0], vid_emb.size(0)) 
-        else:
-            self.logger.update('Le', loss.item(), vid_emb.size(0)) 
+        self.logger.update('Le', loss.item(), vid_emb.size(0))
         return loss
 
     def train_emb(self, videos, captions, lengths, *args):
@@ -351,87 +349,58 @@ class Dual_Encoding(BaseModel):
     def forward_emb(self, videos, targets, volatile=False, *args):
         """Compute the video and caption embeddings
         """
-        # video data
-        frames, mean_origin, video_lengths, vidoes_mask = videos
-        frames = Variable(frames, volatile=volatile)
-        if torch.cuda.is_available():
-            frames = frames.cuda()
 
-        mean_origin = Variable(mean_origin, volatile=volatile)
-        if torch.cuda.is_available():
-            mean_origin = mean_origin.cuda()
-
-        vidoes_mask = Variable(vidoes_mask, volatile=volatile)
-        if torch.cuda.is_available():
-            vidoes_mask = vidoes_mask.cuda()
-        videos_data = (frames, mean_origin, video_lengths, vidoes_mask)
-
-        # text data
-        captions, cap_bows, lengths, cap_masks = targets
-        if captions is not None:
-            captions = Variable(captions, volatile=volatile)
+        with torch.no_grad():
+            # video data
+            frames, mean_origin, video_lengths, vidoes_mask = videos
             if torch.cuda.is_available():
+                frames = frames.cuda()
+                mean_origin = mean_origin.cuda()
+                vidoes_mask = vidoes_mask.cuda()
+            videos_data = (frames, mean_origin, video_lengths, vidoes_mask)
+
+            # text data
+            captions, cap_bows, lengths, cap_masks = targets
+            if captions is not None and torch.cuda.is_available():
                 captions = captions.cuda()
-
-        if cap_bows is not None:
-            cap_bows = Variable(cap_bows, volatile=volatile)
-            if torch.cuda.is_available():
+            if cap_bows is not None and torch.cuda.is_available():
                 cap_bows = cap_bows.cuda()
-
-        if cap_masks is not None:
-            cap_masks = Variable(cap_masks, volatile=volatile)
-            if torch.cuda.is_available():
+            if cap_masks is not None and torch.cuda.is_available():
                 cap_masks = cap_masks.cuda()
-        text_data = (captions, cap_bows, lengths, cap_masks)
+            text_data = (captions, cap_bows, lengths, cap_masks)
 
-
-        vid_emb = self.vid_encoding(videos_data)
-        cap_emb = self.text_encoding(text_data)
-        return vid_emb, cap_emb
+            vid_emb = self.vid_encoding(videos_data)
+            cap_emb = self.text_encoding(text_data)
+            return vid_emb, cap_emb
 
     def embed_vis(self, vis_data, volatile=True):
         # video data
-        frames, mean_origin, video_lengths, vidoes_mask = vis_data
-        frames = Variable(frames, volatile=volatile)
-        if torch.cuda.is_available():
-            frames = frames.cuda()
+        with torch.no_grad():
+            frames, mean_origin, video_lengths, vidoes_mask = vis_data
+            if torch.cuda.is_available():
+                frames = frames.cuda()
+                mean_origin = mean_origin.cuda()
+                vidoes_mask = vidoes_mask.cuda()
+            vis_data = (frames, mean_origin, video_lengths, vidoes_mask)
 
-        mean_origin = Variable(mean_origin, volatile=volatile)
-        if torch.cuda.is_available():
-            mean_origin = mean_origin.cuda()
-
-        vidoes_mask = Variable(vidoes_mask, volatile=volatile)
-        if torch.cuda.is_available():
-            vidoes_mask = vidoes_mask.cuda()
-        vis_data = (frames, mean_origin, video_lengths, vidoes_mask)
-
-        return self.vid_encoding(vis_data)
-
+            return self.vid_encoding(vis_data)
 
     def embed_txt(self, txt_data, volatile=True):
         # text data
-        captions, cap_bows, lengths, cap_masks = txt_data
-        if captions is not None:
-            captions = Variable(captions, volatile=volatile)
-            if torch.cuda.is_available():
+        with torch.no_grad():
+            captions, cap_bows, lengths, cap_masks = txt_data
+            if captions is not None and torch.cuda.is_available():
                 captions = captions.cuda()
-
-        if cap_bows is not None:
-            cap_bows = Variable(cap_bows, volatile=volatile)
-            if torch.cuda.is_available():
+            if cap_bows is not None and torch.cuda.is_available():
                 cap_bows = cap_bows.cuda()
-
-        if cap_masks is not None:
-            cap_masks = Variable(cap_masks, volatile=volatile)
-            if torch.cuda.is_available():
+            if cap_masks is not None and torch.cuda.is_available():
                 cap_masks = cap_masks.cuda()
-        txt_data = (captions, cap_bows, lengths, cap_masks)
+            txt_data = (captions, cap_bows, lengths, cap_masks)
 
-        return self.text_encoding(txt_data)
-
-
+            return self.text_encoding(txt_data)
 
 NAME_TO_MODELS = {'dual_encoding': Dual_Encoding}
+
 
 def get_model(name):
     assert name in NAME_TO_MODELS, '%s not supported.'%name
