@@ -127,7 +127,7 @@ def t2i(c2i, vis_details=False, n_caption=5):
         d_i = c2i[i]
         inds = np.argsort(d_i)
 
-        rank = np.where(inds == i / n_caption)[0][0]
+        rank = np.where(inds == (i / n_caption))[0][0]
         ranks[i] = rank
 
     # Compute metrics
