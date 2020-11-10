@@ -1,7 +1,8 @@
 import os
 import logging
-
-ROOT_PATH=os.path.join('/usr/local/extstore01/zhouhan/', 'VisualSearch')
+sun_path = '/usr/local/extstore01/gengyi/'
+zhou_path = '/usr/local/extstore01/zhouhan/'
+ROOT_PATH=os.path.join(sun_path, 'VisualSearch')
 
 logger = logging.getLogger(__file__)
 logging.basicConfig(
