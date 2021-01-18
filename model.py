@@ -9,7 +9,7 @@ from torch.nn.utils.clip_grad import clip_grad_norm  # clip_grad_norm_ for 0.4.0
 import numpy as np
 from collections import OrderedDict
 import torch.nn.functional as F
-from loss import TripletLoss
+from loss import TripletLoss, ContrastiveLoss
 from basic.bigfile import BigFile
 
 
@@ -319,11 +319,15 @@ class Dual_Encoding(BaseModel):
     def __init__(self, opt):
         # Build Models
         self.grad_clip = opt.grad_clip
+        # TODO: use transformer here
+        # example: self.vid_encoding = Transformer(opt)
+        # example: self.text_encoding = Transformer(opt)
         self.vid_encoding = Video_multilevel_encoding(opt)
         self.text_encoding = Text_multilevel_encoding(opt)
         print(self.vid_encoding)
         print(self.text_encoding)
         if torch.cuda.is_available():
+            #cudnn.benchmark = True
             self.vid_encoding.cuda()
             self.text_encoding.cuda()
             cudnn.benchmark = True
@@ -335,6 +339,10 @@ class Dual_Encoding(BaseModel):
                                             max_violation=opt.max_violation,
                                             cost_style=opt.cost_style,
                                             direction=opt.direction)
+        elif opt.loss_fun == 'cont':
+            # implement contrastive loss here
+            #self.criterion = ContrastiveLoss(opt)
+            raise NotImplementedError
 
         params = list(self.text_encoding.parameters())
         params += list(self.vid_encoding.parameters())

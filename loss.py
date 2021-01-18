@@ -27,6 +27,10 @@ def euclidean_sim(im, s):
     score = -YmX.pow(2).sum(2).t()
     return score    
 
+def exponential_sim(im, s):
+    # need to check dimention matching
+    return torch.exp(cosine_sim(im, s))
+
 
 class TripletLoss(nn.Module):
     """
@@ -42,6 +46,8 @@ class TripletLoss(nn.Module):
             self.sim = order_sim
         elif measure == 'euclidean':
             self.sim = euclidean_sim
+        elif measure == 'exp':
+            self.sim = exponential_sim
         else:
             self.sim = cosine_sim
 
@@ -89,3 +95,42 @@ class TripletLoss(nn.Module):
             return cost_s.sum() + cost_im.sum()
         else:
             return cost_s.mean() + cost_im.mean()
+
+class ContrastiveLoss(nn.Module):
+    def __init__(self, margin=0, measure='exp', neg_sampling='random', cost_style='sum', direction='all'):
+        super(ContrastiveLoss, self).__init__()
+        """ margin: the margin used to select negative samples (see the Negative Sampling Methods slides)
+            measure: how to compute similiarity
+            neg_sampling: 'random', 'progressive': from easy to hard
+            cost_style: used to decide how to add up sentence and image loss (sum or avg)
+            direction: 'i2t' image to text retrieval, 't2i' text to image retrieval, 'all': both
+        """
+        self.progressive_counter = 0
+        self.margin = margin
+        self.cost_style = cost_style
+        self.direction = direction
+        self.neg_sampling = neg_sampling
+        if measure == 'order':
+            self.sim = order_sim
+        elif measure == 'euclidean':
+            self.sim = euclidean_sim
+        elif measure == 'exp':
+            self.sim = exponential_sim
+        else:
+            self.sim = cosine_sim
+
+
+    def forward(self, s, im):
+        """use the same as the one above
+        """
+
+        # Step 1: Compute the sim score of all possible pairs
+        score = self.sim(im, s)
+
+        # Step 2: Rank them in decending order (suppose larger sim score == most similiar)
+
+        # Step 3: Select positive and negative pairs
+
+        # Step 4: Construct the loss
+
+        self.progressive_counter += 1
