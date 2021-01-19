@@ -27,9 +27,9 @@ def euclidean_sim(im, s):
     score = -YmX.pow(2).sum(2).t()
     return score    
 
-def exponential_sim(im, s):
+def exponential_sim(im, s, t=1):
     # need to check dimention matching
-    return torch.exp(cosine_sim(im, s))
+    return torch.exp(cosine_sim(im, s)/t)
 
 
 class TripletLoss(nn.Module):
@@ -55,9 +55,10 @@ class TripletLoss(nn.Module):
 
     def forward(self, s, im):
         # compute image-sentence score matrix
+        print("shape of sentence: {}\nshape of image: {}".format(s.shape, im.shape))
         scores = self.sim(im, s)
-        print(scores.shape)
-        exit(0)
+        print("shape of scores: {}".format(scores.shape))
+
         diagonal = scores.diag().view(im.size(0), 1)
         d1 = diagonal.expand_as(scores)
         d2 = diagonal.t().expand_as(scores)
@@ -122,14 +123,15 @@ class ContrastiveLoss(nn.Module):
             self.sim = cosine_sim
 
 
-    def forward(self, s, im):
+    def forward(self, s, im, temperature):
         """use the same as the one above
         """
 
         # Step 1: Compute the sim score of all possible pairs
-        score = self.sim(im, s)
+        scores = self.sim(im, s, t=temperature)
 
         # Step 2: Rank them in decending order (suppose larger sim score == most similiar)
+        
 
         # Step 3: Select positive and negative pairs
 
