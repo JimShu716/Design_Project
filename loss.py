@@ -56,6 +56,8 @@ class TripletLoss(nn.Module):
     def forward(self, s, im):
         # compute image-sentence score matrix
         scores = self.sim(im, s)
+        print(scores.shape)
+        exit(0)
         diagonal = scores.diag().view(im.size(0), 1)
         d1 = diagonal.expand_as(scores)
         d2 = diagonal.t().expand_as(scores)
