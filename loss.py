@@ -29,7 +29,7 @@ def euclidean_sim(im, s):
 
 def exponential_sim(im, s, t=1):
     # need to check dimention matching
-    return torch.exp(cosine_sim(im, s)/t)
+    return torch.exp(torch.sum(im*s, 2))
 
 
 class TripletLoss(nn.Module):
@@ -99,19 +99,20 @@ class TripletLoss(nn.Module):
             return cost_s.mean() + cost_im.mean()
 
 class ContrastiveLoss(nn.Module):
-    def __init__(self, margin=0, measure='exp', neg_sampling='random', cost_style='sum', direction='all'):
+    def __init__(self, margin=0, measure='exp', neg_sampling='random', cost_style='sum', direction='all', neg_n=10):
         super(ContrastiveLoss, self).__init__()
         """ margin: the margin used to select negative samples (see the Negative Sampling Methods slides)
             measure: how to compute similiarity
             neg_sampling: 'random', 'progressive': from easy to hard
             cost_style: used to decide how to add up sentence and image loss (sum or avg)
             direction: 'i2t' image to text retrieval, 't2i' text to image retrieval, 'all': both
+            neg_n: number of negative samples
         """
-        self.progressive_counter = 0
         self.margin = margin
         self.cost_style = cost_style
         self.direction = direction
         self.neg_sampling = neg_sampling
+        self.neg_n = neg_n
         if measure == 'order':
             self.sim = order_sim
         elif measure == 'euclidean':
@@ -122,18 +123,79 @@ class ContrastiveLoss(nn.Module):
             self.sim = cosine_sim
 
 
-    def forward(self, s, im, temperature):
-        """use the same as the one above
+    def forward(self, s, im, label, temperature, alpha):
+        """
+            s: a 3d tensor stands for sentence encoding
+                i.e.
+                    [
+                        [[aaa],[aaa],[aaa],[aaa],[aaa],[aaa],[aaa]], - encoding of 7 clips from video 1
+                        [[bbb],[bbb],[bbb],[bbb],[bbb],[bbb],[bbb]], - encoding of 7 clips from video 1
+                        [[ccc],[ccc],[ccc],[ccc],[ccc],[ccc],[ccc]], - encoding of 7 clips from video 1
+                    ]
+            im: a 3d tensor stands for image/frame encoding
+                i.e.
+                    [
+                        [[ddd],[ddd],[ddd],[ddd],[ddd],[ddd],[ddd]], - encoding of 7 piece of captions from video 1
+                        [[eee],[eee],[eee],[eee],[eee],[eee],[eee]], - encoding of 7 piece of captions from video 1
+                        [[fff],[fff],[fff],[fff],[fff],[fff],[fff]], - encoding of 7 piece of captions from video 1
+                    ]
+            label: a 2d binary list stands for if the video-sentence pair matchs to each other. 
+                    0 - not match/not-pos pair 
+                    1 - match/pos pair
+                    i.e.
+                        [
+                            [0,0,1,1,1,0,0], - video 1
+                            [0,1,1,1,0,0,0], - video 2
+                            [0,0,0,0,1,1,0], - video 3
+                        ]
+            temperature: used for calculating similiarity 
         """
 
-        # Step 1: Compute the sim score of all possible pairs
+        # Step 1: Compute the sim score of all pairs
         scores = self.sim(im, s, t=temperature)
 
-        # Step 2: Rank them in decending order (suppose larger sim score == most similiar)
-        
+        # Step 2: Compute the sum of score of positive pairs
+        label = torch.tensor(label)
+        pos_scores = scores * label
+        pos_scores_no_zero = list()
+        for i in range(pos_scores.shape[0]):
+            pos_scores_no_zero.append(pos_scores[i][torch.nonzero(pos_scores[i])].squeeze(-1))
 
-        # Step 3: Select positive and negative pairs
+        least_pos_scores = list()
+        for i in pos_scores_no_zero:
+            least_pos_scores.append(torch.min(i))
 
-        # Step 4: Construct the loss
+        sum_pos_scores = pos_scores.sum(1)
 
-        self.progressive_counter += 1
+        # Step 3: Rank the sim score in decending order (suppose larger sim score == most similiar)
+        # compute by sim(pos) - alpha - sim(others)
+        # TBC
+        score_rank = scores
+        if self.neg_sampling == 'progressive':
+            score_rank = -score_rank - alpha
+            torch.add(score_rank, least_pos_scores)
+            score_rank = torch.sort(score_rank).values
+
+        # Step 4: Select positive and negative pairs
+        num_pos = label.sum(1)
+        sum_neg_scores = list()
+        if self.neg_sampling == 'random':
+            for idx, i in enumerate(score_rank):
+                while(t<num_pos[idx] or t<self.neg_n):
+                    raise NotImplementedError
+                        
+        elif self.neg_sampling == 'progressive':
+            # use the rank sampling
+            neg_sample_num = self.neg_n
+            for rank in score_rank:
+                sum_neg_scores.append(rank[0:neg_sample_num].sum())
+
+        else:
+            raise NotImplementedError
+
+        # Step 5: Construct the loss
+        loss = torch.zeros(s.shape[0])
+        sum_neg_scores = torch.tensor(sum_neg_scores)
+        sum_pos_scores = torch.tensor(sum_pos_scores)
+        loss += sum_pos_scores/(sum_pos_scores+sum_neg_scores)
+        return loss
