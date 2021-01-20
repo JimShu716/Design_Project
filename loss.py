@@ -129,15 +129,15 @@ class ContrastiveLoss(nn.Module):
                 i.e.
                     [
                         [[aaa],[aaa],[aaa],[aaa],[aaa],[aaa],[aaa]], - encoding of 7 clips from video 1
-                        [[bbb],[bbb],[bbb],[bbb],[bbb],[bbb],[bbb]], - encoding of 7 clips from video 1
-                        [[ccc],[ccc],[ccc],[ccc],[ccc],[ccc],[ccc]], - encoding of 7 clips from video 1
+                        [[bbb],[bbb],[bbb],[bbb],[bbb],[bbb],[bbb]], - encoding of 7 clips from video 2
+                        [[ccc],[ccc],[ccc],[ccc],[ccc],[ccc],[ccc]], - encoding of 7 clips from video 3
                     ]
             im: a 3d tensor stands for image/frame encoding
                 i.e.
                     [
                         [[ddd],[ddd],[ddd],[ddd],[ddd],[ddd],[ddd]], - encoding of 7 piece of captions from video 1
-                        [[eee],[eee],[eee],[eee],[eee],[eee],[eee]], - encoding of 7 piece of captions from video 1
-                        [[fff],[fff],[fff],[fff],[fff],[fff],[fff]], - encoding of 7 piece of captions from video 1
+                        [[eee],[eee],[eee],[eee],[eee],[eee],[eee]], - encoding of 7 piece of captions from video 2
+                        [[fff],[fff],[fff],[fff],[fff],[fff],[fff]], - encoding of 7 piece of captions from video 3
                     ]
             label: a 2d binary list stands for if the video-sentence pair matchs to each other. 
                     0 - not match/not-pos pair 
