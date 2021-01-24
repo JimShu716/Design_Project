@@ -45,13 +45,16 @@ class ExtractionPipeline():
             self.num_video = len(self.video_list)
    
     
-    def read(self, save = True):
-        print(f"Start reading process, read total number of {self.num_videos} files from {VIDEO_SOURCE_PATH}:")
-        for i in range(self.num_videos):
-            print(f"=== Task {i}/{self.num_videos}:")
-            self.read_once(self.video_list[i],save)
+    def read(self, save = True, over_write = False):
+        print(f"Start reading process, read total number of {self.num_video} files from {VIDEO_SOURCE_PATH}:")
+        task_cnt = 0
+        for i in range(self.num_video):
+            print(f"=== Task {i}/{self.num_video}:")
+            file = self.read_once(self.video_list[i],save,over_write)
+            if not file == None:
+                task_cnt += 1 
             print(f"===")
-    
+        print(f"Finish job with {task_cnt} file generated.")
     def read_once(self,video_name, save = True, over_write = False):
         print(f'{video_name}:')
         if not over_write:
@@ -184,7 +187,7 @@ class ExtractionPipeline():
 
 if __name__ == '__main__':
     
-    pipe = ExtractionPipeline()
-    #pipe.read()
-    file = pipe.read_once(VID_1, over_write=True)
+    pipe = ExtractionPipeline(num_video = -1)
+    pipe.read()
+    #file = pipe.read_once(VID_1, over_write=True)
     #file_2 = pipe.read_from_saved_binary_file(VID_1)
