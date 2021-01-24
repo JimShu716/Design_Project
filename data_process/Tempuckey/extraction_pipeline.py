@@ -8,6 +8,7 @@ Created on Wed Oct  7 19:10:21 2020
 import pickle
 import os
 import cv2
+import srt
 
 SAVE_PATH = '.\\feature\\'
 TEST_PATH = '.\\test\\'
@@ -17,40 +18,53 @@ CAPTION_SOURCE_PATH = '.\\captions\\'
 VID_1 = '1_TRIPPING_2017-11-28-fla-nyr-home_00_44_55.826000_to_00_45_06.437000.mp4'
 
 class ExtractionPipeline():
-    def __init__(self, extracted_fps = 10, frame_per_package = 15):
+    def __init__(self, num_video = 10, extracted_fps = 10, frame_per_package = 15):
         self.caption_list = []
         self.video_list = []
+    
+        # 10/15 => 1.5 sec per package
         self.extracted_fps = extracted_fps
         self.frame_per_package = frame_per_package
+        self.num_video = num_video
         
+        # init environment
+        for p in SAVE_PATH, TEST_PATH, VIDEO_SOURCE_PATH, CAPTION_SOURCE_PATH:
+            if not os.path.exists(p):
+                os.mkdir(p)    
+        
+        # init caption lookup list
         dirpath, dirnames, files = next(os.walk(CAPTION_SOURCE_PATH))
         self.caption_list = [file for file in files]
 
+        # init video lookup list
         dirpath, dirnames, files = next(os.walk(VIDEO_SOURCE_PATH))
         self.video_list = [file for file in files]
         
-        for p in SAVE_PATH, TEST_PATH, VIDEO_SOURCE_PATH, CAPTION_SOURCE_PATH:
-            if not os.path.exists(p):
-                os.mkdir(p)       
+        # if number of video to process is too large or less than 0, read all videos
+        if self.num_video > len(self.video_list) or self.num_video < 0:
+            self.num_video = len(self.video_list)
+   
     
-    def read(self,num_videos = 10, save = True):
-        #if num_videos == -1:
-        for i in range(num_videos):
+    def read(self, save = True):
+        print(f"Start reading process, read total number of {self.num_videos} files from {VIDEO_SOURCE_PATH}:")
+        for i in range(self.num_videos):
+            print(f"=== Task {i}/{self.num_videos}:")
             self.read_once(self.video_list[i],save)
+            print(f"===")
     
     def read_once(self,video_name, save = True):
-        
         video_info = self.process_video_name(video_name)
+        print(f'{video_name}:')
         
         captions = self.retrieve_captions(video_info)
         if (len(captions)==0):
             print(f"Error: Did not find the subtitle for video {video_name}")
-            return
+            return None
         
         frames = self.retrieve_frames(video_info)
         if (len(frames)==0):
             print(f"Error: Loading frame error for video {video_name}")
-            return
+            return None
         
         feature = self.frame_to_feature(frames)
         
@@ -67,6 +81,8 @@ class ExtractionPipeline():
             f = open(filepath, 'wb')
             f.write(file_pickle)
             f.close()
+        else:
+            print("File not saved.")
         
         return file
     
@@ -77,6 +93,10 @@ class ExtractionPipeline():
         file = f.read()
         f.close()
         file = pickle.loads(file)
+        
+        print(f'Read from file: {file_name}:')
+        print(f'Feature packs: {len(file["feature"])}')
+        print(f'Captions: {len(file["captions"])}')
         
         return file
     
@@ -103,6 +123,7 @@ class ExtractionPipeline():
             'start_frame':start_frame,
             'end_time':end_time,
             'end_frame':end_frame,
+            'fps':-1,
             }
         return info
        
@@ -111,19 +132,18 @@ class ExtractionPipeline():
         for file in self.caption_list:
             if file.split(".")[0] == video_info['video_info']:
                 filepath = os.path.join(CAPTION_SOURCE_PATH,file)
-                fp = open( filepath, "rb")
-                lines = [line.decode('utf8') for line in fp.readlines()]
-                fp.close()
-        # TODO: fix line format
+                with open(rf'{filepath}',encoding='utf-8') as fd:
+                    lines = list(srt.parse(fd))
         
+        print(f'Get {len(lines)} lines of subtitles.')
         return lines
      
     def retrieve_frames(self,video_info, save = False):
         frames = {}
         video_path = os.path.join(VIDEO_SOURCE_PATH, video_info['video_name'])
         vid_cap = cv2.VideoCapture(video_path)
-        fps = int(vid_cap.get(cv2.CAP_PROP_FPS))
-        factor = round(fps/self.extracted_fps)
+        video_info['fps'] = vid_cap.get(cv2.CAP_PROP_FPS)
+        factor = round(video_info['fps']/self.extracted_fps)
     
         cur_frame = 0
         img_cnt = 0
@@ -149,7 +169,7 @@ class ExtractionPipeline():
         # pack frames
         frame_list = list(frames.values())
         packed_frames = [frame_list[i:i + self.frame_per_package] for i in range(0, len(frame_list), self.frame_per_package)]
-        print(f"{video_info['video_name']}: packed {len(packed_frames)} packs from extracted {img_cnt} frames from total {cur_frame} frames.")
+        print(f"Packed {len(packed_frames)} packs from extracted {img_cnt} frames from total {cur_frame} frames.")
         return packed_frames
 
 if __name__ == '__main__':
@@ -157,5 +177,4 @@ if __name__ == '__main__':
     pipe = ExtractionPipeline()
     #pipe.read()
     file = pipe.read_once(VID_1)
-    #file_2 = pipe.read_from_saved_binary_file(VID_1)
-        
+    file_2 = pipe.read_from_saved_binary_file(VID_1)
