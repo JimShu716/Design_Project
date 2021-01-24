@@ -5,7 +5,7 @@ Created on Wed Oct  7 19:10:21 2020
 @author: zhouh
 """
 
-import json
+import pickle
 import argparse
 import os
 import cv2
@@ -20,23 +20,62 @@ VID_1 = '1_TRIPPING_2017-11-28-fla-nyr-home_00_44_55.826000_to_00_45_06.437000.m
 class ExtractionPipeline():
     def __init__(self):
         self.caption_dict = []
+        self.video_list = []
         self.extracted_fps = 10
         self.frame_per_package = 15
-        self.init_caption_dictionary()
-
-    def init_caption_dictionary(self):
+        
         dirpath, dirnames, files = next(os.walk(CAPTION_SOURCE_PATH))
         self.caption_dict = [file for file in files]
-        
-    
-    def read(self,num_videos = 10):
-        #if num_videos == -1:
+
         dirpath, dirnames, files = next(os.walk(VIDEO_SOURCE_PATH))
-    
-    
-    def read_once(self,video_name):
-        video_info = self.process_video_name(video_name)
+        self.video_list = [file for file in files]
         
+        
+    
+    def read(self,num_videos = 10, save = True):
+        #if num_videos == -1:
+        for i in range(num_videos):
+            self.read_once(self.video_list[i],save)
+            
+    
+    
+    def read_once(self,video_name, save = True):
+        video_info = self.process_video_name(video_name)
+        captions = self.retrieve_captions(video_info)
+        frames = self.retrieve_video_frames(video_info)
+        feature = self.frame_to_feature(frames)
+        
+        file = {
+            'video_info':video_info,
+            'captions':captions,
+            'feature':feature,
+        }
+        
+        file_pickle = pickle.dumps(file)
+        file_name = video_info['video_name'][:-4]+'.bin'
+        filepath = os.path.join(SAVE_PATH,file_name)
+        f = open(filepath, 'wb')
+        f.write(file_pickle)
+        f.close()
+        return file
+    
+    def read_from_saved_binary_file(self, file_name):
+        file_name = file_name[:-4]+'.bin'
+        filepath = os.path.join(SAVE_PATH,file_name)
+        f = open(filepath, 'rb')
+        file = f.read()
+        f.close()
+        file = pickle.loads(file)
+        
+        return file
+    
+    def frame_to_feature(self, frames):
+        # TODO: put code here to do feature embedding extraction
+        feature = frames
+        
+        
+        return feature
+    
     
     def process_video_name(self,video_name):
         vlist = video_name.split("_",3)
@@ -62,11 +101,15 @@ class ExtractionPipeline():
         lines = []
         for file in self.caption_dict:
             if file.split(".")[0] == video_info['video_info']:
-                print('Found!')
                 filepath = os.path.join(CAPTION_SOURCE_PATH,file)
                 fp = open( filepath, "rb")
                 lines = fp.readlines()
+                lines = [line.decode('utf8') for line in lines]
                 fp.close()
+        else:
+            print('D')
+        # TODO: fix line format
+        
         return lines
     
     
@@ -106,7 +149,8 @@ class ExtractionPipeline():
 
 if __name__ == '__main__':
     
-    a = ExtractionPipeline()
-    lines = a.retrieve_captions(a.process_video_name(VID_1))
-    #frames = retrieve_video_frames(process_video_name(VID_1))
+    pipe = ExtractionPipeline()
+    pipe.read()
+    #file = pipe.read_once(VID_1)
+    #file_2 = pipe.read_from_saved_binary_file(VID_1)
         
