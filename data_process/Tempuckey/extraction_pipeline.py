@@ -52,9 +52,16 @@ class ExtractionPipeline():
             self.read_once(self.video_list[i],save)
             print(f"===")
     
-    def read_once(self,video_name, save = True):
-        video_info = self.process_video_name(video_name)
+    def read_once(self,video_name, save = True, over_write = False):
         print(f'{video_name}:')
+        if not over_write:
+            save_filepath = os.path.join(SAVE_PATH,video_name[:-4]+'.bin')
+            if os.path.exists(save_filepath):
+                print('Found saved feature file,skip this file.')
+                return None
+        
+        video_info = self.process_video_name(video_name)
+        
         
         captions = self.retrieve_captions(video_info)
         if (len(captions)==0):
@@ -81,6 +88,7 @@ class ExtractionPipeline():
             f = open(filepath, 'wb')
             f.write(file_pickle)
             f.close()
+            print('File generated.')
         else:
             print("File not saved.")
         
@@ -124,6 +132,8 @@ class ExtractionPipeline():
             'end_time':end_time,
             'end_frame':end_frame,
             'fps':-1,
+            'tripping_feature_index':[],
+            'tripping_caption_index':[],
             }
         return info
        
@@ -176,5 +186,5 @@ if __name__ == '__main__':
     
     pipe = ExtractionPipeline()
     #pipe.read()
-    file = pipe.read_once(VID_1)
-    file_2 = pipe.read_from_saved_binary_file(VID_1)
+    file = pipe.read_once(VID_1, over_write=True)
+    #file_2 = pipe.read_from_saved_binary_file(VID_1)
