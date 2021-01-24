@@ -1,0 +1,49 @@
+Initializing the environment...
+Read files from 		.\videos\
+Caption file sourced from 	.\captions\
+Save file to 			.\feature\
+
+Found 10 videos and 1078 subtitle files from environment.
+Start reading process...(Total Task number:10)
+
+=== Task 0/10:
+10_TRIPPING_2017-11-07-vgk-mtl-home_00_42_14.766000_to_00_42_24.142000.mp4:
+Found saved feature file,skip this file.
+===
+=== Task 1/10:
+1_TRIPPING_2017-11-28-fla-nyr-home_00_44_55.826000_to_00_45_06.437000.mp4:
+Found saved feature file,skip this file.
+===
+=== Task 2/10:
+2_TRIPPING_2017-11-28-fla-nyr-home_01_05_07.937000_to_01_05_20.550000.mp4:
+Found saved feature file,skip this file.
+===
+=== Task 3/10:
+3_TRIPPING_2018-04-14-col-nsh-national_00_56_33.857000_to_00_56_38.963000.mp4:
+Found saved feature file,skip this file.
+===
+=== Task 4/10:
+4_TRIPPING_2018-04-14-col-nsh-national_01_47_15.329000_to_01_47_30.210000.mp4:
+Found saved feature file,skip this file.
+===
+=== Task 5/10:
+5_TRIPPING_2018-04-14-col-nsh-national_02_29_37.802000_to_02_29_44.442000.mp4:
+Found saved feature file,skip this file.
+===
+=== Task 6/10:
+6_TRIPPING_2018-02-17-njd-tbl-home_02_29_33.198000_to_02_29_40.738000.mp4:
+Found saved feature file,skip this file.
+===
+=== Task 7/10:
+7_TRIPPING_2018-02-27-nsh-wpg-home_00_35_39.204000_to_00_35_42.173000.mp4:
+Found saved feature file,skip this file.
+===
+=== Task 8/10:
+8_TRIPPING_2017-12-31-chi-cgy-national_02_10_26.886000_to_02_10_34.994000.mp4:
+Found saved feature file,skip this file.
+===
+=== Task 9/10:
+9_TRIPPING_2017-11-24-tor-car-home_00_14_12.352000_to_00_14_18.524000.mp4:
+Found saved feature file,skip this file.
+===
+Finish job with 0 file generated.

@@ -18,14 +18,16 @@ CAPTION_SOURCE_PATH = '.\\captions\\'
 VID_1 = '1_TRIPPING_2017-11-28-fla-nyr-home_00_44_55.826000_to_00_45_06.437000.mp4'
 
 class ExtractionPipeline():
-    def __init__(self, num_video = 10, extracted_fps = 10, frame_per_package = 15):
+    def __init__(self, num_video = 10, extracted_fps = 10, frame_per_package = 15, suppress_log = True):
         self.caption_list = []
         self.video_list = []
+        self.logging = ""
     
         # 10/15 => 1.5 sec per package
         self.extracted_fps = extracted_fps
         self.frame_per_package = frame_per_package
         self.num_video = num_video
+        self.suppress_log = suppress_log
         
         # init environment
         for p in SAVE_PATH, TEST_PATH, VIDEO_SOURCE_PATH, CAPTION_SOURCE_PATH:
@@ -40,27 +42,36 @@ class ExtractionPipeline():
         dirpath, dirnames, files = next(os.walk(VIDEO_SOURCE_PATH))
         self.video_list = [file for file in files]
         
+        
+        
         # if number of video to process is too large or less than 0, read all videos
         if self.num_video > len(self.video_list) or self.num_video < 0:
             self.num_video = len(self.video_list)
    
-    
+        self.log(f"Initializing the environment...")
+        self.log(f"Read files from \t\t{VIDEO_SOURCE_PATH}")
+        self.log(f"Caption file sourced from \t{CAPTION_SOURCE_PATH}")
+        self.log(f"Save file to \t\t\t{SAVE_PATH}\n")
+        self.log(f"Found {len(self.video_list)} videos and {len(self.caption_list)} subtitle files from environment.")
+
+        
     def read(self, save = True, over_write = False):
-        print(f"Start reading process, read total number of {self.num_video} files from {VIDEO_SOURCE_PATH}:")
+        self.log(f"Start reading process...(Total Task number:{self.num_video})\n")
         task_cnt = 0
         for i in range(self.num_video):
-            print(f"=== Task {i}/{self.num_video}:")
+            self.log(f"=== Task {i}/{self.num_video}:")
             file = self.read_once(self.video_list[i],save,over_write)
             if not file == None:
                 task_cnt += 1 
-            print(f"===")
-        print(f"Finish job with {task_cnt} file generated.")
+            self.log(f"===")
+        self.log(f"Finish job with {task_cnt} file generated.")
+        self.gen_log()
     def read_once(self,video_name, save = True, over_write = False):
-        print(f'{video_name}:')
+        self.log(f'{video_name}:')
         if not over_write:
             save_filepath = os.path.join(SAVE_PATH,video_name[:-4]+'.bin')
             if os.path.exists(save_filepath):
-                print('Found saved feature file,skip this file.')
+                self.log('Found saved feature file,skip this file.')
                 return None
         
         video_info = self.process_video_name(video_name)
@@ -68,12 +79,12 @@ class ExtractionPipeline():
         
         captions = self.retrieve_captions(video_info)
         if (len(captions)==0):
-            print(f"Error: Did not find the subtitle for video {video_name}")
+            self.log(f"Error: Did not find the subtitle for video {video_name}")
             return None
         
         frames = self.retrieve_frames(video_info)
         if (len(frames)==0):
-            print(f"Error: Loading frame error for video {video_name}")
+            self.log(f"Error: Loading frame error for video {video_name}")
             return None
         
         feature = self.frame_to_feature(frames)
@@ -91,9 +102,9 @@ class ExtractionPipeline():
             f = open(filepath, 'wb')
             f.write(file_pickle)
             f.close()
-            print('File generated.')
+            self.log('File generated.')
         else:
-            print("File not saved.")
+            self.log("File not saved.")
         
         return file
     
@@ -105,9 +116,9 @@ class ExtractionPipeline():
         f.close()
         file = pickle.loads(file)
         
-        print(f'Read from file: {file_name}:')
-        print(f'Feature packs: {len(file["feature"])}')
-        print(f'Captions: {len(file["captions"])}')
+        self.log(f'Read from file: {file_name}:')
+        self.log(f'Feature packs: {len(file["feature"])}')
+        self.log(f'Captions: {len(file["captions"])}')
         
         return file
     
@@ -148,7 +159,7 @@ class ExtractionPipeline():
                 with open(rf'{filepath}',encoding='utf-8') as fd:
                     lines = list(srt.parse(fd))
         
-        print(f'Get {len(lines)} lines of subtitles.')
+        self.log(f'Get {len(lines)} lines of subtitles.')
         return lines
      
     def retrieve_frames(self,video_info, save = False):
@@ -169,9 +180,6 @@ class ExtractionPipeline():
                 break
             if cur_frame % factor == 0:
                 frames[str(cur_frame)] = img
-                # Optional: save feature frames
-                if (save):
-                    cv2.imwrite("%s\\%s\\%d.jpg" % (TEST_PATH,video_info['video_id'],cur_frame), img)
                 img_cnt += 1
             cur_frame += 1
             
@@ -182,9 +190,19 @@ class ExtractionPipeline():
         # pack frames
         frame_list = list(frames.values())
         packed_frames = [frame_list[i:i + self.frame_per_package] for i in range(0, len(frame_list), self.frame_per_package)]
-        print(f"Packed {len(packed_frames)} packs from extracted {img_cnt} frames from total {cur_frame} frames.")
+        self.log(f"Packed {len(packed_frames)} packs from extracted {img_cnt} frames from total {cur_frame} frames.")
         return packed_frames
 
+    def log(self, string):
+        self.logging += string +'\n'
+        if not self.suppress_log:
+            print(string)
+            
+    def gen_log(self):
+        with open("log.txt","w") as fp:
+            fp.write(self.logging)
+            fp.close()
+        
 if __name__ == '__main__':
     
     pipe = ExtractionPipeline(num_video = -1)
