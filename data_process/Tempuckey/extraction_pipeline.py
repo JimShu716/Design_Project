@@ -39,12 +39,19 @@ class ExtractionPipeline():
             self.read_once(self.video_list[i],save)
     
     def read_once(self,video_name, save = True):
+        
         video_info = self.process_video_name(video_name)
+        
         captions = self.retrieve_captions(video_info)
         if (len(captions)==0):
-            print(f"Error: Did not find the subtitle for the video {video_name}")
+            print(f"Error: Did not find the subtitle for video {video_name}")
             return
-        frames = self.retrieve_video_frames(video_info)
+        
+        frames = self.retrieve_frames(video_info)
+        if (len(frames)==0):
+            print(f"Error: Loading frame error for video {video_name}")
+            return
+        
         feature = self.frame_to_feature(frames)
         
         file = {
@@ -52,6 +59,7 @@ class ExtractionPipeline():
             'captions':captions,
             'feature':feature,
         }
+        
         if save:
             file_pickle = pickle.dumps(file)
             file_name = video_info['video_name'][:-4]+'.bin'
@@ -59,6 +67,7 @@ class ExtractionPipeline():
             f = open(filepath, 'wb')
             f.write(file_pickle)
             f.close()
+        
         return file
     
     def read_from_saved_binary_file(self, file_name):
@@ -147,6 +156,6 @@ if __name__ == '__main__':
     
     pipe = ExtractionPipeline()
     #pipe.read()
-    #file = pipe.read_once(VID_1)
+    file = pipe.read_once(VID_1)
     #file_2 = pipe.read_from_saved_binary_file(VID_1)
         
