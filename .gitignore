@@ -2,3 +2,9 @@
 *~
 *.swp
 *.swo
+.idea/
+env/
+data_process/videodatainfo_2017.json
+data_process/Tempuckey/captions
+data_process/Tempuckey/videos
+data_process/Tempuckey/feature
