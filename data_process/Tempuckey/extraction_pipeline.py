@@ -6,7 +6,6 @@ Created on Wed Oct  7 19:10:21 2020
 """
 
 import pickle
-import argparse
 import os
 import cv2
 
@@ -42,6 +41,9 @@ class ExtractionPipeline():
     def read_once(self,video_name, save = True):
         video_info = self.process_video_name(video_name)
         captions = self.retrieve_captions(video_info)
+        if (len(captions)==0):
+            print(f"Error: Did not find the subtitle for the video {video_name}")
+            return
         frames = self.retrieve_video_frames(video_info)
         feature = self.frame_to_feature(frames)
         
@@ -106,8 +108,6 @@ class ExtractionPipeline():
                 lines = fp.readlines()
                 lines = [line.decode('utf8') for line in lines]
                 fp.close()
-        else:
-            print('D')
         # TODO: fix line format
         
         return lines
