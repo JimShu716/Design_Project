@@ -69,7 +69,7 @@ class ExtractionPipeline():
         self.log(f"Start reading process...(Total Task number:{self.num_video})\n")
         task_cnt = 0
         for i in range(self.num_video):
-            self.log(f"=== Task {i}/{self.num_video}:")
+            self.log(f"=== Task {i+1}/{self.num_video}:")
             file = self.read_once(self.video_list[i],save,over_write)
             if not file == None:
                 task_cnt += 1 
@@ -85,7 +85,7 @@ class ExtractionPipeline():
         if not over_write:
             save_filepath = os.path.join(SAVE_PATH,video_name[:-4]+'.bin')
             if os.path.exists(save_filepath):
-                self.log('Found saved feature file,skip this file.')
+                self.log('Found saved feature file, skip this file.')
                 return None
         
         video_info = self.process_video_name(video_name)
