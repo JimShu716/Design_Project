@@ -15,7 +15,6 @@ import math
 
 
 SAVE_PATH = '.\\feature\\'
-TEST_PATH = '.\\test\\'
 VIDEO_SOURCE_PATH = '.\\videos\\'
 CAPTION_SOURCE_PATH = '.\\captions\\'
 LABEL_PATH = '.\\tempuckey_groundtruth_splits_videoinfo_20201026.csv'
@@ -37,7 +36,7 @@ class ExtractionPipeline():
         self.suppress_log = suppress_log
         
         # init environment
-        for p in SAVE_PATH, TEST_PATH, VIDEO_SOURCE_PATH, CAPTION_SOURCE_PATH:
+        for p in SAVE_PATH, VIDEO_SOURCE_PATH, CAPTION_SOURCE_PATH:
             if not os.path.exists(p):
                 os.mkdir(p)    
         
