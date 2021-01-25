@@ -42,11 +42,11 @@ class ExtractionPipeline():
         
         # init caption lookup list
         dirpath, dirnames, files = next(os.walk(CAPTION_SOURCE_PATH))
-        self.caption_list = [file for file in files]
+        self.caption_list = files
 
         # init video lookup list
         dirpath, dirnames, files = next(os.walk(VIDEO_SOURCE_PATH))
-        self.video_list = [file for file in files]
+        self.video_list = files
         
         # init label lookup list
         df = pd.read_csv(LABEL_PATH)
