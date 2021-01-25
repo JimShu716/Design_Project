@@ -1,9 +1,11 @@
 Initializing the environment...
-Read files from 		.\videos\
-Caption file sourced from 	.\captions\
-Save file to 			.\feature\
+Video file source from 		: .\videos\
+Caption file source from 	: .\captions\
+Label file source from 		: .\tempuckey_groundtruth_splits_videoinfo_20201026.csv
+Save file to 			: .\feature\
 
 Found 10 videos and 1078 subtitle files from environment.
+
 Start reading process...(Total Task number:10)
 
 === Task 0/10:
