@@ -171,18 +171,17 @@ class ContrastiveLoss(nn.Module):
         # compute by sim(pos) - alpha - sim(others)
         # TBC
         score_rank = scores
-        if self.neg_sampling == 'progressive':
+        if self.neg_sampling == 'progressive' or self.neg_sampling == 'random':
             score_rank = -score_rank - alpha
             torch.add(score_rank, least_pos_scores)
-            score_rank = torch.sort(score_rank).values
+            score_rank = torch.sort(score_rank, descending  = True).values
 
         # Step 4: Select positive and negative pairs
         num_pos = label.sum(1)
         sum_neg_scores = list()
         if self.neg_sampling == 'random':
-            for idx, i in enumerate(score_rank):
-                while(t<num_pos[idx] or t<self.neg_n):
-                    raise NotImplementedError
+            random_idx = torch.randperm(len(score_rank))
+            sum_neg_scores = score_rank[random_idx].sum(1)
                         
         elif self.neg_sampling == 'progressive':
             # use the rank sampling
