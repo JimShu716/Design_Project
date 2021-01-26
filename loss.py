@@ -173,7 +173,7 @@ class ContrastiveLoss(nn.Module):
         score_rank = scores
         if self.neg_sampling == 'progressive' or self.neg_sampling == 'random':
             score_rank = -score_rank - alpha
-            torch.add(score_rank, least_pos_scores)
+            torch.add(score_rank, torch.tensor(least_pos_scores))
             score_rank = torch.sort(score_rank, descending  = True).values
 
         # Step 4: Select positive and negative pairs
