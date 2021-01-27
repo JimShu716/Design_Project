@@ -247,10 +247,7 @@ class ExtractionPipeline():
         
         
         # ================convert into embeddings===========
-        
-
-        
-        # ===========================
+    
         output = open(SAVE_EMBEDDINGS_PATH, 'wb')
         pickle.dump(frames,output)
         return frames
