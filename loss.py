@@ -186,8 +186,8 @@ class ContrastiveLoss(nn.Module):
         elif self.neg_sampling == 'progressive':
             # use the rank sampling
             neg_sample_num = self.neg_n
-            for rank in score_rank:
-                sum_neg_scores.append(rank[0:neg_sample_num].sum())
+            
+            sum_neg_scores.append(score_rank[0:len(score_rank)][0:neg_sample_num].sum(1))
 
         else:
             raise NotImplementedError
