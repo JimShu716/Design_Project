@@ -11,6 +11,8 @@ import cv2
 import srt
 import pandas as pd
 import math
+import tensorflow as tf
+import torch
 
 
 
@@ -18,6 +20,8 @@ SAVE_PATH = '.\\feature\\'
 VIDEO_SOURCE_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/all_videos_UNLABELED/TRIPPING'
 CAPTION_SOURCE_PATH = '/usr/local/data01/zahra/datasets/NHL_ClosedCaption/Subtitles'
 LABEL_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/labels/tempuckey_groundtruth_splits_videoinfo_20201026.csv'
+
+SAVE_EMBEDDINGS_PATH = '.\\embeddings.pkl'
 
 VID_1 = '1_TRIPPING_2017-11-28-fla-nyr-home_00_44_55.826000_to_00_45_06.437000.mp4'
 VID_10 = '10_TRIPPING_2017-11-07-vgk-mtl-home_00_42_14.766000_to_00_42_24.142000.mp4'
@@ -103,9 +107,9 @@ class ExtractionPipeline():
         if (len(frames)==0):
             self.log(f"Error: Loading frame error for video {video_name}")
             return None
-        
+       
         feature = self.frame_to_feature(frames)
-        
+        print("the frame is", type(feature[0][0]))
         self.get_crtical_time(feature,captions,video_info)
         
         file = {
@@ -235,10 +239,21 @@ class ExtractionPipeline():
         
     def frame_to_feature(self, frames):
         # TODO: put code here to do feature embedding extraction
-        feature = frames
-        # ===========================
         
-        return feature
+        # =========convert into tensor object==================
+         
+        feature = frames
+        for i in range(len(frames)):
+            for j in  range(len(frames[i])): 
+                temp=torch.tensor(frames[i][j])
+                frames[i][j] = temp
+        
+        
+        # ================convert into embeddings===========
+    
+        output = open(SAVE_EMBEDDINGS_PATH, 'wb')
+        pickle.dump(frames,output)
+        return frames
             
 
 if __name__ == '__main__':
