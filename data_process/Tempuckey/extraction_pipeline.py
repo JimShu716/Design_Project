@@ -15,9 +15,9 @@ import math
 
 
 SAVE_PATH = '.\\feature\\'
-VIDEO_SOURCE_PATH = '.\\videos\\'
-CAPTION_SOURCE_PATH = '.\\captions\\'
-LABEL_PATH = '.\\tempuckey_groundtruth_splits_videoinfo_20201026.csv'
+VIDEO_SOURCE_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/all_videos_UNLABELED/TRIPPING'
+CAPTION_SOURCE_PATH = '/usr/local/data01/zahra/datasets/NHL_ClosedCaption/Subtitles'
+LABEL_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/labels/tempuckey_groundtruth_splits_videoinfo_20201026.csv'
 
 VID_1 = '1_TRIPPING_2017-11-28-fla-nyr-home_00_44_55.826000_to_00_45_06.437000.mp4'
 VID_10 = '10_TRIPPING_2017-11-07-vgk-mtl-home_00_42_14.766000_to_00_42_24.142000.mp4'
@@ -68,12 +68,15 @@ class ExtractionPipeline():
     def read(self, save = True, over_write = False):
         self.log(f"Start reading process...(Total Task number:{self.num_video})\n")
         task_cnt = 0
-        for i in range(self.num_video):
-            self.log(f"=== Task {i+1}/{self.num_video}:")
-            file = self.read_once(self.video_list[i],save,over_write)
-            if not file == None:
-                task_cnt += 1 
-            self.log(f"===")
+        try:
+            for i in range(self.num_video):
+                self.log(f"=== Task {i+1}/{self.num_video}:")
+                file = self.read_once(self.video_list[i],save,over_write)
+                if not file == None:
+                    task_cnt += 1 
+                self.log(f"===")
+        except:
+            self.log(f"Job disrrupted, stop at task {task_cnt}")
         self.log(f"Finish job with {task_cnt} file generated.")
         with open("log.txt","w") as fp:
             fp.write(self.logging)
@@ -240,7 +243,7 @@ class ExtractionPipeline():
 
 if __name__ == '__main__':
     
-    pipe = ExtractionPipeline(num_video = -1,suppress_log=False)
+    pipe = ExtractionPipeline(num_video = 10,suppress_log=False)
     pipe.read()
     #file = pipe.read_once(VID_10, over_write=True)
     #file_2 = pipe.read_from_saved_binary_file(VID_1)
