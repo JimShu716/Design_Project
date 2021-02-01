@@ -1,7 +1,7 @@
 trainCollection=tgif-msrvtt10k
 valCollection=tv2016train
 testCollection=iacc.3
-rootpath=/usr/local/extstore01/pengnanf/VisualSearch
+rootpath=/usr/local/extstore01/gengyi/VisualSearch
 visual_feature=pyresnext-101_rbps13k,flatten0_output,os
 n_caption=2
 
