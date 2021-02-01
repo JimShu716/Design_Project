@@ -407,7 +407,7 @@ class Dual_Encoding(BaseModel):
         print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
         print("captions.shape: {}".format(captions.shape))
         print("cap_bows.shape: {}".format(cap_bows.shape))
-        print("lengths.shape: {}".format(lengths.shape))
+        print("lengths.shape: {}".format(len(lengths)))
         print("cap_masks.shape: {}".format(cap_masks.shape))
         print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
