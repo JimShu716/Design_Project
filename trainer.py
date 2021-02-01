@@ -308,6 +308,7 @@ def train(opt, train_loader, model, epoch):
     for i, train_data in enumerate(train_loader):
 
         print(type(train_data))
+        exit(0)
 
         # measure data loading time
         data_time.update(time.time() - end)
