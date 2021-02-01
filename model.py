@@ -293,6 +293,12 @@ class BaseModel(object):
         # compute the embeddings
         vid_emb, cap_emb = self.forward_emb(videos, captions, False)
 
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        print("vid_emb type: {}".format(type(vid_emb)))
+        print("cap_emb type: {}".format(type(cap_emb)))
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        exit(0)
+
         # measure accuracy and record loss
         self.optimizer.zero_grad()
         loss = self.forward_loss(cap_emb, vid_emb)
@@ -363,15 +369,6 @@ class Dual_Encoding(BaseModel):
         frames, mean_origin, video_lengths, vidoes_mask = videos
         frames = Variable(frames, volatile=volatile)
 
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        print("frame shape: {}".format(frames.shape))
-        print("mean_origin: {}".format(mean_origin))
-        print("video_length: {}".format(video_lengths))
-        print("video_mask: {}".format(vidoes_mask))
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-
-        exit(0)
-        
         if torch.cuda.is_available():
             frames = frames.cuda()
 
@@ -383,6 +380,15 @@ class Dual_Encoding(BaseModel):
         if torch.cuda.is_available():
             vidoes_mask = vidoes_mask.cuda()
         videos_data = (frames, mean_origin, video_lengths, vidoes_mask)
+
+        # print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        # print("frame shape: {}".format(frames.shape))
+        # print("mean_origin shape: {}".format(mean_origin.shape))
+        # print("video_length shape: {}".format(video_lengths.shape))
+        # print("video_mask shape: {}".format(vidoes_mask.shape))
+        # print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+        # exit(0)
 
         # text data
         captions, cap_bows, lengths, cap_masks = targets
