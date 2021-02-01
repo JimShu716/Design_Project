@@ -290,9 +290,6 @@ class BaseModel(object):
         self.logger.update('Eit', self.Eiters)
         self.logger.update('lr', self.optimizer.param_groups[0]['lr'])
 
-        print("video shape: {}\ncap shape: {}".format(videos.shape, captions.shape))
-        exit(0)
-
         # compute the embeddings
         vid_emb, cap_emb = self.forward_emb(videos, captions, False)
 
@@ -365,6 +362,16 @@ class Dual_Encoding(BaseModel):
         # video data
         frames, mean_origin, video_lengths, vidoes_mask = videos
         frames = Variable(frames, volatile=volatile)
+
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        print("frame shape: {}".format(frames.shape))
+        print("mean_origin: {}".format(mean_origin))
+        print("video_length: {}".format(video_lengths))
+        print("video_mask: {}".format(vidoes_mask))
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+        exit(0)
+        
         if torch.cuda.is_available():
             frames = frames.cuda()
 
