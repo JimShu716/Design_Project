@@ -290,6 +290,9 @@ class BaseModel(object):
         self.logger.update('Eit', self.Eiters)
         self.logger.update('lr', self.optimizer.param_groups[0]['lr'])
 
+        print("video shape: {}\ncap shape: {}".format(videos.shape, captions.shape))
+        exit(0)
+
         # compute the embeddings
         vid_emb, cap_emb = self.forward_emb(videos, captions, False)
 
