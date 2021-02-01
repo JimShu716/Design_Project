@@ -294,8 +294,8 @@ class BaseModel(object):
         vid_emb, cap_emb = self.forward_emb(videos, captions, False)
 
         print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        print("vid_emb type: {}".format(type(vid_emb)))
-        print("cap_emb type: {}".format(type(cap_emb)))
+        print("vid_emb shape: {}".format(vid_emb.shape))
+        print("cap_emb shape: {}".format(cap_emb.shape))
         print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
         exit(0)
 
