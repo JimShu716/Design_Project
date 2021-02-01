@@ -4,7 +4,7 @@ Created on Wed Oct  7 19:10:21 2020
 
 @author: zhouh
 """
-
+import logging
 import pickle
 import os
 import cv2
@@ -12,14 +12,17 @@ import srt
 import pandas as pd
 import math
 import torch
-
+from tensorflow.keras.applications.resnet50 import ResNet50
+from tensorflow.keras.applications.resnet import preprocess_input
+from PIL import Image
+import skimage.transform as st
+import numpy as np
 
 
 SAVE_PATH = '.\\feature\\'
 # VIDEO_SOURCE_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/all_videos_UNLABELED/TRIPPING'
 # CAPTION_SOURCE_PATH = '/usr/local/data01/zahra/datasets/NHL_ClosedCaption/Subtitles'
 # LABEL_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/labels/tempuckey_groundtruth_splits_videoinfo_20201026.csv'
-
 VIDEO_SOURCE_PATH = '.\\videos\\'
 CAPTION_SOURCE_PATH = '.\\captions\\'
 LABEL_PATH = '.\\tempuckey_groundtruth_splits_videoinfo_20201026.csv'
@@ -82,6 +85,7 @@ class ExtractionPipeline():
                     task_cnt += 1 
                 self.log(f"===")
         except:
+            logging.exception("message")
             self.log(f"Job disrrupted, stop at task {task_cnt}")
         self.log(f"Finish job with {task_cnt} file generated.")
         with open("log.txt","w") as fp:
@@ -111,7 +115,7 @@ class ExtractionPipeline():
             return None
        
         feature = self.frame_to_feature(frames)
-        print("the frame is", type(feature[0][0]))
+        #print("the frame is", feature[0][0])
         self.get_crtical_time(feature,captions,video_info)
         
         file = {
@@ -243,19 +247,31 @@ class ExtractionPipeline():
         # TODO: put code here to do feature embedding extraction
         
         # =========convert into tensor object==================
-         
+        print("======== Start converting to feature =====")
+        model = ResNet50(weights='imagenet')
         feature = frames
         for i in range(len(frames)):
             for j in  range(len(frames[i])): 
-                temp=torch.tensor(frames[i][j])
-                frames[i][j] = temp
+                
+        # ================convert into embeddings (tensor object)===========
+               
+                feature = self.extract_feature(frames[i][j],model)
+                feature_torch =torch.tensor(feature)
+                frames[i][j] = feature_torch
         
-        
-        # ================convert into embeddings===========
-    
-
         return frames
-            
+    
+    def extract_feature(self, frame,model):
+        
+        
+        #==========resize the frame to fit the model ========
+        x = st.resize(frame, (224, 224,3))
+        x = np.expand_dims(x, axis=0)
+       
+        x = preprocess_input(x)
+        feature = model.predict(x)
+        print(feature)
+        return feature
 
 if __name__ == '__main__':
     
