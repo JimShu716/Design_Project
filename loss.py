@@ -54,16 +54,33 @@ class TripletLoss(nn.Module):
         self.max_violation = max_violation
 
     def forward(self, s, im):
+        """
+            s.shape = (128, 2048)
+            im.shape = (128, 2048)
+
+            Colab with step running: https://colab.research.google.com/drive/1sjW0Eo1zJYbiopXShf186NoKk7GHUzGd?usp=sharing
+        """
         # compute image-sentence score matrix
         print("shape of sentence: {}\nshape of image: {}".format(s.shape, im.shape))
+        
         scores = self.sim(im, s)
+        # after sim: scores.shape = (128, 128)
+        
         print("shape of scores: {}".format(scores.shape))
+
+        # get the diagonal of the similiarty matrix
         diagonal = scores.diag().view(im.size(0), 1)
+        # diagonal.shape = (128, 1)
+        # Guess: scores[i][i] = pos score? Indeed.
+        # TODO: Change the contrastive loss w.r.t this logic
+
         d1 = diagonal.expand_as(scores)
         d2 = diagonal.t().expand_as(scores)
 
         # clear diagonals
         mask = torch.eye(scores.size(0)) > .5
+        # generate a binary matrix with the diagonal is True while the rest is False
+
         I = Variable(mask)
         if torch.cuda.is_available():
             I = I.cuda()

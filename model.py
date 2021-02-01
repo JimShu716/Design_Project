@@ -404,12 +404,20 @@ class Dual_Encoding(BaseModel):
                 cap_masks = cap_masks.cuda()
         text_data = (captions, cap_bows, lengths, cap_masks)
 
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        print("captions.shape: {}".format(captions.shape))
-        print("cap_bows.shape: {}".format(cap_bows.shape))
-        print("lengths.shape: {}".format(len(lengths)))
-        print("cap_masks.shape: {}".format(cap_masks.shape))
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        # print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        # print("captions.shape: {}".format(captions.shape))
+        # print("cap_bows.shape: {}".format(cap_bows.shape))
+        # print("lengths.shape: {}".format(len(lengths)))
+        # print("cap_masks.shape: {}".format(cap_masks.shape))
+        # print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        
+        # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        # captions.shape: torch.Size([128, 49])
+        # cap_bows.shape: torch.Size([128, 7807])
+        # lengths.shape: 128
+        # cap_masks.shape: torch.Size([128, 49])
+        # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 
 
         vid_emb = self.vid_encoding(videos_data)
