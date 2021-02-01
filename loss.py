@@ -196,5 +196,8 @@ class ContrastiveLoss(nn.Module):
         loss = torch.zeros(s.shape[0])
         sum_neg_scores = torch.tensor(sum_neg_scores)
         sum_pos_scores = torch.tensor(sum_pos_scores)
-        loss += sum_pos_scores/(sum_pos_scores+sum_neg_scores)
+        if self.cost_style == "sum":
+            loss += torch.log(sum_pos_scores/(sum_pos_scores+sum_neg_scores))
+        else:
+            
         return loss
