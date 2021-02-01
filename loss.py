@@ -199,5 +199,5 @@ class ContrastiveLoss(nn.Module):
         if self.cost_style == "sum":
             loss += torch.log(sum_pos_scores/(sum_pos_scores+sum_neg_scores))
         else:
-            
+            loss += 0
         return loss
