@@ -121,8 +121,15 @@ class Video_multilevel_encoding(nn.Module):
 
 
     def forward(self, videos):
+        # TODO: Study this one here
         """Extract video feature vectors."""
-
+        """
+            videos: frames after ResNet
+            videos_origin: mean of frames
+            lengths: video_lengths
+            videos_mask: videos_mask
+        """
+        
         videos, videos_origin, lengths, vidoes_mask = videos
         
         # Level 1. Global Encoding by Mean Pooling According
@@ -293,11 +300,9 @@ class BaseModel(object):
         # compute the embeddings
         vid_emb, cap_emb = self.forward_emb(videos, captions, False)
 
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        print("vid_emb shape: {}".format(vid_emb.shape))
-        print("cap_emb shape: {}".format(cap_emb.shape))
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        exit(0)
+        # Output shape for MSR_VTT:
+        # vid_emb.shape = torch.Size([128, 2048])
+        # cap_emb.shape = torch.Size([128, 2048])
 
         # measure accuracy and record loss
         self.optimizer.zero_grad()
@@ -381,15 +386,6 @@ class Dual_Encoding(BaseModel):
             vidoes_mask = vidoes_mask.cuda()
         videos_data = (frames, mean_origin, video_lengths, vidoes_mask)
 
-        # print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        # print("frame shape: {}".format(frames.shape))
-        # print("mean_origin shape: {}".format(mean_origin.shape))
-        # print("video_length shape: {}".format(video_lengths.shape))
-        # print("video_mask shape: {}".format(vidoes_mask.shape))
-        # print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-
-        # exit(0)
-
         # text data
         captions, cap_bows, lengths, cap_masks = targets
         if captions is not None:
@@ -407,6 +403,13 @@ class Dual_Encoding(BaseModel):
             if torch.cuda.is_available():
                 cap_masks = cap_masks.cuda()
         text_data = (captions, cap_bows, lengths, cap_masks)
+
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        print("captions.shape: {}".format(captions.shape))
+        print("cap_bows.shape: {}".format(cap_bows.shape))
+        print("lengths.shape: {}".format(lengths.shape))
+        print("cap_masks.shape: {}".format(cap_masks.shape))
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
 
         vid_emb = self.vid_encoding(videos_data)
