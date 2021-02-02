@@ -121,8 +121,15 @@ class Video_multilevel_encoding(nn.Module):
 
 
     def forward(self, videos):
+        # TODO: Study this one here
         """Extract video feature vectors."""
-
+        """
+            videos: frames after ResNet
+            videos_origin: mean of frames
+            lengths: video_lengths
+            videos_mask: videos_mask
+        """
+        
         videos, videos_origin, lengths, vidoes_mask = videos
         
         # Level 1. Global Encoding by Mean Pooling According
@@ -293,6 +300,10 @@ class BaseModel(object):
         # compute the embeddings
         vid_emb, cap_emb = self.forward_emb(videos, captions, False)
 
+        # Output shape for MSR_VTT:
+        # vid_emb.shape = torch.Size([128, 2048])
+        # cap_emb.shape = torch.Size([128, 2048])
+
         # measure accuracy and record loss
         self.optimizer.zero_grad()
         loss = self.forward_loss(cap_emb, vid_emb)
@@ -362,6 +373,7 @@ class Dual_Encoding(BaseModel):
         # video data
         frames, mean_origin, video_lengths, vidoes_mask = videos
         frames = Variable(frames, volatile=volatile)
+
         if torch.cuda.is_available():
             frames = frames.cuda()
 
@@ -391,6 +403,21 @@ class Dual_Encoding(BaseModel):
             if torch.cuda.is_available():
                 cap_masks = cap_masks.cuda()
         text_data = (captions, cap_bows, lengths, cap_masks)
+
+        # print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        # print("captions.shape: {}".format(captions.shape))
+        # print("cap_bows.shape: {}".format(cap_bows.shape))
+        # print("lengths.shape: {}".format(len(lengths)))
+        # print("cap_masks.shape: {}".format(cap_masks.shape))
+        # print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        
+        # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        # captions.shape: torch.Size([128, 49])
+        # cap_bows.shape: torch.Size([128, 7807])
+        # lengths.shape: 128
+        # cap_masks.shape: torch.Size([128, 49])
+        # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 
 
         vid_emb = self.vid_encoding(videos_data)
