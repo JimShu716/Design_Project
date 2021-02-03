@@ -123,9 +123,9 @@ class ExtractionPipeline():
         }
 
         if save:
-            file_pickle = pickle.dumps(file)
-            file_name = video_info['video_name'][:-4] + '.bin'
-            filepath = os.path.join(SAVE_PATH, file_name)
+            file_pickle = pickle.dumps(file,protocol= 2)
+            file_name = video_info['video_name'][:-4]+'.bin'
+            filepath = os.path.join(SAVE_PATH,file_name)
             f = open(filepath, 'wb')
             f.write(file_pickle)
             f.close()
@@ -264,7 +264,14 @@ class ExtractionPipeline():
                 feature = self.extract_feature(frames[i][j], model)
                 feature_torch = torch.tensor(feature)
                 frames[i][j] = feature_torch
-
+        # ================fill the list with zero tensors to make same length===========
+               
+        second_last_list_length = len(frames[len(frames)-2])
+        last_list_length = len(frames[len(frames)-1])
+        while len(frames[len(frames)-1])<second_last_list_length:
+           
+            additional_tensor = torch.tensor( np.zeros((1,1000)))
+            frames[len(frames)-1].append(additional_tensor)
         return frames
 
     def extract_feature(self, frame, model):
@@ -275,7 +282,6 @@ class ExtractionPipeline():
 
         x = preprocess_input(x)
         feature = model.predict(x)
-        print(feature)
         return feature
 
     def caption_to_feature(self, frames, captions, video_info):
