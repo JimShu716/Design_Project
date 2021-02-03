@@ -117,7 +117,7 @@ class TripletLoss(nn.Module):
 
 
 class ContrastiveLoss(nn.Module):
-    def __init__(self, margin=0, measure='exp', neg_sampling='random', cost_style='sum', direction='all', neg_n=10):
+    def __init__(self, measure='exp', neg_sampling='random', cost_style='sum', direction='all', neg_n=10):
         super(ContrastiveLoss, self).__init__()
         """ margin: the margin used to select negative samples (see the Negative Sampling Methods slides)
             measure: how to compute similiarity
@@ -149,15 +149,15 @@ class ContrastiveLoss(nn.Module):
             alpha: used for negative sampling
         """
 
-        scores = self.sim(im, s)
+        scores = exponential_sim(im, s, t=temperature)
         # scores.shape = (batch_size, batch_size)
 
+        # find all positive pairs
         diagonal = scores.diag().view(im.size(0), 1)
+        min_pos_score = diagonal.min()
+        sum_pos = diagonal.sum()
         # diagonal.shape = (batch_size, 1)
         # Guess: scores[i][i] = pos score? Yes.
-
-        d1 = diagonal.expand_as(scores)
-        d2 = diagonal.t().expand_as(scores)
 
         # clear diagonals
         mask = torch.eye(scores.size(0)) > .5
@@ -173,6 +173,30 @@ class ContrastiveLoss(nn.Module):
 
         # Implement negative sampling here
         # TODO !!!
+
+        if self.direction in  ['i2t', 'all']:
+            # caption retrieval
+            if neg_sampling == "progressive":
+                cost_s = (min_pos_score - alpha - scores).clamp(min=0)
+                cost_s = cost_s.masked_fill_(I, 0)
+            elif neg_sampling == 'random':
+                # TODO: implement random
+                raise NotImplementedError
+            else:
+                # TODO: implement all
+                raise NotImplementedError
+        # compare every diagonal score to scores in its row
+        if self.direction in ['t2i', 'all']:
+            # image retrieval
+            if neg_sampling == "progressive":
+                cost_im = (min_pos_score - alpha - scores).clamp(min=0)
+                cost_im = cost_im.masked_fill_(I, 0)
+            elif neg_sampling == 'random':
+                # TODO: implement random
+                raise NotImplementedError
+            else:
+                # TODO: implement all
+                raise NotImplementedError
 
         # Sum up and return
         if cost_s is None:
