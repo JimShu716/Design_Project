@@ -373,7 +373,7 @@ class Dual_Encoding(BaseModel):
         # video data
         frames, mean_origin, video_lengths, vidoes_mask = videos
         frames = Variable(frames, volatile=volatile)
-
+    
         if torch.cuda.is_available():
             frames = frames.cuda()
 
@@ -404,13 +404,19 @@ class Dual_Encoding(BaseModel):
                 cap_masks = cap_masks.cuda()
         text_data = (captions, cap_bows, lengths, cap_masks)
 
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        print("captions.shape: {}".format(captions.shape))
-        print("cap_bows.shape: {}".format(cap_bows.shape))
-        print("lengths.shape: {}".format(len(lengths)))
-        print("cap_masks.shape: {}".format(cap_masks.shape))
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-
+        #print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        #print("captions.shape: {}".format(captions.shape))
+        #print("cap_bows.shape: {}".format(cap_bows.shape))
+        #print("lengths.shape: {}".format(len(lengths)))
+        #print("cap_masks.shape: {}".format(cap_masks.shape))
+        #print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        
+        print(">"*20)
+        print("video_mask:")
+        print(vidoes_mask)
+        print(">"*20)
+        print("cap_mask:")
+        print(cap_masks)
 
         vid_emb = self.vid_encoding(videos_data)
         cap_emb = self.text_encoding(text_data)
