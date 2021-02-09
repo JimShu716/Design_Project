@@ -24,7 +24,7 @@ SAVE_PATH = '.\\feature\\'
 # CAPTION_SOURCE_PATH = '/usr/local/data01/zahra/datasets/NHL_ClosedCaption/Subtitles'
 # LABEL_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/labels/tempuckey_groundtruth_splits_videoinfo_20201026.csv'
 VIDEO_SOURCE_PATH = '.\\videos\\'
-CAPTION_SOURCE_PATH = '.\\corpus_with_timestamp\\'
+CAPTION_SOURCE_PATH = '.\\captions\\'
 LABEL_PATH = '.\\tempuckey_groundtruth_splits_videoinfo_20201026.csv'
 
 VID_1 = '1_TRIPPING_2017-11-28-fla-nyr-home_00_44_55.826000_to_00_45_06.437000.mp4'
@@ -114,7 +114,7 @@ class ExtractionPipeline():
 
         # feature = self.frame_to_feature(frames)
         feature = frames
-        self.get_crtical_time(feature, captions, video_info)
+        #self.get_crtical_time(feature, captions, video_info)
 
         file = {
             'video_info': video_info,
@@ -222,8 +222,6 @@ class ExtractionPipeline():
         packed_frames = [frame_list[i:i + self.frame_per_package] for i in
                          range(0, len(frame_list), self.frame_per_package)]
 
-
-
         self.log(f"Packed {len(packed_frames)} packs from extracted {img_cnt} frames from total {cur_frame} frames.")
         return packed_frames
 
@@ -232,7 +230,7 @@ class ExtractionPipeline():
         if not self.suppress_log:
             print(string)
 
-    def get_crtical_time(self, feature, captions, video_info):
+    def get_critical_time(self, feature, captions, video_info):
         events = self.label[self.label["video"] == video_info["video_name"]]
         c_feature = []
         c_caption = []
@@ -288,7 +286,7 @@ class ExtractionPipeline():
         feature = [[] for i in range(len(frames))]
         frame_start_time = video_info['start_time']
         video_length = video_info['actual_video_length']
-        for cap in captions:
+        for cap, w in captions.items():
             # 5.1s/ 1.5s = 3.4 -> 3
             # 6.15s /1.5s = 4.1 -> 4
             start_time = datetime.timedelta(hours=cap[0].hour, minutes=cap[0].minute, seconds=cap[0].second).total_seconds() - frame_start_time
@@ -299,13 +297,13 @@ class ExtractionPipeline():
             end_index = int(end_time/video_info['sec_per_package'])
             for i in range(start_index, end_index+1):
                 if i < len(feature):
-                    feature[i].append(cap)
+                    feature[i].append((cap, w))
         return feature
 
 
 if __name__ == '__main__':
     pipe = ExtractionPipeline(num_video=10, suppress_log=False)
     # pipe.read()
-    file = pipe.read_once(VID_10, over_write=True)
+    file = pipe.read_once(VID_1, over_write=True)
     # file_2 = pipe.read_from_saved_binary_file(VID_1)
     print('end')
