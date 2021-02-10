@@ -18,6 +18,11 @@ import tensorflow.keras.preprocessing
 from PIL import Image
 import skimage.transform as st
 import numpy as np
+import string
+from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import OneHotEncoder
+from numpy import argmax
+#from nltk.corpus import stopwords
 
 SAVE_PATH = '.\\feature\\'
 # VIDEO_SOURCE_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/all_videos_UNLABELED/TRIPPING'
@@ -283,10 +288,14 @@ class ExtractionPipeline():
         return feature
 
     def caption_to_feature(self, frames, captions, video_info):
+        all_sentence =""  #String to store all the sentence
         feature = [[] for i in range(len(frames))]
         frame_start_time = video_info['start_time']
         video_length = video_info['actual_video_length']
         for cap, w in captions.items():
+            all_sentence += " "
+            all_sentence += w
+      
             # 5.1s/ 1.5s = 3.4 -> 3
             # 6.15s /1.5s = 4.1 -> 4
             start_time = datetime.timedelta(hours=cap[0].hour, minutes=cap[0].minute, seconds=cap[0].second).total_seconds() - frame_start_time
@@ -298,8 +307,82 @@ class ExtractionPipeline():
             for i in range(start_index, end_index+1):
                 if i < len(feature):
                     feature[i].append((cap, w))
+                    
+         # ================ Convert all sentence to list =========== 
+        all_sentence= all_sentence.lower() # all to lower case
+        all_sentence = all_sentence.translate(str.maketrans('', '', string.punctuation)) # remove all punctuations
+        word_list = all_sentence.split()
+        
+         # ================ Create stop word list ===========
+ #       all_stopwords = stopwords.words('english')
+        feature = self.caption_to_one_hot(feature, word_list)
         return feature
+    
+    
+    def caption_to_one_hot(self,feature, all_word_list):
+        print(len(all_word_list))
+        
+        # integer encode
+        label_encoder = LabelEncoder() 
+        integer_encoded = label_encoder.fit_transform(all_word_list) #encode labels
+        integer_encoded_list = integer_encoded.tolist()
+        print(integer_encoded)
+       
+        
+          # ================ Construct a word dictionary=========== 
+        word_dict ={}
+        
+        for key in  all_word_list:
+            for value in integer_encoded_list:
+                word_dict[key] = value
+                integer_encoded_list.remove(value)
+                break
+        #print(word_dict)
+        
+        
+        # binary encode
+        onehot_encoder = OneHotEncoder(sparse=False)
+      
+        
 
+        
+        for i in range(len(feature)):
+            for j in range(len(feature[i])):
+                    timestamps = feature[i][j][0]
+                    sentence = feature[i][j][1]
+                    
+                    sentence = sentence.lower() # to lower case
+                    sentence = sentence.translate(str.maketrans('', '', string.punctuation)) # remove all punctuations
+                    sentence_word =sentence.split()
+              
+                    
+                    integer_encoded_sentence =[]
+                    
+                    for word in sentence_word:
+                        word_integer = word_dict.get(word)
+                        integer_encoded_sentence.append(word_integer)
+          
+                    #print(integer_encoded_sentence)
+                    
+                    
+                     # ================ Initialize matrix for one hot encoding=========== 
+                    one_hot_sentence = []
+                    for idx in range(len(integer_encoded_sentence)):
+                            initial_arr = np.zeros(len(word_dict)).tolist()
+                            initial_arr[integer_encoded_sentence[idx]] = 1.0
+                            one_hot_sentence.append(initial_arr)
+                            
+                    one_hot_sentence = np.array(one_hot_sentence)
+                    #print(one_hot_sentence.shape)
+                    
+                   # print(len(integer_encoded))
+                    #integer_encoded = integer_encoded.reshape(len(integer_encoded), 1)
+                    #onehot_encoded = onehot_encoder.fit_transform(integer_encoded)
+                    
+                    feature[i][j] = (timestamps,one_hot_sentence)
+
+        
+        return feature
 
 if __name__ == '__main__':
     pipe = ExtractionPipeline(num_video=10, suppress_log=False)
