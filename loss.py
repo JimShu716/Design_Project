@@ -157,7 +157,7 @@ class ContrastiveLoss(nn.Module):
 
         # find all positive pairs
         diagonal = scores.diag().view(im.size(0), 1)
-        min_pos_score = diagonal.min()
+        # min_pos_score = diagonal.min()
         sum_pos = diagonal.sum()
         # diagonal.shape = (batch_size, 1)
         # Guess: scores[i][i] = pos score? Yes.
