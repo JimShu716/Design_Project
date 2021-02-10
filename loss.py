@@ -117,7 +117,7 @@ class TripletLoss(nn.Module):
 
 
 class ContrastiveLoss(nn.Module):
-    def __init__(self, measure='exp', neg_sampling='random', cost_style='sum', direction='all', neg_n=10):
+    def __init__(self, measure='cosine', neg_sampling='random', cost_style='sum', direction='all', neg_n=10):
         super(ContrastiveLoss, self).__init__()
         """ margin: the margin used to select negative samples (see the Negative Sampling Methods slides)
             measure: how to compute similiarity
@@ -127,8 +127,8 @@ class ContrastiveLoss(nn.Module):
             neg_n: number of negative samples
         """
         
-        print(">"*20)
-        print("Contrastive Loss Used")
+        #print(">"*20)
+        #print("Contrastive Loss Used")
         #self.margin = margin
         self.cost_style = cost_style
         self.direction = direction
@@ -140,8 +140,10 @@ class ContrastiveLoss(nn.Module):
             self.sim = euclidean_sim
         elif measure == 'exp':
             self.sim = exponential_sim
-        else:
+        elif measure == 'cosine':
             self.sim = cosine_sim
+        else:
+            raise NotImplemented
 
     def forward(self, s, im, temperature=1, alpha=0):
         """
@@ -178,38 +180,13 @@ class ContrastiveLoss(nn.Module):
         # TODO !!!
         if self.direction in  ['i2t', 'all']:
             # caption retrieval
-            cost_s = scores
+            cost_s = scores.clamp(min=0)
             cost_s = cost_s.masked_fill_(I, 0)
         # compare every diagonal score to scores in its row
         if self.direction in ['t2i', 'all']:
             # image retrieval
-            cost_im = scores
+            cost_im = scores.clamp(min=0)
             cost_im = cost_im.masked_fill_(I, 0)
-
-        # if self.direction in  ['i2t', 'all']:
-        #     # caption retrieval
-        #     if neg_sampling == "progressive":
-        #         cost_s = (min_pos_score - alpha - scores).clamp(min=0)
-        #         cost_s = cost_s.masked_fill_(I, 0)
-        #     elif neg_sampling == 'random':
-        #         # TODO: implement random
-        #         raise NotImplementedError
-        #     else:
-        #         # TODO: implement all
-        #         raise NotImplementedError
-
-        # # compare every diagonal score to scores in its row
-        # if self.direction in ['t2i', 'all']:
-        #     # image retrieval
-        #     if neg_sampling == "progressive":
-        #         cost_im = (min_pos_score - alpha - scores).clamp(min=0)
-        #         cost_im = cost_im.masked_fill_(I, 0)
-        #     elif neg_sampling == 'random':
-        #         # TODO: implement random
-        #         raise NotImplementedError
-        #     else:
-        #         # TODO: implement all
-        #         raise NotImplementedError
 
         # Sum up and return
         if cost_s is None:
