@@ -173,6 +173,15 @@ class ContrastiveLoss(nn.Module):
 
         # Implement negative sampling here
         # TODO !!!
+        if self.direction in  ['i2t', 'all']:
+            # caption retrieval
+            cost_s = scores
+            cost_s = cost_s.masked_fill_(I, 0)
+        # compare every diagonal score to scores in its row
+        if self.direction in ['t2i', 'all']:
+            # image retrieval
+            cost_im = scores
+            cost_im = cost_im.masked_fill_(I, 0)
 
         # Sum up and return
         if cost_s is None:
