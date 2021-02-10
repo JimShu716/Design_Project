@@ -352,8 +352,8 @@ class Dual_Encoding(BaseModel):
                                             direction=opt.direction)
         elif opt.loss_fun == 'cont':
             # implement contrastive loss here
-            #self.criterion = ContrastiveLoss(opt)
-            raise NotImplementedError
+            self.criterion = ContrastiveLoss(measure=opt.measure, neg_sampling=opt.neg_sampling, cost_style=opt.cost_style, direction=opt.direction)
+            #raise NotImplementedError
 
         params = list(self.text_encoding.parameters())
         params += list(self.vid_encoding.parameters())
@@ -373,7 +373,7 @@ class Dual_Encoding(BaseModel):
         # video data
         frames, mean_origin, video_lengths, vidoes_mask = videos
         frames = Variable(frames, volatile=volatile)
-
+    
         if torch.cuda.is_available():
             frames = frames.cuda()
 
@@ -416,10 +416,7 @@ class Dual_Encoding(BaseModel):
         # cap_bows.shape: torch.Size([128, 7807])
         # lengths.shape: 128
         # cap_masks.shape: torch.Size([128, 49])
-        # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-
-
+        # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         vid_emb = self.vid_encoding(videos_data)
         cap_emb = self.text_encoding(text_data)
         return vid_emb, cap_emb

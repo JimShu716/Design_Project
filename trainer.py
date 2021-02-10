@@ -65,7 +65,8 @@ def parse_args():
     parser.add_argument('--margin', type=float, default=0.2, help='rank loss margin')
     parser.add_argument('--direction', type=str, default='all', help='retrieval direction (all|t2i|i2t)')
     parser.add_argument('--max_violation', action='store_true', help='use max instead of sum in the rank loss')
-    parser.add_argument('--cost_style', type=str, default='sum', help='cost style (sum, mean). (default: sum)')
+    parser.add_argument('--cost_style', type=str, default='sum', choices=['sum', 'mean'], help='cost style (sum, mean). (default: sum)')
+    parser.add_argument('--neg_sampling', type=str, default='progresive', choices=['progressive', 'random', 'all'], help='how to select negative samples')
     # optimizer
     parser.add_argument('--optimizer', type=str, default='adam', help='optimizer. (default: rmsprop)')
     parser.add_argument('--learning_rate', type=float, default=0.0001, help='initial learning rate')
