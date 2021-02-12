@@ -117,7 +117,7 @@ class TripletLoss(nn.Module):
 
 
 class ContrastiveLoss(nn.Module):
-    def __init__(self, measure='cosine', neg_sampling='random', cost_style='sum', direction='all', neg_n=10):
+    def __init__(self, margin=0, measure='cosine', neg_sampling='random', cost_style='sum', direction='all', neg_n=10):
         super(ContrastiveLoss, self).__init__()
         """ margin: the margin used to select negative samples (see the Negative Sampling Methods slides)
             measure: how to compute similiarity
@@ -129,7 +129,7 @@ class ContrastiveLoss(nn.Module):
         
         #print(">"*20)
         #print("Contrastive Loss Used")
-        #self.margin = margin
+        self.margin = margin
         self.cost_style = cost_style
         self.direction = direction
         self.neg_sampling = neg_sampling
@@ -160,7 +160,9 @@ class ContrastiveLoss(nn.Module):
         # find all positive pairs
         diagonal = scores.diag().view(im.size(0), 1)
         # min_pos_score = diagonal.min()
-        sum_pos = diagonal.sum()
+        d1 = diagonal.expand_as(scores)
+        d2 = diagonal.t().expand_as(scores)
+        # sum_pos = diagonal.sum()
         # diagonal.shape = (batch_size, 1)
         # Guess: scores[i][i] = pos score? Yes.
 
@@ -178,21 +180,50 @@ class ContrastiveLoss(nn.Module):
 
         # Implement negative sampling here
         # TODO !!!
-        if self.direction in  ['i2t', 'all']:
-            # caption retrieval
-            cost_s = scores.clamp(min=0)
-            cost_s = cost_s.masked_fill_(I, 0)
-        # compare every diagonal score to scores in its row
-        if self.direction in ['t2i', 'all']:
-            # image retrieval
-            cost_im = scores.clamp(min=0)
-            cost_im = cost_im.masked_fill_(I, 0)
+        if self.neg_sampling == 'all':
+            if self.direction in  ['i2t', 'all']:
+                # caption retrieval
+                cost_s = scores.clamp(min=0)
+                cost_s = cost_s.masked_fill_(I, 0)
+            # compare every diagonal score to scores in its row
+            if self.direction in ['t2i', 'all']:
+                # image retrieval
+                cost_im = scores.clamp(min=0)
+                cost_im = cost_im.masked_fill_(I, 0)
+
+        elif self.neg_sampling == 'progressive':
+            raise NotImplementedError
+
+        elif self.neg_sampling == 'random':
+            raise NotImplementedError
+
+        else:
+            if self.direction in  ['i2t', 'all']:
+                # caption retrieval
+                cost_s = (self.margin + scores - d1).clamp(min=0)
+                cost_s = cost_s.masked_fill_(I, 0)
+            # compare every diagonal score to scores in its row
+            if self.direction in ['t2i', 'all']:
+                # image retrieval
+                cost_im = (self.margin + scores - d2).clamp(min=0)
+                cost_im = cost_im.masked_fill_(I, 0)
 
         # Sum up and return
         if cost_s is None:
             cost_s = Variable(torch.zeros(1)).cuda()
         if cost_im is None:
             cost_im = Variable(torch.zeros(1)).cuda()
+
+        # compute sum_neg
+        sum_neg_cost_s = cost_s.sum(axis=1) # shape(1, 128)
+        sum_neg_cost_im = cost_im.sum(axis=1) # shape(1, 128)
+
+        diagonal = diagonal.squeeze(-1)
+        sum_neg_pos_cost_s = sum_neg_cost_s + diagonal
+        sum_neg_pos_cost_im = sum_neg_cost_s + diagonal
+
+        cost_s = diagonal/sum_neg_pos_cost_s
+        cost_im = diagonal/sum_neg_pos_cost_im
 
         if self.cost_style == 'sum':
             return cost_s.sum() + cost_im.sum()
