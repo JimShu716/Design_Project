@@ -22,6 +22,9 @@ import string
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 from numpy import argmax
+
+import gensim.models.keyedvectors
+from gensim.models import Word2Vec
 #from nltk.corpus import stopwords
 
 SAVE_PATH = '.\\feature\\'
@@ -33,6 +36,7 @@ CAPTION_SOURCE_PATH = '.\\captions\\'
 LABEL_PATH = '.\\tempuckey_groundtruth_splits_videoinfo_20201026.csv'
 
 VOCABULARY_DATA_PATH = '.\\30flickr.txt'
+WORD2VEC_PATH = '../word2vec/feature.bin'
 
 VID_1 = '1_TRIPPING_2017-11-28-fla-nyr-home_00_44_55.826000_to_00_45_06.437000.mp4'
 VID_10 = '10_TRIPPING_2017-11-07-vgk-mtl-home_00_42_14.766000_to_00_42_24.142000.mp4'
@@ -327,9 +331,11 @@ class ExtractionPipeline():
          # ================ Create stop word list ===========
  #       all_stopwords = stopwords.words('english')
  
- 
-        feature = self.caption_to_one_hot(feature, self.dictionary)
-        return feature
+         
+        #feature_result = self.caption_to_one_hot(feature, self.dictionary) #generate one-hot encoding
+        feature_result = self.word2vec_embeddings(feature) # generate embeddings by word2vec
+        
+        return feature_result
     
     
     
@@ -426,6 +432,7 @@ class ExtractionPipeline():
         
         return final_vocab
     
+
     """
     Function to preprocess the word vocabulary into word dictionary for one-hot
     
@@ -452,6 +459,41 @@ class ExtractionPipeline():
         print("==== Dictionary Construction Completed =====")
         return(word_dict)
 
+
+    """
+    Function to generate word embedding by word2vec
+    
+    feature - feature with raw caption texts
+    
+    Return: the feature with sentence embeddings
+    """
+    def word2vec_embeddings(self, feature):
+        # Load pretrained model 
+        model =  gensim.models.KeyedVectors.load_word2vec_format(WORD2VEC_PATH, binary=True,  unicode_errors='ignore')
+        
+        for i in range(len(feature)):
+            for j in range(len(feature[i])):
+                    timestamps = feature[i][j][0]
+                    sentence = feature[i][j][1]
+                    
+                    sentence = sentence.lower() # to lower case
+                    sentence = sentence.translate(str.maketrans('', '', string.punctuation)) # remove all punctuations
+                    sentence_word =sentence.split()
+              
+                     
+                    sentence_embeddings =[]
+                    
+                    # ======== Generate word embeddings and sentence embeddings by pretrained word2vec
+                    for word in sentence_word:
+                        word_embeddings = model[word]
+                        sentence_embeddings.append(word_embeddings)
+                    
+                    feature[i][j] = (timestamps,sentence_embeddings)
+                    #print(integer_encoded_sentence)
+                    
+                    
+                    return feature
+                
 if __name__ == '__main__':
     pipe = ExtractionPipeline(num_video=10, suppress_log=False)
     #pipe.read()
