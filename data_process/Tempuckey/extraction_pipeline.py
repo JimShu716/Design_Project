@@ -106,6 +106,7 @@ class ExtractionPipeline():
         video_info = self.process_video_name(video_name)
 
         captions = self.retrieve_captions(video_info)
+       #print(captions)
         if (len(captions) == 0):
             self.log(f"Error: Did not find the subtitle for video {video_name}")
             return None
@@ -320,13 +321,12 @@ class ExtractionPipeline():
     
     
     def caption_to_one_hot(self,feature, all_word_list):
-        print(len(all_word_list))
-        
+
         # integer encode
         label_encoder = LabelEncoder() 
         integer_encoded = label_encoder.fit_transform(all_word_list) #encode labels
         integer_encoded_list = integer_encoded.tolist()
-        print(integer_encoded)
+  
        
         
           # ================ Construct a word dictionary=========== 
@@ -337,7 +337,7 @@ class ExtractionPipeline():
                 word_dict[key] = value
                 integer_encoded_list.remove(value)
                 break
-        #print(word_dict)
+        print(word_dict)
         
         
         # binary encode
@@ -386,7 +386,7 @@ class ExtractionPipeline():
 
 if __name__ == '__main__':
     pipe = ExtractionPipeline(num_video=10, suppress_log=False)
-    # pipe.read()
-    file = pipe.read_once(VID_1, over_write=True)
+    #pipe.read()
+    file = pipe.read_once(VID_10, over_write=True)
     # file_2 = pipe.read_from_saved_binary_file(VID_1)
     print('end')
