@@ -32,6 +32,8 @@ VIDEO_SOURCE_PATH = '.\\videos\\'
 CAPTION_SOURCE_PATH = '.\\captions\\'
 LABEL_PATH = '.\\tempuckey_groundtruth_splits_videoinfo_20201026.csv'
 
+VOCABULARY_DATA_PATH = '.\\30flickr.txt'
+
 VID_1 = '1_TRIPPING_2017-11-28-fla-nyr-home_00_44_55.826000_to_00_45_06.437000.mp4'
 VID_10 = '10_TRIPPING_2017-11-07-vgk-mtl-home_00_42_14.766000_to_00_42_24.142000.mp4'
 
@@ -47,6 +49,8 @@ class ExtractionPipeline():
         self.frame_per_package = frame_per_package
         self.num_video = num_video
         self.suppress_log = suppress_log
+        
+
 
         # init environment
         for p in SAVE_PATH, VIDEO_SOURCE_PATH, CAPTION_SOURCE_PATH:
@@ -76,6 +80,12 @@ class ExtractionPipeline():
         self.log(f"Label file source from \t\t: {LABEL_PATH}")
         self.log(f"Save file to \t\t\t: {SAVE_PATH}\n")
         self.log(f"Found {len(self.video_list)} videos and {len(self.caption_list)} subtitle files from environment.\n")
+        
+        #=========== Construct the word dictionary
+        vocabulary = self.txt_to_vocabulary(VOCABULARY_DATA_PATH)
+        word_dict = self.vocab_to_dict(vocabulary)
+        
+        self.dictionary = word_dict
 
     def read(self, save=True, over_write=False):
         self.log(f"Start reading process...(Total Task number:{self.num_video})\n")
@@ -115,9 +125,9 @@ class ExtractionPipeline():
         if (len(frames) == 0):
             self.log(f"Error: Loading frame error for video {video_name}")
             return None
-
+        
+       
         captions = self.caption_to_feature(frames, captions, video_info)
-
         # feature = self.frame_to_feature(frames)
         feature = frames
         #self.get_crtical_time(feature, captions, video_info)
@@ -310,39 +320,35 @@ class ExtractionPipeline():
                     feature[i].append((cap, w))
                     
          # ================ Convert all sentence to list =========== 
-        all_sentence= all_sentence.lower() # all to lower case
-        all_sentence = all_sentence.translate(str.maketrans('', '', string.punctuation)) # remove all punctuations
-        word_list = all_sentence.split()
+        #all_sentence= all_sentence.lower() # all to lower case
+        # all_sentence = all_sentence.translate(str.maketrans('', '', string.punctuation)) # remove all punctuations
+        #word_list = all_sentence.split()
         
          # ================ Create stop word list ===========
  #       all_stopwords = stopwords.words('english')
-        feature = self.caption_to_one_hot(feature, word_list)
+ 
+ 
+        feature = self.caption_to_one_hot(feature, self.dictionary)
         return feature
     
     
-    def caption_to_one_hot(self,feature, all_word_list):
+    
+    """
+    Function to preprocess the raw caption text into one-hot encodings
+    
+    feature - raw caption feature
+    word_dict - dictionary of words to construct one- hot
+    
+    Return: the processed caption feature
+    """
+    def caption_to_one_hot(self,feature, word_dict):
 
-        # integer encode
-        label_encoder = LabelEncoder() 
-        integer_encoded = label_encoder.fit_transform(all_word_list) #encode labels
-        integer_encoded_list = integer_encoded.tolist()
-  
        
-        
-          # ================ Construct a word dictionary=========== 
-        word_dict ={}
-        
-        for key in  all_word_list:
-            for value in integer_encoded_list:
-                word_dict[key] = value
-                integer_encoded_list.remove(value)
-                break
-        print(word_dict)
-        
+        dict_size= len(word_dict)
         
         # binary encode
         onehot_encoder = OneHotEncoder(sparse=False)
-      
+        
         
 
         
@@ -360,6 +366,11 @@ class ExtractionPipeline():
                     
                     for word in sentence_word:
                         word_integer = word_dict.get(word)
+                        
+                        # ============== IF the word does not exist in the dictionary, we put it at the last index =======
+                      
+                        if word_integer is None:
+                            word_integer = dict_size +1
                         integer_encoded_sentence.append(word_integer)
           
                     #print(integer_encoded_sentence)
@@ -367,22 +378,79 @@ class ExtractionPipeline():
                     
                      # ================ Initialize matrix for one hot encoding=========== 
                     one_hot_sentence = []
+                
                     for idx in range(len(integer_encoded_sentence)):
-                            initial_arr = np.zeros(len(word_dict)).tolist()
+                            initial_arr = np.zeros(len(word_dict)+2).tolist()
                             initial_arr[integer_encoded_sentence[idx]] = 1.0
                             one_hot_sentence.append(initial_arr)
                             
                     one_hot_sentence = np.array(one_hot_sentence)
                     #print(one_hot_sentence.shape)
                     
-                   # print(len(integer_encoded))
-                    #integer_encoded = integer_encoded.reshape(len(integer_encoded), 1)
-                    #onehot_encoded = onehot_encoder.fit_transform(integer_encoded)
-                    
                     feature[i][j] = (timestamps,one_hot_sentence)
 
         
         return feature
+    
+    
+    """
+    Function to preprocess the data in txt file into word vocabulary
+    
+    Return: the extracted word vocabulary
+    """
+    def txt_to_vocabulary(self, file_path):
+        word_vocab= ""
+      
+        print("====== Start processing vocabulary ====")
+        with open(file_path, 'rb') as reader:
+            for line in reader:
+                
+               
+                line = line.decode("utf-8")
+                cap_id, caption = line.split(' ',1)
+                caption= caption.lower() # all to lower case
+                caption = caption.translate(str.maketrans('', '', string.punctuation)) # remove all punctuations
+                word_vocab += ""
+                word_vocab += caption
+                
+        vocab_result = word_vocab.split()
+        
+        #========= Remove duplicates in the vocabulary ========
+        vocab_set = set()
+        final_vocab = []
+        
+        for word in vocab_result :
+            if word not in vocab_set:
+                vocab_set.add(word)
+                final_vocab.append(word)
+        
+        return final_vocab
+    
+    """
+    Function to preprocess the word vocabulary into word dictionary for one-hot
+    
+    Return: the word dictionary
+    """
+    def vocab_to_dict(self, vocabulary):
+        
+        print("====== Start constructing dictionary ====")
+        # integer encode
+        label_encoder = LabelEncoder() 
+        integer_encoded = label_encoder.fit_transform(vocabulary) #encode labels
+        integer_encoded_list = integer_encoded.tolist()
+  
+       
+        
+         # ================ Construct a word dictionary=========== 
+        word_dict ={}
+        
+        for key in  vocabulary:
+            for value in integer_encoded_list:
+                word_dict[key] = value
+                integer_encoded_list.remove(value)
+                break
+        print("==== Dictionary Construction Completed =====")
+        return(word_dict)
 
 if __name__ == '__main__':
     pipe = ExtractionPipeline(num_video=10, suppress_log=False)
