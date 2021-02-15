@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 from torch.autograd import Variable
 import torch.nn as nn
 
@@ -151,73 +152,58 @@ class ContrastiveLoss(nn.Module):
             tempurature: used for simliarity
             alpha: used for negative sampling
         """
-
-        scores = self.sim(im, s, t=temperature)
         # scores.shape = (batch_size, batch_size)
-
-        # find all positive pairs
-        diagonal = scores.diag().view(im.size(0), 1)
-        min_pos_score = diagonal.min()
-        sum_pos = diagonal.sum()
-        # diagonal.shape = (batch_size, 1)
-        # Guess: scores[i][i] = pos score? Yes.
-
-        # clear diagonals
-        mask = torch.eye(scores.size(0)) > .5
-        # generate a binary matrix with the diagonal is True while the rest is False
-        # mask is a identity matrix with a shape of (batch_size, batch_size)
-
-        I = Variable(mask)
+        scores = self.sim(im, s, t=temperature)
+        batch_size = 128
+        mask = np.zeros([batch_size,batch_size])
+        
+        #TODO! Vectorize here
+        s = 0
+        n = 4
+        while n <= batch_size:
+            mask[s:n,s:n] = 1
+            n+=4
+            s+=4
+        #TODO! ends here
+                
+        m_match = torch.Tensor(mask) == 0
+        m_cost = torch.Tensor(mask) == 1
+        Imatch = Variable(m_match)
+        Icost = Variable(m_cost)
+        
         if torch.cuda.is_available():
-            I = I.cuda()
+            Imatch = Imatch.cuda()
+            Icost = Icost.cuda()
 
         cost_s = None
         cost_im = None
-
+        match_s = None
+        match_im = None
+        
         # Implement negative sampling here
         # TODO !!!
+        #MAY BE USE A MARGIN????
         if self.direction in  ['i2t', 'all']:
             # caption retrieval
-            cost_s = scores
-            cost_s = cost_s.masked_fill_(I, 0)
-        # compare every diagonal score to scores in its row
+            cost_s = scores.clamp(min=0)
+            cost_s = cost_s.masked_fill_(Imatch, 0)
+            match_s = scores.clamp(min=0)
+            match_s = match_s.masked_fill_(m_cost, 0)
+            
         if self.direction in ['t2i', 'all']:
             # image retrieval
-            cost_im = scores
-            cost_im = cost_im.masked_fill_(I, 0)
-
-        # if self.direction in  ['i2t', 'all']:
-        #     # caption retrieval
-        #     if neg_sampling == "progressive":
-        #         cost_s = (min_pos_score - alpha - scores).clamp(min=0)
-        #         cost_s = cost_s.masked_fill_(I, 0)
-        #     elif neg_sampling == 'random':
-        #         # TODO: implement random
-        #         raise NotImplementedError
-        #     else:
-        #         # TODO: implement all
-        #         raise NotImplementedError
-
-        # # compare every diagonal score to scores in its row
-        # if self.direction in ['t2i', 'all']:
-        #     # image retrieval
-        #     if neg_sampling == "progressive":
-        #         cost_im = (min_pos_score - alpha - scores).clamp(min=0)
-        #         cost_im = cost_im.masked_fill_(I, 0)
-        #     elif neg_sampling == 'random':
-        #         # TODO: implement random
-        #         raise NotImplementedError
-        #     else:
-        #         # TODO: implement all
-        #         raise NotImplementedError
-
+            cost_im = scores.t().clamp(min=0)
+            cost_im = cost_im.masked_fill_(Imatch, 0)
+            match_im = scores.t().clamp(min=0)
+            match_im = match_im.masked_fill_(m_cost, 0)       
+        
         # Sum up and return
         if cost_s is None:
             cost_s = Variable(torch.zeros(1)).cuda()
+            match_s = Variable(torch.zeros(1)).cuda()
         if cost_im is None:
             cost_im = Variable(torch.zeros(1)).cuda()
-
-        if self.cost_style == 'sum':
-            return cost_s.sum() + cost_im.sum()
-        else:
-            return cost_s.mean() + cost_im.mean()
+            match_im = Variable(torch.zeros(1)).cuda()        
+        #MIL-NCE loss
+        return (cost_s.sum()+cost_im.sum()) / (cost_s.sum()+cost_im.sum() + match_s.sum() + match_im.sum())
+        
