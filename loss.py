@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 from torch.autograd import Variable
 import torch.nn as nn
 
@@ -117,7 +118,9 @@ class TripletLoss(nn.Module):
 
 
 class ContrastiveLoss(nn.Module):
-    def __init__(self, margin=0, measure='cosine', neg_sampling='random', cost_style='sum', direction='all', neg_n=10):
+
+    def __init__(self, measure='exp', neg_sampling='random', direction='all',dataset='msrvtt', num_of_pairs=20):
+
         super(ContrastiveLoss, self).__init__()
         """ margin: the margin used to select negative samples (see the Negative Sampling Methods slides)
             measure: how to compute similiarity
@@ -127,13 +130,17 @@ class ContrastiveLoss(nn.Module):
             neg_n: number of negative samples
         """
         
-        #print(">"*20)
-        #print("Contrastive Loss Used")
-        self.margin = margin
-        self.cost_style = cost_style
+
+        print(">"*20)
+        print("Contrastive Loss Used")
+        #self.margin = margin
+        #self.cost_style = cost_style
+
         self.direction = direction
         self.neg_sampling = neg_sampling
-        self.neg_n = neg_n
+        #could be a number(msrvtt) or a list of numbers indicating the number of positive pairs of one clip
+        self.num_of_pairs = num_of_pairs
+        self.dataset = dataset
         if measure == 'order':
             self.sim = order_sim
         elif measure == 'euclidean':
@@ -153,43 +160,63 @@ class ContrastiveLoss(nn.Module):
             tempurature: used for simliarity
             alpha: used for negative sampling
         """
-
-        scores = self.sim(im, s, t=temperature)
         # scores.shape = (batch_size, batch_size)
 
-        # find all positive pairs
-        diagonal = scores.diag().view(im.size(0), 1)
-        # min_pos_score = diagonal.min()
-        d1 = diagonal.expand_as(scores)
-        d2 = diagonal.t().expand_as(scores)
-        # sum_pos = diagonal.sum()
-        # diagonal.shape = (batch_size, 1)
-        # Guess: scores[i][i] = pos score? Yes.
+        scores = self.sim(im, s, t=temperature)
+        batch_size = 128
+        mask = np.zeros([batch_size,batch_size])
+        #start point
+        s = 0 
+        if self.dataset == 'msrvtt':
+            #TODO! Vectorize here
+            while s < int (batch_size/self.num_of_pairs):
+                mask[s:s+self.num_of_pairs,s:s+self.num_of_pairs] = 1
+                s+=self.num_of_pairs
+            #TODO! ends here
+            
+        elif self.dataset == 'tempuckey':  
+            #TODO
+            #generate a non-regular mask for Tempuckey dataset
+            #self.num_of_pairs should be a list of numbers
+            for num in self.num_of_pairs:
+                mask[s:num,s:num] = 1
+                s+=num
+                
+            
+        m_match = torch.Tensor(mask) == 0
+        m_cost = torch.Tensor(mask) == 1
+        Imatch = Variable(m_match)
+        Icost = Variable(m_cost)
+        
 
-        # clear diagonals
-        mask = torch.eye(scores.size(0)) > .5
-        # generate a binary matrix with the diagonal is True while the rest is False
-        # mask is a identity matrix with a shape of (batch_size, batch_size)
-
-        I = Variable(mask)
         if torch.cuda.is_available():
-            I = I.cuda()
+            Imatch = Imatch.cuda()
+            Icost = Icost.cuda()
 
         cost_s = None
         cost_im = None
-
+        match_s = None
+        match_im = None
+        
         # Implement negative sampling here
         # TODO !!!
+
+        #MAY BE USE A MARGIN????
+
         if self.neg_sampling == 'all':
             if self.direction in  ['i2t', 'all']:
                 # caption retrieval
                 cost_s = scores.clamp(min=0)
-                cost_s = cost_s.masked_fill_(I, 0)
-            # compare every diagonal score to scores in its row
+                cost_s = cost_s.masked_fill_(Imatch, 0)
+                match_s = scores.clamp(min=0)
+                match_s = match_s.masked_fill_(m_cost, 0)
+                
             if self.direction in ['t2i', 'all']:
                 # image retrieval
-                cost_im = scores.clamp(min=0)
-                cost_im = cost_im.masked_fill_(I, 0)
+                cost_im = scores.t().clamp(min=0)
+                cost_im = cost_im.masked_fill_(Imatch, 0)
+                match_im = scores.t().clamp(min=0)
+                match_im = match_im.masked_fill_(m_cost, 0) 
 
         elif self.neg_sampling == 'progressive':
             raise NotImplementedError
@@ -197,35 +224,15 @@ class ContrastiveLoss(nn.Module):
         elif self.neg_sampling == 'random':
             raise NotImplementedError
 
-        else:
-            if self.direction in  ['i2t', 'all']:
-                # caption retrieval
-                cost_s = (self.margin + scores - d1).clamp(min=0)
-                cost_s = cost_s.masked_fill_(I, 0)
-            # compare every diagonal score to scores in its row
-            if self.direction in ['t2i', 'all']:
-                # image retrieval
-                cost_im = (self.margin + scores - d2).clamp(min=0)
-                cost_im = cost_im.masked_fill_(I, 0)
-
+        
         # Sum up and return
         if cost_s is None:
             cost_s = Variable(torch.zeros(1)).cuda()
+            match_s = Variable(torch.zeros(1)).cuda()
         if cost_im is None:
             cost_im = Variable(torch.zeros(1)).cuda()
+            match_im = Variable(torch.zeros(1)).cuda()        
+        #MIL-NCE loss
+        return (cost_s.sum()+cost_im.sum()) / (cost_s.sum()+cost_im.sum() + match_s.sum() + match_im.sum())
+        
 
-        # compute sum_neg
-        sum_neg_cost_s = cost_s.sum(axis=1) # shape(1, 128)
-        sum_neg_cost_im = cost_im.sum(axis=1) # shape(1, 128)
-
-        diagonal = diagonal.squeeze(-1)
-        sum_neg_pos_cost_s = sum_neg_cost_s + diagonal
-        sum_neg_pos_cost_im = sum_neg_cost_s + diagonal
-
-        cost_s = diagonal/sum_neg_pos_cost_s
-        cost_im = diagonal/sum_neg_pos_cost_im
-
-        if self.cost_style == 'sum':
-            return cost_s.sum() + cost_im.sum()
-        else:
-            return cost_s.mean() + cost_im.mean()
