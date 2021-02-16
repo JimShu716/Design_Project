@@ -159,11 +159,9 @@ class ContrastiveLoss(nn.Module):
         
         #TODO! Vectorize here
         s = 0
-        n = 4
-        while n <= batch_size:
-            mask[s:n,s:n] = 1
-            n+=4
-            s+=4
+        while s < batch_size - 8:
+            mask[s:s+20,s:s+20] = 1
+            s+=20
         #TODO! ends here
                 
         m_match = torch.Tensor(mask) == 0
