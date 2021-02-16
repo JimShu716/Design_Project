@@ -4,7 +4,16 @@
 *.swo
 .idea/
 env/
+
+data_process/untitled1.py
 data_process/videodatainfo_2017.json
+
 data_process/Tempuckey/captions
 data_process/Tempuckey/videos
+data_process/Tempuckey/video_pool
 data_process/Tempuckey/feature
+data_process/Tempuckey/TextData
+
+data_process/Tempuckey/log.txt
+data_process/Tempuckey/data_provider.py
+data_process/Tempuckey/vocab.py
