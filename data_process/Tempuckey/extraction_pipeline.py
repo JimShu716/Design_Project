@@ -52,7 +52,7 @@ class ExtractionPipeline():
         self.video_list = []
         self.logging = ""
 
-        # 10/15 => 1.5 sec per package
+        # 15/10 => 1.5 sec per package
         self.extracted_fps = extracted_fps
         self.frame_per_package = frame_per_package
         self.num_video = num_video
@@ -146,6 +146,7 @@ class ExtractionPipeline():
         assert len(feature) == len(captions)
         if save:
             for i in range(len(captions)):
+                video_info['patch_id']=i
                 file_patch = {
                     'video_info': video_info,
                     'captions': captions[i],
@@ -193,12 +194,13 @@ class ExtractionPipeline():
             'video_info': vlist[2],
             'fps': 30,
             'factor': 1,
-            'sec_per_package': self.frame_per_package / self.extracted_fps,
+            'patch_length': self.frame_per_package/self.extracted_fps,
             'start_time': start_time,
             'end_time': end_time,
             'video_length': end_time - start_time,
             'tripping_feature_index': [],
             'tripping_caption_index': [],
+            'patch_id': -1,
         }
         return info
 
