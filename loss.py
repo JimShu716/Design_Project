@@ -118,7 +118,7 @@ class TripletLoss(nn.Module):
 
 
 class ContrastiveLoss(nn.Module):
-    def __init__(self, measure='exp', neg_sampling='random', direction='all',dataset='msrvtt', num_of_pairs=20):
+    def __init__(self, measure='exp', neg_sampling='random', direction='all',dataset='msrvtt', num_of_pairs=20,start_idx):
         super(ContrastiveLoss, self).__init__()
         """ margin: the margin used to select negative samples (see the Negative Sampling Methods slides)
             measure: how to compute similiarity
@@ -137,6 +137,12 @@ class ContrastiveLoss(nn.Module):
         #could be a number(msrvtt) or a list of numbers indicating the number of positive pairs of one clip
         self.num_of_pairs = num_of_pairs
         self.dataset = dataset
+        
+        if dataset == 'tempuckey':
+            self.start_idx = start_idx
+        else:
+            self.start_idx = list(range(0,120,self.num_of_pairs))
+            
         if measure == 'order':
             self.sim = order_sim
         elif measure == 'euclidean':
@@ -158,23 +164,12 @@ class ContrastiveLoss(nn.Module):
         scores = self.sim(im, s, t=temperature)
         batch_size = 128
         mask = np.zeros([batch_size,batch_size])
-        #start point
-        s = 0 
-        if self.dataset == 'msrvtt':
-            #TODO! Vectorize here
-            while s < int (batch_size/self.num_of_pairs):
-                mask[s:s+self.num_of_pairs,s:s+self.num_of_pairs] = 1
-                s+=self.num_of_pairs
-            #TODO! ends here
-            
-        elif self.dataset == 'tempuckey':  
-            #TODO
-            #generate a non-regular mask for Tempuckey dataset
-            #self.num_of_pairs should be a list of numbers
-            for num in self.num_of_pairs:
-                mask[s:num,s:num] = 1
-                s+=num
-                
+               
+        #this mask can handle both tempuckey and msrvtt
+        n = start_idx[1:]
+        idx = zip(start_idx,n)
+        for i,j in idx:
+          mask[i:j,i:j] = 1                
             
         m_match = torch.Tensor(mask) == 0
         m_cost = torch.Tensor(mask) == 1
