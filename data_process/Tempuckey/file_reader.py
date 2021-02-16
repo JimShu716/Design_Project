@@ -9,7 +9,7 @@ import pandas as pd
 import pickle
 #file_name ="5_TRIPPING_2018-04-14-col-nsh-national_02_29_37.802000_to_02_29_44.442000.bin"
 
-vocab_path = './vocab/word_vocab_5.pkl'
+vocab_path = './vocab/word_vocab_5_bow.pkl'
 
 #f = open(file_name,"rb")
 #bin_data = f.read()
@@ -34,7 +34,7 @@ class Vocabulary(object):
             self.idx += 1
 
     def __call__(self, word):
-        if word not in self.word2idx and 'bow' not in self.text_style:
+        if word not in self.word2idx :
             return self.word2idx['<unk>']
         return self.word2idx[word]
 
@@ -46,4 +46,4 @@ class Vocabulary(object):
 data = pd.read_pickle(vocab_path)
 #data = pickle.load(vocab_path)
     
-print(data.__call__())
+print(data.__call__("sda"))
