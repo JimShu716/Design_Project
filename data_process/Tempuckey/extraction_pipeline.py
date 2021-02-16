@@ -15,7 +15,9 @@ import math
 import torch
 from tensorflow.keras.applications.resnet50 import ResNet50
 import tensorflow.keras.preprocessing
-# from tensorflow.keras.applications import preprocess_input
+
+from tensorflow.keras.applications.resnet50 import preprocess_input
+
 from PIL import Image
 import skimage.transform as st
 import numpy as np
@@ -37,7 +39,7 @@ VIDEO_SOURCE_PATH = '.\\videos\\'
 CAPTION_SOURCE_PATH = '.\\captions\\'
 LABEL_PATH = '.\\tempuckey_groundtruth_splits_videoinfo_20201026.csv'
 
-VOCABULARY_DATA_PATH = '.\\30flickr.txt'
+#VOCABULARY_DATA_PATH = '.\\30flickr.txt'
 
 VOCABULARY_PATH = '.\\vocab\\word_vocab_5.pkl'
 WORD2VEC_PATH = '..\\word2vec\\feature.bin'
@@ -133,9 +135,11 @@ class ExtractionPipeline():
             return None
 
         captions = self.caption_to_feature(frames, captions, video_info)
-        # feature = self.frame_to_feature(frames)
-        feature = frames
-        # self.get_crtical_time(feature, captions, video_info)
+
+        feature = self.frame_to_feature(frames)
+        #feature = frames
+        #self.get_crtical_time(feature, captions, video_info)
+
 
         file = {
             'video_info': video_info,
@@ -508,7 +512,8 @@ class Vocabulary(object):
 
 if __name__ == '__main__':
     pipe = ExtractionPipeline(num_video=10, suppress_log=False)
-    # pipe.read()
-    file = pipe.read_once(VID_10, over_write=True)
+    pipe.read()
+    #file = pipe.read_once(VID_10, over_write=True)
+
     # file_2 = pipe.read_from_saved_binary_file(VID_1)
     print('end')
