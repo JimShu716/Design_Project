@@ -36,6 +36,8 @@ CAPTION_SOURCE_PATH = '.\\captions\\'
 LABEL_PATH = '.\\tempuckey_groundtruth_splits_videoinfo_20201026.csv'
 
 VOCABULARY_DATA_PATH = '.\\30flickr.txt'
+
+VOCABULARY_PATH = './vocab/word_vocab_5.pkl'
 WORD2VEC_PATH = '../word2vec/feature.bin'
 
 VID_1 = '1_TRIPPING_2017-11-28-fla-nyr-home_00_44_55.826000_to_00_45_06.437000.mp4'
@@ -85,11 +87,13 @@ class ExtractionPipeline():
         self.log(f"Save file to \t\t\t: {SAVE_PATH}\n")
         self.log(f"Found {len(self.video_list)} videos and {len(self.caption_list)} subtitle files from environment.\n")
         
-        #=========== Construct the word dictionary
-        vocabulary = self.txt_to_vocabulary(VOCABULARY_DATA_PATH)
-        word_dict = self.vocab_to_dict(vocabulary)
+        #=========== Construct the word dictionary (Using the 30 flickr)
+        #vocabulary = self.txt_to_vocabulary(VOCABULARY_DATA_PATH)
+        #word_dict = self.vocab_to_dict(vocabulary)
         
-        self.dictionary = word_dict
+        
+        
+        self.dictionary = pd.read_pickle(VOCABULARY_PATH)
 
     def read(self, save=True, over_write=False):
         self.log(f"Start reading process...(Total Task number:{self.num_video})\n")
@@ -332,8 +336,8 @@ class ExtractionPipeline():
  #       all_stopwords = stopwords.words('english')
  
          
-        #feature_result = self.caption_to_one_hot(feature, self.dictionary) #generate one-hot encoding
-        feature_result = self.word2vec_embeddings(feature) # generate embeddings by word2vec
+        feature_result = self.caption_to_one_hot(feature, self.dictionary) #generate one-hot encoding
+        #feature_result = self.word2vec_embeddings(feature) # generate embeddings by word2vec
         
         return feature_result
     
@@ -347,15 +351,11 @@ class ExtractionPipeline():
     
     Return: the processed caption feature
     """
-    def caption_to_one_hot(self,feature, word_dict):
+    def caption_to_one_hot(self,feature, word_vocab):
 
        
-        dict_size= len(word_dict)
-        
-        # binary encode
-        onehot_encoder = OneHotEncoder(sparse=False)
-        
-        
+        dict_size= word_vocab.__len__()
+
 
         
         for i in range(len(feature)):
@@ -371,12 +371,8 @@ class ExtractionPipeline():
                     integer_encoded_sentence =[]
                     
                     for word in sentence_word:
-                        word_integer = word_dict.get(word)
-                        
-                        # ============== IF the word does not exist in the dictionary, we put it at the last index =======
-                      
-                        if word_integer is None:
-                            word_integer = dict_size +1
+                        word_integer = word_vocab.__call__(word)
+                    
                         integer_encoded_sentence.append(word_integer)
           
                     #print(integer_encoded_sentence)
@@ -386,13 +382,11 @@ class ExtractionPipeline():
                     one_hot_sentence = []
                 
                     for idx in range(len(integer_encoded_sentence)):
-                            initial_arr = np.zeros(len(word_dict)+2).tolist()
+                            initial_arr = np.zeros(dict_size).tolist()
                             initial_arr[integer_encoded_sentence[idx]] = 1.0
                             one_hot_sentence.append(initial_arr)
                             
                     one_hot_sentence = np.array(one_hot_sentence)
-                    #print(one_hot_sentence.shape)
-                    
                     feature[i][j] = (timestamps,one_hot_sentence)
 
         
@@ -489,10 +483,34 @@ class ExtractionPipeline():
                         sentence_embeddings.append(word_embeddings)
                     
                     feature[i][j] = (timestamps,sentence_embeddings)
-                    #print(integer_encoded_sentence)
-                    
+  
                     
                     return feature
+                
+class Vocabulary(object):
+    """Simple vocabulary wrapper."""
+
+    def __init__(self, text_style):
+        self.word2idx = {}
+        self.idx2word = {}
+        self.idx = 0
+        self.text_style = text_style
+
+    def add_word(self, word):
+        if word not in self.word2idx:
+            self.word2idx[word] = self.idx
+            self.idx2word[self.idx] = word
+            self.idx += 1
+
+    def __call__(self, word):
+        if word not in self.word2idx and 'bow' not in self.text_style:
+            return self.word2idx['<unk>']
+        return self.word2idx[word]
+
+    def __len__(self):
+        return len(self.word2idx)
+
+
                 
 if __name__ == '__main__':
     pipe = ExtractionPipeline(num_video=10, suppress_log=False)
