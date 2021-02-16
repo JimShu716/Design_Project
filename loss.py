@@ -118,7 +118,9 @@ class TripletLoss(nn.Module):
 
 
 class ContrastiveLoss(nn.Module):
-    def __init__(self, measure='exp', neg_sampling='random', direction='all',dataset='msrvtt', num_of_pairs=20,start_idx):
+
+    def __init__(self, start_idx,measure='exp', neg_sampling='random', direction='all',dataset='msrvtt', num_of_pairs=20):
+
         super(ContrastiveLoss, self).__init__()
         """ margin: the margin used to select negative samples (see the Negative Sampling Methods slides)
             measure: how to compute similiarity
@@ -128,10 +130,12 @@ class ContrastiveLoss(nn.Module):
             neg_n: number of negative samples
         """
         
+
         print(">"*20)
         print("Contrastive Loss Used")
         #self.margin = margin
         #self.cost_style = cost_style
+
         self.direction = direction
         self.neg_sampling = neg_sampling
         #could be a number(msrvtt) or a list of numbers indicating the number of positive pairs of one clip
@@ -149,8 +153,10 @@ class ContrastiveLoss(nn.Module):
             self.sim = euclidean_sim
         elif measure == 'exp':
             self.sim = exponential_sim
-        else:
+        elif measure == 'cosine':
             self.sim = cosine_sim
+        else:
+            raise NotImplemented
 
     def forward(self, s, im, temperature=1, alpha=0):
         """
@@ -161,6 +167,7 @@ class ContrastiveLoss(nn.Module):
             alpha: used for negative sampling
         """
         # scores.shape = (batch_size, batch_size)
+
         scores = self.sim(im, s, t=temperature)
         batch_size = 128
         mask = np.zeros([batch_size,batch_size])
@@ -176,6 +183,7 @@ class ContrastiveLoss(nn.Module):
         Imatch = Variable(m_match)
         Icost = Variable(m_cost)
         
+
         if torch.cuda.is_available():
             Imatch = Imatch.cuda()
             Icost = Icost.cuda()
@@ -187,7 +195,9 @@ class ContrastiveLoss(nn.Module):
         
         # Implement negative sampling here
         # TODO !!!
+
         #MAY BE USE A MARGIN????
+
         if self.neg_sampling == 'all':
             if self.direction in  ['i2t', 'all']:
                 # caption retrieval
@@ -202,6 +212,7 @@ class ContrastiveLoss(nn.Module):
                 cost_im = cost_im.masked_fill_(Imatch, 0)
                 match_im = scores.t().clamp(min=0)
                 match_im = match_im.masked_fill_(m_cost, 0) 
+
         elif self.neg_sampling == 'progressive':
             raise NotImplementedError
 
@@ -219,3 +230,4 @@ class ContrastiveLoss(nn.Module):
         #MIL-NCE loss
         return (cost_s.sum()+cost_im.sum()) / (cost_s.sum()+cost_im.sum() + match_s.sum() + match_im.sum())
         
+

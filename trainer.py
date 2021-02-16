@@ -61,12 +61,12 @@ def parse_args():
     parser.add_argument('--text_mapping_layers', type=str, default='0-2048', help='text fully connected layers for common space learning. (default: 0-2048)')
     parser.add_argument('--visual_mapping_layers', type=str, default='0-2048', help='visual fully connected layers  for common space learning. (default: 0-2048)')
     # loss
-    parser.add_argument('--loss_fun', type=str, default='mrl', choices=['mrl','cont'], help='loss function')
+    parser.add_argument('--loss_fun', type=str, default='cont', choices=['mrl','cont'], help='loss function')
     parser.add_argument('--margin', type=float, default=0.2, help='rank loss margin')
     parser.add_argument('--direction', type=str, default='all', help='retrieval direction (all|t2i|i2t)')
     parser.add_argument('--max_violation', action='store_true', help='use max instead of sum in the rank loss')
     parser.add_argument('--cost_style', type=str, default='sum', choices=['sum', 'mean'], help='cost style (sum, mean). (default: sum)')
-    parser.add_argument('--neg_sampling', type=str, default='progresive', choices=['progressive', 'random', 'all'], help='how to select negative samples')
+    parser.add_argument('--neg_sampling', type=str, default='default', choices=['progressive', 'random', 'all', 'default'], help='how to select negative samples')
     # optimizer
     parser.add_argument('--optimizer', type=str, default='adam', help='optimizer. (default: rmsprop)')
     parser.add_argument('--learning_rate', type=float, default=0.0001, help='initial learning rate')
