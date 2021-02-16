@@ -37,7 +37,7 @@ LABEL_PATH = '.\\tempuckey_groundtruth_splits_videoinfo_20201026.csv'
 
 VOCABULARY_DATA_PATH = '.\\30flickr.txt'
 
-VOCABULARY_PATH = './vocab/word_vocab_5.pkl'
+VOCABULARY_PATH = './vocab/word_vocab_5_bow.pkl'
 WORD2VEC_PATH = '../word2vec/feature.bin'
 
 VID_1 = '1_TRIPPING_2017-11-28-fla-nyr-home_00_44_55.826000_to_00_45_06.437000.mp4'
@@ -311,6 +311,7 @@ class ExtractionPipeline():
         feature = [[] for i in range(len(frames))]
         frame_start_time = video_info['start_time']
         video_length = video_info['actual_video_length']
+        
         for cap, w in captions.items():
             all_sentence += " "
             all_sentence += w
@@ -359,36 +360,40 @@ class ExtractionPipeline():
 
         
         for i in range(len(feature)):
+            sentence = ""
             for j in range(len(feature[i])):
                     timestamps = feature[i][j][0]
-                    sentence = feature[i][j][1]
-                    
-                    sentence = sentence.lower() # to lower case
-                    sentence = sentence.translate(str.maketrans('', '', string.punctuation)) # remove all punctuations
-                    sentence_word =sentence.split()
-              
-                    
-                    integer_encoded_sentence =[]
-                    
-                    for word in sentence_word:
-                        word_integer = word_vocab.__call__(word)
-                    
-                        integer_encoded_sentence.append(word_integer)
-          
-                    #print(integer_encoded_sentence)
+                    sentence += feature[i][j][1]
                     
                     
-                     # ================ Initialize matrix for one hot encoding=========== 
-                    one_hot_sentence = []
+            print("sentence is =",sentence)
+            sentence = sentence.lower() # to lower case
+            sentence = sentence.translate(str.maketrans('', '', string.punctuation)) # remove all punctuations
+            sentence_word =sentence.split()
+      
+            
+            integer_encoded_sentence =[]
+            
+            for word in sentence_word:
+                word_integer = word_vocab.__call__(word)
+                if word_integer==-1:
+                    continue
+                integer_encoded_sentence.append(word_integer)
                 
-                    for idx in range(len(integer_encoded_sentence)):
-                            initial_arr = np.zeros(dict_size).tolist()
-                            initial_arr[integer_encoded_sentence[idx]] = 1.0
-                            one_hot_sentence.append(initial_arr)
-                            
-                    one_hot_sentence = np.array(one_hot_sentence)
-                    feature[i][j] = (timestamps,one_hot_sentence)
-
+            #print(integer_encoded_sentence)
+            
+            
+             # ================ Initialize matrix for one hot encoding=========== 
+            #one_hot_sentence = []
+            one_hot_sentence = np.zeros(dict_size).tolist()
+            for idx in range(len(integer_encoded_sentence)):
+                    
+                    one_hot_sentence[integer_encoded_sentence[idx]] = 1.0
+                    #one_hot_sentence.append(initial_arr)
+                    
+            one_hot_sentence = np.array(one_hot_sentence)
+            feature[i] = one_hot_sentence
+                    
         
         return feature
     
@@ -503,8 +508,8 @@ class Vocabulary(object):
             self.idx += 1
 
     def __call__(self, word):
-        if word not in self.word2idx and 'bow' not in self.text_style:
-            return self.word2idx['<unk>']
+        if word not in self.word2idx:
+            return -1
         return self.word2idx[word]
 
     def __len__(self):
