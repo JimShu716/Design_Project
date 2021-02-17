@@ -36,9 +36,10 @@ VIDEO_SOURCE_PATH = '.\\videos\\'
 CAPTION_SOURCE_PATH = '.\\captions\\'
 LABEL_PATH = '.\\tempuckey_groundtruth_splits_videoinfo_20201026.csv'
 
-# VIDEO_SOURCE_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/all_videos_UNLABELED/TRIPPING'
-# CAPTION_SOURCE_PATH = '/usr/local/data01/zahra/datasets/NHL_ClosedCaption/Subtitles'
-# LABEL_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/labels/tempuckey_groundtruth_splits_videoinfo_20201026.csv'
+SAVE_PATH_SERVER = '/usr/local/extstore02/haoshu/saved_files'
+VIDEO_SOURCE_PATH_SERVER = '/usr/local/data02/zahra/datasets/Tempuckey/all_videos_UNLABELED/TRIPPING'
+CAPTION_SOURCE_PATH_SERVER = '/usr/local/data01/zahra/datasets/NHL_ClosedCaption/Subtitles'
+LABEL_PATH_SERVER = '/usr/local/data02/zahra/datasets/Tempuckey/labels/tempuckey_groundtruth_splits_videoinfo_20201026.csv'
 
 
 #VOCABULARY_DATA_PATH = '.\\30flickr.txt'
@@ -63,30 +64,32 @@ class ExtractionPipeline():
         self.suppress_log = suppress_log
 
         if on_server:
-            self.VIDEO_SOURCE_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/all_videos_UNLABELED/TRIPPING'
-            self.CAPTION_SOURCE_PATH = '/usr/local/data01/zahra/datasets/NHL_ClosedCaption/Subtitles'
-            self.LABEL_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/labels/tempuckey_groundtruth_splits_videoinfo_20201026.csv'
+            self.SAVE_PATH = SAVE_PATH_SERVER
+            self.VIDEO_SOURCE_PATH = VIDEO_SOURCE_PATH_SERVER
+            self.CAPTION_SOURCE_PATH = CAPTION_SOURCE_PATH_SERVER
+            self.LABEL_PATH = LABEL_PATH_SERVER
         else:
-            self.VIDEO_SOURCE_PATH = '.\\videos\\'
-            self.CAPTION_SOURCE_PATH = '.\\captions\\'
-            self.LABEL_PATH = '.\\tempuckey_groundtruth_splits_videoinfo_20201026.csv'
+            self.SAVE_PATH = SAVE_PATH
+            self.VIDEO_SOURCE_PATH = VIDEO_SOURCE_PATH
+            self.CAPTION_SOURCE_PATH = CAPTION_SOURCE_PATH
+            self.LABEL_PATH = LABEL_PATH
 
 
         # init environment
-        for p in SAVE_PATH, VIDEO_SOURCE_PATH, CAPTION_SOURCE_PATH:
+        for p in self.SAVE_PATH, self.VIDEO_SOURCE_PATH, self.CAPTION_SOURCE_PATH:
             if not os.path.exists(p):
                 os.mkdir(p)
 
         # init caption lookup list
-        dirpath, dirnames, files = next(os.walk(CAPTION_SOURCE_PATH))
+        dirpath, dirnames, files = next(os.walk(self.CAPTION_SOURCE_PATH))
         self.caption_list = files
 
         # init video lookup list
-        dirpath, dirnames, files = next(os.walk(VIDEO_SOURCE_PATH))
+        dirpath, dirnames, files = next(os.walk(self.VIDEO_SOURCE_PATH))
         self.video_list = files
 
         # init label lookup list
-        df = pd.read_csv(LABEL_PATH)
+        df = pd.read_csv(self.LABEL_PATH)
         df = df[df['action'] == 'tripping']
         self.label = df
 
@@ -95,10 +98,10 @@ class ExtractionPipeline():
             self.num_video = len(self.video_list)
 
         self.log("Initializing the environment...")
-        self.log(f"Video file source from \t\t: {VIDEO_SOURCE_PATH}")
-        self.log(f"Caption file source from \t: {CAPTION_SOURCE_PATH}")
-        self.log(f"Label file source from \t\t: {LABEL_PATH}")
-        self.log(f"Save file to \t\t\t\t: {SAVE_PATH}\n")
+        self.log(f"Video file source from \t\t: {self.VIDEO_SOURCE_PATH}")
+        self.log(f"Caption file source from \t: {self.CAPTION_SOURCE_PATH}")
+        self.log(f"Label file source from \t\t: {self.LABEL_PATH}")
+        self.log(f"Save file to \t\t\t\t: {self.SAVE_PATH}\n")
         self.log(f"Found {len(self.video_list)} videos and {len(self.caption_list)} subtitle files from environment.\n")
 
         # =========== Construct the word dictionary (Using the 30 flickr)
@@ -128,7 +131,7 @@ class ExtractionPipeline():
     def read_once(self, video_name, save=True, over_write=False):
         self.log(f'{video_name}:')
         if not over_write:
-            save_filepath = os.path.join(SAVE_PATH, video_name[:-4] + '.bin')
+            save_filepath = os.path.join(self.SAVE_PATH, video_name[:-4] + '_0.bin')
             if os.path.exists(save_filepath):
                 self.log('Found saved feature file, skip this file.')
                 return None
@@ -170,7 +173,7 @@ class ExtractionPipeline():
                 }
                 file_pickle = pickle.dumps(file_patch, protocol=2)
                 file_name = video_info['video_name'][:-4] + '_' + str(i) + '.bin'
-                filepath = os.path.join(SAVE_PATH, file_name)
+                filepath = os.path.join(self.SAVE_PATH, file_name)
                 with open(filepath, 'wb') as f:
                     f.write(file_pickle)
             self.log(f'{len(captions)} File generated.')
@@ -181,7 +184,7 @@ class ExtractionPipeline():
 
     def read_from_saved_binary_file(self, file_name):
         file_name = file_name[:-4] + '.bin'
-        filepath = os.path.join(SAVE_PATH, file_name)
+        filepath = os.path.join(self.SAVE_PATH, file_name)
         f = open(filepath, 'rb')
         file = f.read()
         f.close()
@@ -226,7 +229,7 @@ class ExtractionPipeline():
         video_info_name = video_info['video_info']
         for file in self.caption_list:
             if file.split(".")[0] == video_info_name:
-                filepath = os.path.join(CAPTION_SOURCE_PATH, file)
+                filepath = os.path.join(self.CAPTION_SOURCE_PATH, file)
                 with open(filepath, 'rb') as f:     
                     content = pickle.load(f)
 
@@ -235,7 +238,7 @@ class ExtractionPipeline():
 
     def retrieve_frames(self, video_info, save=False):
         frames = {}
-        video_path = os.path.join(VIDEO_SOURCE_PATH, video_info['video_name'])
+        video_path = os.path.join(self.VIDEO_SOURCE_PATH, video_info['video_name'])
         vid_cap = cv2.VideoCapture(video_path)
         video_info['fps'] = round(vid_cap.get(cv2.CAP_PROP_FPS))
         factor = round(video_info['fps'] / self.extracted_fps)
@@ -296,7 +299,7 @@ class ExtractionPipeline():
 
     def frame_to_feature(self, frames):
         # =========convert into tensor object==================
-        print("======== Start converting to feature =====")
+        #print("======== Start converting to feature =====")
         model = ResNet50(weights='imagenet')
         feature = frames
         for i in range(len(frames)):
@@ -413,7 +416,7 @@ class ExtractionPipeline():
     def txt_to_vocabulary(self, file_path):
         word_vocab = ""
 
-        print("====== Start processing vocabulary ====")
+        #print("====== Start processing vocabulary ====")
         with open(file_path, 'rb') as reader:
             for line in reader:
                 line = line.decode("utf-8")
@@ -444,7 +447,7 @@ class ExtractionPipeline():
 
     def vocab_to_dict(self, vocabulary):
 
-        print("====== Start constructing dictionary ====")
+        #print("====== Start constructing dictionary ====")
         # integer encode
         label_encoder = LabelEncoder()
         integer_encoded = label_encoder.fit_transform(vocabulary)  # encode labels
@@ -458,7 +461,7 @@ class ExtractionPipeline():
                 word_dict[key] = value
                 integer_encoded_list.remove(value)
                 break
-        print("==== Dictionary Construction Completed =====")
+        #print("==== Dictionary Construction Completed =====")
         return (word_dict)
 
     """
@@ -519,9 +522,10 @@ class Vocabulary(object):
 
 
 if __name__ == '__main__':
-    pipe = ExtractionPipeline(num_video=-1, suppress_log=False)
-    pipe.read()
-    #file = pipe.read_once(VID_10, over_write=True)
+    #pipe = ExtractionPipeline(num_video=-1, on_server=True, suppress_log=False)
+    pipe = ExtractionPipeline(num_video=10, on_server=False, suppress_log=False)
+    #pipe.read()
+    file = pipe.read_once(VID_10)
 
     # file_2 = pipe.read_from_saved_binary_file(VID_1)
     print('end')
