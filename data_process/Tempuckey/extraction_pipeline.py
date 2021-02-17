@@ -512,7 +512,7 @@ class Vocabulary(object):
 
 
 if __name__ == '__main__':
-    pipe = ExtractionPipeline(num_video=10, suppress_log=False)
+    pipe = ExtractionPipeline(num_video=-1, suppress_log=False)
     pipe.read()
     #file = pipe.read_once(VID_10, over_write=True)
 
