@@ -216,6 +216,7 @@ class ExtractionPipeline():
             if file.split(".")[0] == video_info_name:
                 filepath = os.path.join(CAPTION_SOURCE_PATH, file)
                 with open(filepath, 'rb') as f:
+                    f.seek(0)
                     content = pickle.load(f)
 
         self.log(f'Get {len(content)} lines of subtitles.')
