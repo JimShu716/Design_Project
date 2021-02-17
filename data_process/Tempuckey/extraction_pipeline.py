@@ -32,12 +32,12 @@ from gensim.models import Word2Vec
 # from nltk.corpus import stopwords
 
 SAVE_PATH = '.\\feature\\'
-# VIDEO_SOURCE_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/all_videos_UNLABELED/TRIPPING'
-# CAPTION_SOURCE_PATH = '/usr/local/data01/zahra/datasets/NHL_ClosedCaption/Subtitles'
-# LABEL_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/labels/tempuckey_groundtruth_splits_videoinfo_20201026.csv'
-VIDEO_SOURCE_PATH = '.\\videos\\'
-CAPTION_SOURCE_PATH = '.\\captions\\'
-LABEL_PATH = '.\\tempuckey_groundtruth_splits_videoinfo_20201026.csv'
+VIDEO_SOURCE_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/all_videos_UNLABELED/TRIPPING'
+CAPTION_SOURCE_PATH = '/usr/local/data01/zahra/datasets/NHL_ClosedCaption/Subtitles'
+LABEL_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/labels/tempuckey_groundtruth_splits_videoinfo_20201026.csv'
+#VIDEO_SOURCE_PATH = '.\\videos\\'
+#CAPTION_SOURCE_PATH = '.\\captions\\'
+#LABEL_PATH = '.\\tempuckey_groundtruth_splits_videoinfo_20201026.csv'
 
 #VOCABULARY_DATA_PATH = '.\\30flickr.txt'
 
