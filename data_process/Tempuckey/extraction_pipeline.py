@@ -41,14 +41,14 @@ VIDEO_SOURCE_PATH_SERVER = '/usr/local/data02/zahra/datasets/Tempuckey/all_video
 CAPTION_SOURCE_PATH_SERVER = '/usr/local/data01/zahra/datasets/NHL_ClosedCaption/Subtitles'
 LABEL_PATH_SERVER = '/usr/local/data02/zahra/datasets/Tempuckey/labels/tempuckey_groundtruth_splits_videoinfo_20201026.csv'
 
-
-#VOCABULARY_DATA_PATH = '.\\30flickr.txt'
+# VOCABULARY_DATA_PATH = '.\\30flickr.txt'
 
 VOCABULARY_PATH = './vocab/word_vocab_5_bow.pkl'
-#WORD2VEC_PATH = '..\\word2vec\\feature.bin'
+# WORD2VEC_PATH = '..\\word2vec\\feature.bin'
 
 VID_1 = '1_TRIPPING_2017-11-28-fla-nyr-home_00_44_55.826000_to_00_45_06.437000.mp4'
 VID_10 = '10_TRIPPING_2017-11-07-vgk-mtl-home_00_42_14.766000_to_00_42_24.142000.mp4'
+VID_606 = '606_TRIPPING_2017-12-30-mtl-fla-home_01_42_36.517000_to_01_42_45.660000.mp4'
 
 
 class ExtractionPipeline():
@@ -73,7 +73,6 @@ class ExtractionPipeline():
             self.VIDEO_SOURCE_PATH = VIDEO_SOURCE_PATH
             self.CAPTION_SOURCE_PATH = CAPTION_SOURCE_PATH
             self.LABEL_PATH = LABEL_PATH
-
 
         # init environment
         for p in self.SAVE_PATH, self.VIDEO_SOURCE_PATH, self.CAPTION_SOURCE_PATH:
@@ -124,7 +123,7 @@ class ExtractionPipeline():
             logging.exception("message")
             self.log(f"Job disrrupted, stop at task {task_cnt}")
         self.log(f"Finish job with {task_cnt} file generated.")
-        with open("log.txt", "w") as fp:
+        with open(os.path.join(self.SAVE_PATH, "log.txt"), "w") as fp:
             fp.write(self.logging)
             fp.close()
 
@@ -140,21 +139,18 @@ class ExtractionPipeline():
 
         captions = self.retrieve_captions(video_info)
         # print(captions)
-        if (len(captions) == 0):
+        if len(captions) == 0:
             self.log(f"Error: Did not find the subtitle for video {video_name}")
             return None
 
         frames = self.retrieve_frames(video_info)
-        if (len(frames) == 0):
+        if len(frames) == 0:
             self.log(f"Error: Loading frame error for video {video_name}")
             return None
 
         captions = self.caption_to_feature(frames, captions, video_info)
 
         feature = self.frame_to_feature(frames)
-        #feature = frames
-        #self.get_crtical_time(feature, captions, video_info)
-
 
         file = {
             'video_info': video_info,
@@ -165,7 +161,7 @@ class ExtractionPipeline():
         assert len(feature) == len(captions)
         if save:
             for i in range(len(captions)):
-                video_info['patch_id']=i
+                video_info['patch_id'] = i
                 file_patch = {
                     'video_info': video_info,
                     'captions': captions[i],
@@ -214,7 +210,7 @@ class ExtractionPipeline():
             'fps': 30,
             'factor': 1,
             'sec_per_package': self.frame_per_package / self.extracted_fps,
-            'patch_length': self.frame_per_package/self.extracted_fps,
+            'patch_length': self.frame_per_package / self.extracted_fps,
             'start_time': start_time,
             'end_time': end_time,
             'video_length': end_time - start_time,
@@ -230,7 +226,7 @@ class ExtractionPipeline():
         for file in self.caption_list:
             if file.split(".")[0] == video_info_name:
                 filepath = os.path.join(self.CAPTION_SOURCE_PATH, file)
-                with open(filepath, 'rb') as f:     
+                with open(filepath, 'rb') as f:
                     content = pickle.load(f)
 
         self.log(f'Get {len(content)} lines of subtitles.')
@@ -299,7 +295,7 @@ class ExtractionPipeline():
 
     def frame_to_feature(self, frames):
         # =========convert into tensor object==================
-        #print("======== Start converting to feature =====")
+        # print("======== Start converting to feature =====")
         model = ResNet50(weights='imagenet')
         feature = frames
         for i in range(len(frames)):
@@ -337,6 +333,8 @@ class ExtractionPipeline():
 
             # 5.1s/ 1.5s = 3.4 -> 3
             # 6.15s /1.5s = 4.1 -> 4
+            if cap[0] is None or cap[1] is None or len(cap) != 2:
+                continue
             start_time = datetime.timedelta(hours=cap[0].hour, minutes=cap[0].minute,
                                             seconds=cap[0].second).total_seconds() - frame_start_time
             end_time = datetime.timedelta(hours=cap[1].hour, minutes=cap[1].minute,
@@ -416,7 +414,7 @@ class ExtractionPipeline():
     def txt_to_vocabulary(self, file_path):
         word_vocab = ""
 
-        #print("====== Start processing vocabulary ====")
+        # print("====== Start processing vocabulary ====")
         with open(file_path, 'rb') as reader:
             for line in reader:
                 line = line.decode("utf-8")
@@ -447,7 +445,7 @@ class ExtractionPipeline():
 
     def vocab_to_dict(self, vocabulary):
 
-        #print("====== Start constructing dictionary ====")
+        # print("====== Start constructing dictionary ====")
         # integer encode
         label_encoder = LabelEncoder()
         integer_encoded = label_encoder.fit_transform(vocabulary)  # encode labels
@@ -461,7 +459,7 @@ class ExtractionPipeline():
                 word_dict[key] = value
                 integer_encoded_list.remove(value)
                 break
-        #print("==== Dictionary Construction Completed =====")
+        # print("==== Dictionary Construction Completed =====")
         return (word_dict)
 
     """
@@ -522,10 +520,10 @@ class Vocabulary(object):
 
 
 if __name__ == '__main__':
-    #pipe = ExtractionPipeline(num_video=-1, on_server=True, suppress_log=False)
+    # pipe = ExtractionPipeline(num_video=-1, on_server=True, suppress_log=False)
     pipe = ExtractionPipeline(num_video=10, on_server=False, suppress_log=False)
-    #pipe.read()
-    file = pipe.read_once(VID_10)
+    # pipe.read()
+    file = pipe.read_once(VID_606)
 
     # file_2 = pipe.read_from_saved_binary_file(VID_1)
     print('end')
