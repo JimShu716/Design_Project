@@ -77,6 +77,7 @@ def parse_args():
     # misc
     parser.add_argument('--num_epochs', default=50, type=int, help='Number of training epochs.')
     parser.add_argument('--batch_size', default=128, type=int, help='Size of a training mini-batch.')
+    parser.add_argument('--batch_padding', default=0, type=int, help='Size of padding for mini-batch')
     parser.add_argument('--workers', default=5, type=int, help='Number of data loader workers.')
     parser.add_argument('--postfix', default='runs_0', help='Path to save the model and Tensorboard log.')
     parser.add_argument('--log_step', default=10, type=int, help='Number of steps to print and record the log.')
@@ -179,7 +180,7 @@ def main():
                     for x in collections }
     if testCollection.startswith('msvd'):
         data_loaders = data.get_train_data_loaders(
-            caption_files, visual_feats, rnn_vocab, bow2vec, opt.batch_size, opt.workers, opt.n_caption, video2frames=video2frames)
+            caption_files, visual_feats, rnn_vocab, bow2vec, opt.batch_size, opt.workers, opt.n_caption, video2frames=video2frames, padding_size=opt.batch_padding)
         val_video_ids_list = data.read_video_ids(caption_files['val'])
         val_vid_data_loader = data.get_vis_data_loader(visual_feats['val'], opt.batch_size, opt.workers, video2frames['val'], video_ids=val_video_ids_list)
         val_text_data_loader = data.get_txt_data_loader(caption_files['val'], rnn_vocab, bow2vec, opt.batch_size, opt.workers)
