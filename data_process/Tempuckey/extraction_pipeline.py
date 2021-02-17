@@ -41,8 +41,8 @@ LABEL_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/labels/tempuckey_ground
 
 #VOCABULARY_DATA_PATH = '.\\30flickr.txt'
 
-VOCABULARY_PATH = '.\\vocab\\word_vocab_5.pkl'
-WORD2VEC_PATH = '..\\word2vec\\feature.bin'
+VOCABULARY_PATH = './vocab/word_vocab_5.pkl'
+#WORD2VEC_PATH = '..\\word2vec\\feature.bin'
 
 VID_1 = '1_TRIPPING_2017-11-28-fla-nyr-home_00_44_55.826000_to_00_45_06.437000.mp4'
 VID_10 = '10_TRIPPING_2017-11-07-vgk-mtl-home_00_42_14.766000_to_00_42_24.142000.mp4'
