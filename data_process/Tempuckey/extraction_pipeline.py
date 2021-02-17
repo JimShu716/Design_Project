@@ -32,12 +32,14 @@ from gensim.models import Word2Vec
 # from nltk.corpus import stopwords
 
 SAVE_PATH = '.\\feature\\'
-# VIDEO_SOURCE_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/all_videos_UNLABELED/TRIPPING'
-# CAPTION_SOURCE_PATH = '/usr/local/data01/zahra/datasets/NHL_ClosedCaption/Subtitles'
-# LABEL_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/labels/tempuckey_groundtruth_splits_videoinfo_20201026.csv'
 VIDEO_SOURCE_PATH = '.\\videos\\'
 CAPTION_SOURCE_PATH = '.\\captions\\'
 LABEL_PATH = '.\\tempuckey_groundtruth_splits_videoinfo_20201026.csv'
+
+# VIDEO_SOURCE_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/all_videos_UNLABELED/TRIPPING'
+# CAPTION_SOURCE_PATH = '/usr/local/data01/zahra/datasets/NHL_ClosedCaption/Subtitles'
+# LABEL_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/labels/tempuckey_groundtruth_splits_videoinfo_20201026.csv'
+
 
 #VOCABULARY_DATA_PATH = '.\\30flickr.txt'
 
@@ -49,7 +51,7 @@ VID_10 = '10_TRIPPING_2017-11-07-vgk-mtl-home_00_42_14.766000_to_00_42_24.142000
 
 
 class ExtractionPipeline():
-    def __init__(self, num_video=10, extracted_fps=10, frame_per_package=15, suppress_log=True):
+    def __init__(self, num_video=10, extracted_fps=10, frame_per_package=15, on_server=False, suppress_log=True):
         self.caption_list = []
         self.video_list = []
         self.logging = ""
@@ -60,12 +62,22 @@ class ExtractionPipeline():
         self.num_video = num_video
         self.suppress_log = suppress_log
 
+        if on_server:
+            self.VIDEO_SOURCE_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/all_videos_UNLABELED/TRIPPING'
+            self.CAPTION_SOURCE_PATH = '/usr/local/data01/zahra/datasets/NHL_ClosedCaption/Subtitles'
+            self.LABEL_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/labels/tempuckey_groundtruth_splits_videoinfo_20201026.csv'
+        else:
+            self.VIDEO_SOURCE_PATH = '.\\videos\\'
+            self.CAPTION_SOURCE_PATH = '.\\captions\\'
+            self.LABEL_PATH = '.\\tempuckey_groundtruth_splits_videoinfo_20201026.csv'
+
+
         # init environment
         for p in SAVE_PATH, VIDEO_SOURCE_PATH, CAPTION_SOURCE_PATH:
             if not os.path.exists(p):
                 os.mkdir(p)
 
-                # init caption lookup list
+        # init caption lookup list
         dirpath, dirnames, files = next(os.walk(CAPTION_SOURCE_PATH))
         self.caption_list = files
 
@@ -215,8 +227,7 @@ class ExtractionPipeline():
         for file in self.caption_list:
             if file.split(".")[0] == video_info_name:
                 filepath = os.path.join(CAPTION_SOURCE_PATH, file)
-                with open(filepath, 'rb') as f:
-                    f.seek(0)
+                with open(filepath, 'rb') as f:     
                     content = pickle.load(f)
 
         self.log(f'Get {len(content)} lines of subtitles.')
@@ -508,7 +519,7 @@ class Vocabulary(object):
 
 
 if __name__ == '__main__':
-    pipe = ExtractionPipeline(num_video=10, suppress_log=False)
+    pipe = ExtractionPipeline(num_video=-1, suppress_log=False)
     pipe.read()
     #file = pipe.read_once(VID_10, over_write=True)
 
