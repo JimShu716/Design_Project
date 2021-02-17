@@ -250,7 +250,7 @@ class TxtDataSet4DualEncoding(data.Dataset):
     def __len__(self):
         return self.length
 
-def get_data_loaders(cap_files, visual_feats, vocab, bow2vec, batch_size=100, num_workers=2, n_caption=2, video2frames=None):
+def get_data_loaders(cap_files, visual_feats, vocab, bow2vec, batch_size=100, num_workers=2, n_caption=2, video2frames=None, padding_size=0):
     """
     Returns torch.utils.data.DataLoader for train and validation datasets
     Args:
@@ -267,6 +267,20 @@ def get_data_loaders(cap_files, visual_feats, vocab, bow2vec, batch_size=100, nu
                                     num_workers=num_workers,
                                     collate_fn=collate_frame_gru_fn)
                         for x in cap_files }
+    # data_loaders = {'train': torch.utils.data.DataLoader(dataset=dset['train'],
+    #                                 batch_size=batch_size,
+    #                                 shuffle=True,
+    #                                 pin_memory=True,
+    #                                 num_workers=num_workers,
+    #                                 collate_fn=collate_frame_gru_fn),
+    #                 'val': torch.utils.data.DataLoader(dataset=dset['val'],
+    #                                 batch_size=batch_size,
+    #                                 shuffle=False,
+    #                                 pin_memory=True,
+    #                                 num_workers=num_workers,
+    #                                 collate_fn=collate_frame_gru_fn)
+                    
+    #                 }
     return data_loaders
 
 
