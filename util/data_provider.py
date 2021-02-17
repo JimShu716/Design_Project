@@ -260,27 +260,27 @@ def get_data_loaders(cap_files, visual_feats, vocab, bow2vec, batch_size=100, nu
     dset = {'train': Dataset4DualEncoding(cap_files['train'], visual_feats['train'], bow2vec, vocab, video2frames=video2frames['train']),
             'val': Dataset4DualEncoding(cap_files['val'], visual_feats['val'], bow2vec, vocab, n_caption, video2frames=video2frames['val']) }
 
-    # data_loaders = {x: torch.utils.data.DataLoader(dataset=dset[x],
-    #                                 batch_size=batch_size,
-    #                                 shuffle=(x=='train'),
-    #                                 pin_memory=True,
-    #                                 num_workers=num_workers,
-    #                                 collate_fn=collate_frame_gru_fn)
-    #                     for x in cap_files }
-    data_loaders = {'train': torch.utils.data.DataLoader(dataset=dset['train'],
+    data_loaders = {x: torch.utils.data.DataLoader(dataset=dset[x],
                                     batch_size=batch_size,
-                                    shuffle=True,
-                                    pin_memory=True,
-                                    num_workers=num_workers,
-                                    collate_fn=collate_frame_gru_fn),
-                    'val': torch.utils.data.DataLoader(dataset=dset['val'],
-                                    batch_size=batch_size,
-                                    shuffle=False,
+                                    shuffle=(x=='train'),
                                     pin_memory=True,
                                     num_workers=num_workers,
                                     collate_fn=collate_frame_gru_fn)
+                        for x in cap_files }
+    # data_loaders = {'train': torch.utils.data.DataLoader(dataset=dset['train'],
+    #                                 batch_size=batch_size,
+    #                                 shuffle=True,
+    #                                 pin_memory=True,
+    #                                 num_workers=num_workers,
+    #                                 collate_fn=collate_frame_gru_fn),
+    #                 'val': torch.utils.data.DataLoader(dataset=dset['val'],
+    #                                 batch_size=batch_size,
+    #                                 shuffle=False,
+    #                                 pin_memory=True,
+    #                                 num_workers=num_workers,
+    #                                 collate_fn=collate_frame_gru_fn)
                     
-                    }
+    #                 }
     return data_loaders
 
 
