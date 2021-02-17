@@ -16,3 +16,4 @@ data_process/Tempuckey/TextData
 
 data_process/Tempuckey/log.txt
 data_process/Tempuckey/vocab.py
+data_process/Tempuckey/TempuckeyDataset.json

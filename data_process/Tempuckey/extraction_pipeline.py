@@ -32,12 +32,12 @@ from gensim.models import Word2Vec
 # from nltk.corpus import stopwords
 
 SAVE_PATH = '.\\feature\\'
-VIDEO_SOURCE_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/all_videos_UNLABELED/TRIPPING'
-CAPTION_SOURCE_PATH = '/usr/local/data01/zahra/datasets/NHL_ClosedCaption/Subtitles'
-LABEL_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/labels/tempuckey_groundtruth_splits_videoinfo_20201026.csv'
-#VIDEO_SOURCE_PATH = '.\\videos\\'
-#CAPTION_SOURCE_PATH = '.\\captions\\'
-#LABEL_PATH = '.\\tempuckey_groundtruth_splits_videoinfo_20201026.csv'
+# VIDEO_SOURCE_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/all_videos_UNLABELED/TRIPPING'
+# CAPTION_SOURCE_PATH = '/usr/local/data01/zahra/datasets/NHL_ClosedCaption/Subtitles'
+# LABEL_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/labels/tempuckey_groundtruth_splits_videoinfo_20201026.csv'
+VIDEO_SOURCE_PATH = '.\\videos\\'
+CAPTION_SOURCE_PATH = '.\\captions\\'
+LABEL_PATH = '.\\tempuckey_groundtruth_splits_videoinfo_20201026.csv'
 
 #VOCABULARY_DATA_PATH = '.\\30flickr.txt'
 
@@ -284,8 +284,6 @@ class ExtractionPipeline():
         # video_info['tripping_caption_index'] = list(set(c_caption))
 
     def frame_to_feature(self, frames):
-        # TODO: put code here to do feature embedding extraction
-
         # =========convert into tensor object==================
         print("======== Start converting to feature =====")
         model = ResNet50(weights='imagenet')
@@ -293,12 +291,10 @@ class ExtractionPipeline():
         for i in range(len(frames)):
             for j in range(len(frames[i])):
                 # ================convert into embeddings (tensor object)===========
-
                 feature = self.extract_feature(frames[i][j], model)
                 feature_torch = torch.tensor(feature)
                 frames[i][j] = feature_torch
         # ================fill the list with zero tensors to make same length===========
-
         second_last_list_length = len(frames[len(frames) - 2])
         last_list_length = len(frames[len(frames) - 1])
         while len(frames[len(frames) - 1]) < second_last_list_length:
@@ -307,7 +303,6 @@ class ExtractionPipeline():
         return frames
 
     def extract_feature(self, frame, model):
-
         # ==========resize the frame to fit the model ========
         x = st.resize(frame, (224, 224, 3))
         x = np.expand_dims(x, axis=0)
