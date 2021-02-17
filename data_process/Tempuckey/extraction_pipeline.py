@@ -33,7 +33,7 @@ from gensim.models import Word2Vec
 
 SAVE_PATH = '.\\feature\\'
 VIDEO_SOURCE_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/all_videos_UNLABELED/TRIPPING'
-CAPTION_SOURCE_PATH = '/usr/local/data01/zahra/datasets/NHL_ClosedCaption/Subtitles'
+CAPTION_SOURCE_PATH = '/usr/local/data01/zahra/datasets/NHL_ClosedCaption/corpus_with_timestamp'
 LABEL_PATH = '/usr/local/data02/zahra/datasets/Tempuckey/labels/tempuckey_groundtruth_splits_videoinfo_20201026.csv'
 #VIDEO_SOURCE_PATH = '.\\videos\\'
 #CAPTION_SOURCE_PATH = '.\\captions\\'
@@ -215,9 +215,8 @@ class ExtractionPipeline():
         for file in self.caption_list:
             if file.split(".")[0] == video_info_name:
                 filepath = os.path.join(CAPTION_SOURCE_PATH, file)
-                f = open(filepath, 'rb') 
-                f.seek(0,0)
-                content = pickle.load(f)
+                with open(filepath, 'rb') as f:     
+                    content = pickle.load(f)
 
         self.log(f'Get {len(content)} lines of subtitles.')
         return content
