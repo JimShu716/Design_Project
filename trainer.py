@@ -61,11 +61,12 @@ def parse_args():
     parser.add_argument('--text_mapping_layers', type=str, default='0-2048', help='text fully connected layers for common space learning. (default: 0-2048)')
     parser.add_argument('--visual_mapping_layers', type=str, default='0-2048', help='visual fully connected layers  for common space learning. (default: 0-2048)')
     # loss
-    parser.add_argument('--loss_fun', type=str, default='mrl', help='loss function')
+    parser.add_argument('--loss_fun', type=str, default='cont', choices=['mrl','cont'], help='loss function')
     parser.add_argument('--margin', type=float, default=0.2, help='rank loss margin')
     parser.add_argument('--direction', type=str, default='all', help='retrieval direction (all|t2i|i2t)')
     parser.add_argument('--max_violation', action='store_true', help='use max instead of sum in the rank loss')
-    parser.add_argument('--cost_style', type=str, default='sum', help='cost style (sum, mean). (default: sum)')
+    parser.add_argument('--cost_style', type=str, default='sum', choices=['sum', 'mean'], help='cost style (sum, mean). (default: sum)')
+    parser.add_argument('--neg_sampling', type=str, default='default', choices=['progressive', 'random', 'all', 'default'], help='how to select negative samples')
     # optimizer
     parser.add_argument('--optimizer', type=str, default='adam', help='optimizer. (default: rmsprop)')
     parser.add_argument('--learning_rate', type=float, default=0.0001, help='initial learning rate')
@@ -76,6 +77,7 @@ def parse_args():
     # misc
     parser.add_argument('--num_epochs', default=50, type=int, help='Number of training epochs.')
     parser.add_argument('--batch_size', default=128, type=int, help='Size of a training mini-batch.')
+    parser.add_argument('--batch_padding', default=0, type=int, help='Size of padding for mini-batch')
     parser.add_argument('--workers', default=5, type=int, help='Number of data loader workers.')
     parser.add_argument('--postfix', default='runs_0', help='Path to save the model and Tensorboard log.')
     parser.add_argument('--log_step', default=10, type=int, help='Number of steps to print and record the log.')
@@ -178,7 +180,7 @@ def main():
                     for x in collections }
     if testCollection.startswith('msvd'):
         data_loaders = data.get_train_data_loaders(
-            caption_files, visual_feats, rnn_vocab, bow2vec, opt.batch_size, opt.workers, opt.n_caption, video2frames=video2frames)
+            caption_files, visual_feats, rnn_vocab, bow2vec, opt.batch_size, opt.workers, opt.n_caption, video2frames=video2frames, padding_size=opt.batch_padding)
         val_video_ids_list = data.read_video_ids(caption_files['val'])
         val_vid_data_loader = data.get_vis_data_loader(visual_feats['val'], opt.batch_size, opt.workers, video2frames['val'], video_ids=val_video_ids_list)
         val_text_data_loader = data.get_txt_data_loader(caption_files['val'], rnn_vocab, bow2vec, opt.batch_size, opt.workers)
@@ -188,6 +190,7 @@ def main():
        
 
     # Construct the model
+    # TODO: Change model here
     model = get_model(opt.model)(opt)
     opt.we_parameter = None
     
