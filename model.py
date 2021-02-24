@@ -218,7 +218,7 @@ class Text_multilevel_encoding(nn.Module):
         # Embed word ids to vectors
         # cap_wids, cap_w2vs, cap_bows, cap_mask = x
         cap_wids, cap_bows, lengths, cap_mask = text
-        print(cap_bows)
+        #print(cap_bows)
 
         # Level 1. Global Encoding by Mean Pooling According
         org_out = cap_bows
