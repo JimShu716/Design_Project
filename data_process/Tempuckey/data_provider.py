@@ -32,7 +32,9 @@ class TempuckeyDataSet(data.Dataset):
     def __getitem__(self, index):
         file_path = os.path.join(self.read_path, self.file_pool[index])
         with open(file_path, 'rb') as f:
-            file = pickle.loads(f.read())
+            f_content = f.read()
+            f.close()
+            file = pickle.loads(f_content)
         video = (file['feature'], file['video_info']['patch_length'])
         caption = (file['captions'])
         caption_length = np.count_nonzero(caption == 1.0)
