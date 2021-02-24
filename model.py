@@ -336,8 +336,8 @@ class Dual_Encoding(BaseModel):
         # example: self.text_encoding = Transformer(opt)
         self.vid_encoding = Video_multilevel_encoding(opt)
         self.text_encoding = Text_multilevel_encoding(opt)
-        print(self.vid_encoding)
-        print(self.text_encoding)
+        #print(self.vid_encoding)
+        #print(self.text_encoding)
         if torch.cuda.is_available():
             #cudnn.benchmark = True
             self.vid_encoding.cuda()
