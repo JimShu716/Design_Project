@@ -3,7 +3,7 @@ valCollection=msrvtt10kval
 testCollection=msrvtt10ktest
 concate=full
 overwrite=1
-loss=mrl
+loss=cont
 
 # Generate a vocabulary on the training set
 ./do_get_vocab.sh $trainCollection
