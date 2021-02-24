@@ -119,7 +119,7 @@ class TripletLoss(nn.Module):
 
 class ContrastiveLoss(nn.Module):
 
-    def __init__(self, start_index=None, measure='exp',margin=0, neg_sampling='random', cost_style='sum', direction='all',dataset='msrvtt', num_of_pairs=20):
+    def __init__(self, start_idx=None, measure='exp',margin=0, neg_sampling='random', cost_style='sum', direction='all',dataset='msrvtt', num_of_pairs=20):
 
         super(ContrastiveLoss, self).__init__()
         """ margin: the margin used to select negative samples (see the Negative Sampling Methods slides)
