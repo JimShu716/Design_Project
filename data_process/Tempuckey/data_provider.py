@@ -34,7 +34,7 @@ class TempuckeyDataSet(data.Dataset):
         with open(file_path, 'rb') as f:
             f_content = f.read()
             f.close()
-            file = pickle.loads(f_content)
+            file = pickle.load(f_content)
         video = (file['feature'], file['video_info']['patch_length'])
         caption = (file['captions'])
         caption_length = np.count_nonzero(caption == 1.0)
@@ -44,6 +44,7 @@ class TempuckeyDataSet(data.Dataset):
 
     def __len__(self):
         return self.length
+
 
 
 tt = TempuckeyDataSet()
