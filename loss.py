@@ -33,7 +33,7 @@ def exponential_sim(im, s, t=1):
     return torch.exp(cosine_sim(im, s)/t)
 
 
-class TripletLoss:
+class TripletLoss(nn.Module):
     """
     triplet ranking loss
     """
