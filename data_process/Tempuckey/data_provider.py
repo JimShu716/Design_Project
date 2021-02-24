@@ -1,7 +1,12 @@
-from data_process.Tempuckey.extraction_pipeline import SAVE_PATH
+from extraction_pipeline import SAVE_PATH
+from extraction_pipeline import SAVE_PATH_SERVER
+import numpy as np
 import torch.utils.data as data
 import pickle
 import os
+
+
+
 
 
 class TempuckeyDataSet(data.Dataset):
@@ -19,7 +24,10 @@ class TempuckeyDataSet(data.Dataset):
             file = pickle.loads(f.read())
         video = (file['feature'], file['video_info']['patch_length'])
         caption = (file['captions'])
-        return video, caption
+        caption_length = np.count_nonzero(caption == 1.0)
+        
+        print(caption_length)
+        return video, caption,caption_length
 
     def __len__(self):
         return self.length
@@ -29,3 +37,5 @@ if __name__ == '__main__':
     tt = TempuckeyDataSet()
     file = tt.__getitem__(0)
     print('test break pt.')
+
+
