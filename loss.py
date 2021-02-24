@@ -178,10 +178,10 @@ class ContrastiveLoss(nn.Module):
         for i,j in idx:
             mask[i:j,i:j] = 1                
             
-        m_match = torch.Tensor(mask) == 0
-        m_cost = torch.Tensor(mask) == 1
-        Imatch = Variable(m_match)
-        Icost = Variable(m_cost)
+        m_match = torch.from_numpy(mask) == 0
+        m_cost = torch.from_numpy(mask) == 1
+        Imatch = Variable(m_match,requires_grad = True)
+        Icost = Variable(m_cost,requires_grad = True)
         
 
         if torch.cuda.is_available():
