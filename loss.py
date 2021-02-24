@@ -119,7 +119,7 @@ class TripletLoss(nn.Module):
 
 class ContrastiveLoss(nn.Module):
 
-    def __init__(self, start_idx,measure='exp', neg_sampling='random', direction='all',dataset='msrvtt', num_of_pairs=20):
+    def __init__(self, start_idx=None, measure='exp',margin=0, neg_sampling='random', cost_style='sum', direction='all',dataset='msrvtt', num_of_pairs=20):
 
         super(ContrastiveLoss, self).__init__()
         """ margin: the margin used to select negative samples (see the Negative Sampling Methods slides)
@@ -133,8 +133,8 @@ class ContrastiveLoss(nn.Module):
 
         print(">"*20)
         print("Contrastive Loss Used")
-        #self.margin = margin
-        #self.cost_style = cost_style
+        self.margin = margin
+        self.cost_style = cost_style
 
         self.direction = direction
         self.neg_sampling = neg_sampling
@@ -173,10 +173,10 @@ class ContrastiveLoss(nn.Module):
         mask = np.zeros([batch_size,batch_size])
                
         #this mask can handle both tempuckey and msrvtt
-        n = start_idx[1:]
-        idx = zip(start_idx,n)
+        n = self.start_idx[1:]
+        idx = zip(self.start_idx,n)
         for i,j in idx:
-          mask[i:j,i:j] = 1                
+            mask[i:j,i:j] = 1                
             
         m_match = torch.from_numpy(mask) == 0
         m_cost = torch.from_numpy(mask) == 1
