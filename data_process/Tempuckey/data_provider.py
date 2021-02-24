@@ -44,9 +44,8 @@ class TempuckeyDataSet(data.Dataset):
         return self.length
 
 
-if __name__ == '__main__':
-    tt = TempuckeyDataSet()
-    file = tt.__getitem__(3)
-    print('test break pt.')
+tt = TempuckeyDataSet()
+file = tt.__getitem__(3)
+print('test break pt.')
 
 
