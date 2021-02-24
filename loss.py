@@ -180,8 +180,8 @@ class ContrastiveLoss(nn.Module):
             
         m_match = torch.from_numpy(mask) == 0
         m_cost = torch.from_numpy(mask) == 1
-        Imatch = Variable(m_match,requires_grad = True)
-        Icost = Variable(m_cost,requires_grad = True)
+        Imatch = Variable(m_match)
+        Icost = Variable(m_cost)
         
 
         if torch.cuda.is_available():
@@ -204,14 +204,14 @@ class ContrastiveLoss(nn.Module):
                 cost_s = scores.clamp(min=0)
                 cost_s = cost_s.masked_fill_(Imatch, 0)
                 match_s = scores.clamp(min=0)
-                match_s = match_s.masked_fill_(m_cost, 0)
+                match_s = match_s.masked_fill_(Icost, 0)
                 
             if self.direction in ['t2i', 'all']:
                 # image retrieval
                 cost_im = scores.t().clamp(min=0)
                 cost_im = cost_im.masked_fill_(Imatch, 0)
                 match_im = scores.t().clamp(min=0)
-                match_im = match_im.masked_fill_(m_cost, 0) 
+                match_im = match_im.masked_fill_(Icost, 0) 
 
         elif self.neg_sampling == 'progressive':
             raise NotImplementedError
@@ -222,11 +222,12 @@ class ContrastiveLoss(nn.Module):
         
         # Sum up and return
         if cost_s is None:
-            cost_s = Variable(torch.zeros(1)).cuda()
-            match_s = Variable(torch.zeros(1)).cuda()
+            print("sum up =============================================")
+            cost_s = Variable(torch.zeros(1), requires_grad = True).cuda()
+            match_s = Variable(torch.zeros(1), requires_grad = True).cuda()
         if cost_im is None:
-            cost_im = Variable(torch.zeros(1)).cuda()
-            match_im = Variable(torch.zeros(1)).cuda()        
+            cost_im = Variable(torch.zeros(1), requires_grad = True).cuda()
+            match_im = Variable(torch.zeros(1), requires_grad = True).cuda()        
         #MIL-NCE loss
         return (cost_s.sum()+cost_im.sum()) / (cost_s.sum()+cost_im.sum() + match_s.sum() + match_im.sum())
         
