@@ -4,7 +4,6 @@ import torch.utils.data as data
 import pickle
 import os
 import torch._utils
-from _load_from_bytes import _load_from_bytes
 
 try:
     torch._utils._rebuild_tensor_v2
