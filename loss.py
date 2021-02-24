@@ -119,7 +119,7 @@ class TripletLoss(nn.Module):
 
 class ContrastiveLoss(nn.Module):
 
-    def __init__(self, start_idx=None, measure='exp',margin=0, neg_sampling='random', cost_style='sum', direction='all',dataset='msrvtt', num_of_pairs=20):
+    def __init__(self, start_idx=None, measure='cosine',margin=0, neg_sampling='all', cost_style='sum', direction='all',dataset='msrvtt', num_of_pairs=20):
 
         super(ContrastiveLoss, self).__init__()
         """ margin: the margin used to select negative samples (see the Negative Sampling Methods slides)
@@ -198,31 +198,32 @@ class ContrastiveLoss(nn.Module):
 
         #MAY BE USE A MARGIN????
 
-        if self.neg_sampling == 'all':
-            if self.direction in  ['i2t', 'all']:
-                # caption retrieval
-                cost_s = scores.clamp(min=0)
-                cost_s = cost_s.masked_fill_(Imatch, 0)
-                match_s = scores.clamp(min=0)
-                match_s = match_s.masked_fill_(Icost, 0)
+        #if self.neg_sampling == 'all':
+        if self.direction in  ['i2t', 'all']:
+            # caption retrieval
+            cost_s = scores.clamp(min=0)
+           # print("COST_S",cost_s)
+            cost_s = cost_s.masked_fill_(Imatch, 0)
+            match_s = scores.clamp(min=0)
+            match_s = match_s.masked_fill_(Icost, 0)
                 
-            if self.direction in ['t2i', 'all']:
+        if self.direction in ['t2i', 'all']:
                 # image retrieval
-                cost_im = scores.t().clamp(min=0)
-                cost_im = cost_im.masked_fill_(Imatch, 0)
-                match_im = scores.t().clamp(min=0)
-                match_im = match_im.masked_fill_(Icost, 0) 
+            cost_im = scores.t().clamp(min=0)
+            cost_im = cost_im.masked_fill_(Imatch, 0)
+            match_im = scores.t().clamp(min=0)
+            match_im = match_im.masked_fill_(Icost, 0) 
 
-        elif self.neg_sampling == 'progressive':
-            raise NotImplementedError
+        #elif self.neg_sampling == 'progressive':
+         #  raise NotImplementedError
 
-        elif self.neg_sampling == 'random':
-            raise NotImplementedError
+       #elif self.neg_sampling == 'random':
+        #   raise NotImplementedError
 
         
         # Sum up and return
         if cost_s is None:
-            print("sum up =============================================")
+           # print("sum up =============================================")
             cost_s = Variable(torch.zeros(1), requires_grad = True).cuda()
             match_s = Variable(torch.zeros(1), requires_grad = True).cuda()
         if cost_im is None:
