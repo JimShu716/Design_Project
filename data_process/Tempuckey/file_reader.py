@@ -7,43 +7,22 @@ Created on Sun Jan 31 19:24:46 2021
 import numpy as np
 import pandas as pd
 import pickle
-#file_name ="5_TRIPPING_2018-04-14-col-nsh-national_02_29_37.802000_to_02_29_44.442000.bin"
+file_name ="./feature/3_TRIPPING_2018-04-14-col-nsh-national_00_56_33.857000_to_00_56_38.963000_2.bin"
 
-vocab_path = './vocab/word_vocab_5_bow.pkl'
+#vocab_path = './vocab/word_vocab_5_bow.pkl'
 
-#f = open(file_name,"rb")
-#bin_data = f.read()
-#data = pickle.loads(bin_data, encoding='bytes')
-#res = data.get('feature')
-#print(type(res[0][0]))
-#print(res[0][0].shape)
-
-class Vocabulary(object):
-    """Simple vocabulary wrapper."""
-
-    def __init__(self, text_style):
-        self.word2idx = {}
-        self.idx2word = {}
-        self.idx = 0
-        self.text_style = text_style
-
-    def add_word(self, word):
-        if word not in self.word2idx:
-            self.word2idx[word] = self.idx
-            self.idx2word[self.idx] = word
-            self.idx += 1
-
-    def __call__(self, word):
-        if word not in self.word2idx :
-            return self.word2idx['<unk>']
-        return self.word2idx[word]
-
-    def __len__(self):
-        return len(self.word2idx)
+f = open(file_name,"rb")
+bin_data = f.read()
+data = pickle.loads(bin_data, encoding='bytes')
+res = data.get('feature')
+print(type(res[0][0]))
+print(res[0][0].shape)
 
 
 
-data = pd.read_pickle(vocab_path)
+
+
+#data = pd.read_pickle(vocab_path)
 #data = pickle.load(vocab_path)
     
-print(data.__call__("sda"))
+#print(data.__call__("sda"))
