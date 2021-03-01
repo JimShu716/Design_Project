@@ -18,45 +18,58 @@ except AttributeError:
 
 
 SAVE_PATH = '.\\feature\\'
+SSP = '/usr/local/extstore01/zhouhan/Tempuckey/feature_somewhere'
+
+VIDEO_MAX_LEN = 100
 
 def collate(data):
     # Sort a data list by caption length
-    if data[0][1] is not None:
-        data.sort(key=lambda x: len(x[1]), reverse=True)
-    videos, captions, cap_bows, idxs, cap_ids, video_ids = zip(*data)
+    # if data[0][1] is not None:
+    #     data.sort(key=lambda x: len(x[1]), reverse=True)
+    # videos, captions, cap_bows, idxs, cap_ids, video_ids = zip(*data)
+
+    videos, video_infos, captions, caption_lengths = zip(*data)
 
     # Merge videos (convert tuple of 1D tensor to 4D tensor)
-    video_lengths = [min(VIDEO_MAX_LEN, len(frame)) for frame in videos]
     frame_vec_len = len(videos[0][0])
-    vidoes = torch.zeros(len(videos), max(video_lengths), frame_vec_len)
-    videos_origin = torch.zeros(len(videos), frame_vec_len)
-    vidoes_mask = torch.zeros(len(videos), max(video_lengths))
-    for i, frames in enumerate(videos):
+    video_lengths = [min(VIDEO_MAX_LEN, len(frame)) for frame in videos]
+    video_datas = torch.zeros(len(videos), max(video_lengths), frame_vec_len)
+    video_means = torch.zeros(len(videos), frame_vec_len)
+    video_masks = torch.zeros(len(videos), max(video_lengths))
+    video_names = [info['video_name'] for info in video_infos]
+
+    for i, video in enumerate(videos):
         end = video_lengths[i]
-        vidoes[i, :end, :] = frames[:end, :]
-        videos_origin[i, :] = torch.mean(frames, 0)
-        vidoes_mask[i, :end] = 1.0
+        video_datas[i, :end, :] = video[:end, :]
+        video_means[i, :] = torch.mean(video, 0)
+        video_masks[i, :end] = 1.0
 
-    if captions[0] is not None:
-        # Merge captions (convert tuple of 1D tensor to 2D tensor)
-        lengths = [len(cap) for cap in captions]
-        target = torch.zeros(len(captions), max(lengths)).long()
-        words_mask = torch.zeros(len(captions), max(lengths))
-        for i, cap in enumerate(captions):
-            end = lengths[i]
-            target[i, :end] = cap[:end]
-            words_mask[i, :end] = 1.0
-    else:
-        target = None
-        lengths = None
-        words_mask = None
 
-    cap_bows = torch.stack(cap_bows, 0) if cap_bows[0] is not None else None
+    # Merge captions (convert tuple of 1D tensor to 2D tensor)
+    cap_lengths = [len(cap) for cap in captions]
+    cap_datas = torch.zeros(len(captions), max(cap_lengths)).long()
+    cap_masks = torch.zeros(len(captions), max(cap_lengths))
 
-    video_data = (vidoes, videos_origin, video_lengths, vidoes_mask)
-    text_data = (target, cap_bows, lengths, words_mask)
+    for i, cap in enumerate(captions):
+        end = cap_lengths[i]
+        cap_datas[i, :end] = cap[:end]
+        cap_masks[i, :end] = 1.0
 
-    return video_data, text_data, idxs, cap_ids, video_ids
+    #cap_bows = torch.stack(cap_bows, 0) if cap_bows[0] is not None else None
+    #TODO: bow2vec
+    cap_bows = None
+
+    video_data = (video_datas,
+                  video_means,
+                  video_lengths,
+                  video_masks,
+                  video_names)
+    text_data = (cap_datas,
+                 cap_bows,
+                 cap_lengths,
+                 cap_masks)
+
+    return video_data, text_data
 
 
 """
@@ -70,14 +83,15 @@ class CPU_Unpickler(pickle.Unpickler,object):
         else: return super(CPU_Unpickler,self).find_class(module, name)
 
 print (type(CPU_Unpickler))
+
 class TempuckeyDataSet(data.Dataset):
     def __init__(self, read_path=SAVE_PATH):
         self.read_path = read_path
         _, _, self.file_pool = next(os.walk(read_path))
         self.length = len(self.file_pool)
-#        print 'Initializing TempuckeyDataSet...'
-  #      print 'Read path: %s' % self.read_path
- #       print 'Find %d files in the path.' % self.read_path
+        print 'Initializing TempuckeyDataSet...'
+        print 'Read path: %s' % self.read_path
+        print 'Find %d files in the path.' % self.length
 
     def __getitem__(self, index):
         file_path = os.path.join(self.read_path, self.file_pool[index])
@@ -86,18 +100,22 @@ class TempuckeyDataSet(data.Dataset):
         
             file = CPU_Unpickler(f).load()
           
-        video = (file['feature'], file['video_info']['patch_length'])
+        video = file['feature']
+        video_info = file['video_info']
         caption = (file['captions'])
         caption_length = np.count_nonzero(caption == 1.0)
-        
-        print(caption_length)
-        return video, caption,caption_length
+
+        return video, video_info, caption, caption_length
 
     def __len__(self):
         return self.length
 
 
 if __name__ == '__main__':
-    tt = TempuckeyDataSet()
-    file = tt.__getitem__(7)
-   #print 'test break pt.'
+    tt = TempuckeyDataSet(SSP)
+    item = tt.__getitem__(0)
+    data = []
+    for index in range(tt.length):
+        data.append(tt.__getitem__(index))
+    video_data, text_data = collate(data)
+    #print 'test break pt.'
