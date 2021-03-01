@@ -36,7 +36,7 @@ VIDEO_SOURCE_PATH = '.\\videos\\'
 CAPTION_SOURCE_PATH = '.\\captions\\'
 LABEL_PATH = '.\\tempuckey_groundtruth_splits_videoinfo_20201026.csv'
 
-SAVE_PATH_SERVER = '.\\feature\\'
+SAVE_PATH_SERVER = '.\\feature2\\'
 VIDEO_SOURCE_PATH_SERVER = '/usr/local/data02/zahra/datasets/Tempuckey/all_videos_UNLABELED/TRIPPING'
 CAPTION_SOURCE_PATH_SERVER = '/usr/local/data01/zahra/datasets/NHL_ClosedCaption/corpus_with_timestamp'
 LABEL_PATH_SERVER = '/usr/local/data02/zahra/datasets/Tempuckey/labels/tempuckey_groundtruth_splits_videoinfo_20201026.csv'
@@ -167,7 +167,7 @@ class ExtractionPipeline():
                     'captions': captions[i],
                     'feature': feature[i],
                 }
-                file_pickle = pickle.dumps(file_patch, protocol=2)
+                file_pickle = pickle.dumps(file_patch)
                 file_name = video_info['video_name'][:-4] + '_' + str(i) + '.bin'
                 filepath = os.path.join(self.SAVE_PATH, file_name)
                 with open(filepath, 'wb') as f:
@@ -521,7 +521,7 @@ class Vocabulary(object):
 
 if __name__ == '__main__':
     #pipe = ExtractionPipeline(num_video=-1, on_server=True, suppress_log=False)
-    pipe = ExtractionPipeline(num_video=-1, on_server=True, suppress_log=False)
+    pipe = ExtractionPipeline(num_video=1, on_server=True, suppress_log=False)
     pipe.read()
     #file = pipe.read_once(VID_10)
 
