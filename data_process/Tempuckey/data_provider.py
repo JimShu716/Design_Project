@@ -69,7 +69,7 @@ class CPU_Unpickler(pickle.Unpickler):
             return lambda b: torch.load(io.BytesIO(b), map_location='cpu')
         else: return super(CPU_Unpickler,self).find_class(module, name)
 
-
+print (type(CPU_Unpickler))
 class TempuckeyDataSet(data.Dataset):
     def __init__(self, read_path=SAVE_PATH):
         self.read_path = read_path
