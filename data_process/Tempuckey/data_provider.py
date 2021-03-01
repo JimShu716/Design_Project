@@ -4,6 +4,7 @@ import torch.utils.data as data
 import pickle
 import os
 import torch._utils
+import io
 
 try:
     torch._utils._rebuild_tensor_v2
@@ -16,7 +17,7 @@ except AttributeError:
     torch._utils._rebuild_tensor_v2 = _rebuild_tensor_v2
 
 
-SAVE_PATH = '.\\feature2\\'
+SAVE_PATH = '.\\feature\\'
 
 def collate(data):
     # Sort a data list by caption length
@@ -58,19 +59,30 @@ def collate(data):
     return video_data, text_data, idxs, cap_ids, video_ids
 
 
+"""
+A class to solve unpickling issues
+
+"""
+class CPU_Unpickler(pickle.Unpickler):
+    def find_class(self, module, name):
+        if module == 'torch.storage' and name == '_load_from_bytes':
+            return lambda b: torch.load(io.BytesIO(b), map_location='cpu')
+        else: return super().find_class(module, name)
+
+
 class TempuckeyDataSet(data.Dataset):
     def __init__(self, read_path=SAVE_PATH):
         self.read_path = read_path
         _, _, self.file_pool = next(os.walk(read_path))
         self.length = len(self.file_pool)
-        #print 'Initializing TempuckeyDataSet...'
-        #print 'Read path: %s' % self.read_path
-        #print 'Find %d files in the path.' % self.read_path
+#        print 'Initializing TempuckeyDataSet...'
+  #      print 'Read path: %s' % self.read_path
+ #       print 'Find %d files in the path.' % self.read_path
 
     def __getitem__(self, index):
         file_path = os.path.join(self.read_path, self.file_pool[index])
         f= open(file_path, 'rb')
-        file = pickle.load(f)
+        file = CPU_Unpickler(f).load()
         f.close()
         video = (file['feature'], file['video_info']['patch_length'])
         caption = (file['captions'])
@@ -86,4 +98,4 @@ class TempuckeyDataSet(data.Dataset):
 if __name__ == '__main__':
     tt = TempuckeyDataSet()
     file = tt.__getitem__(0)
-    print 'test break pt.'
+   #print 'test break pt.'
