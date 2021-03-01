@@ -16,7 +16,7 @@ except AttributeError:
     torch._utils._rebuild_tensor_v2 = _rebuild_tensor_v2
 
 
-SAVE_PATH = '.\\feature\\'
+SAVE_PATH = '.\\feature2\\'
 
 def collate(data):
     # Sort a data list by caption length
