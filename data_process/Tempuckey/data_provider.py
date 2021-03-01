@@ -63,7 +63,7 @@ def collate(data):
 A class to solve unpickling issues
 
 """
-class CPU_Unpickler(pickle.Unpickler):
+class CPU_Unpickler(pickle.Unpickler,object):
     def find_class(self, module, name):
         if module == 'torch.storage' and name == '_load_from_bytes':
             return lambda b: torch.load(io.BytesIO(b), map_location='cpu')
