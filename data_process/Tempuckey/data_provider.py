@@ -63,9 +63,9 @@ class TempuckeyDataSet(data.Dataset):
         self.read_path = read_path
         _, _, self.file_pool = next(os.walk(read_path))
         self.length = len(self.file_pool)
-        print 'Initializing TempuckeyDataSet...'
-        print 'Read path: %s' % self.read_path
-        print 'Find %d files in the path.' % self.read_path
+        #print 'Initializing TempuckeyDataSet...'
+        #print 'Read path: %s' % self.read_path
+        #print 'Find %d files in the path.' % self.read_path
 
     def __getitem__(self, index):
         file_path = os.path.join(self.read_path, self.file_pool[index])
