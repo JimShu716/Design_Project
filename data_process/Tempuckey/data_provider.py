@@ -81,9 +81,11 @@ class TempuckeyDataSet(data.Dataset):
 
     def __getitem__(self, index):
         file_path = os.path.join(self.read_path, self.file_pool[index])
-        f= open(file_path, 'rb')
-        file = CPU_Unpickler(f).load()
-        f.close()
+        
+        with open(file_path, 'rb') as f:
+        
+            file = CPU_Unpickler(f).load()
+          
         video = (file['feature'], file['video_info']['patch_length'])
         caption = (file['captions'])
         caption_length = np.count_nonzero(caption == 1.0)
