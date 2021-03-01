@@ -99,5 +99,5 @@ class TempuckeyDataSet(data.Dataset):
 
 if __name__ == '__main__':
     tt = TempuckeyDataSet()
-    file = tt.__getitem__(0)
+    file = tt.__getitem__(7)
    #print 'test break pt.'
