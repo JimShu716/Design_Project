@@ -262,7 +262,7 @@ def get_data_loaders(cap_files, visual_feats, vocab, bow2vec, batch_size=100, nu
 
     data_loaders = {x: torch.utils.data.DataLoader(dataset=dset[x],
                                     batch_size=batch_size,
-                                    shuffle=(x=='train'),
+                                    shuffle=False, #(x=='train'),
                                     pin_memory=True,
                                     num_workers=num_workers,
                                     collate_fn=collate_frame_gru_fn)
@@ -295,7 +295,7 @@ def get_train_data_loaders(cap_files, visual_feats, vocab, bow2vec, batch_size=1
 
     data_loaders = {x: torch.utils.data.DataLoader(dataset=dset[x],
                                     batch_size=batch_size,
-                                    shuffle=(x=='train'),
+                                    shuffle=False,#(x=='train'),
                                     pin_memory=True,
                                     num_workers=num_workers,
                                     collate_fn=collate_frame_gru_fn)
