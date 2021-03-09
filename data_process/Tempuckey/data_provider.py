@@ -30,13 +30,9 @@ def collate(data):
     # videos, captions, cap_bows, idxs, cap_ids, video_ids = zip(*data)
 
     videos, video_infos, captions, caption_lengths = zip(*data)
-    print type(videos[0])
-    print type(video_infos[0])
-    print type(captions[0])
-    print type(caption_lengths[0])
 
     # Merge videos (convert tuple of 1D tensor to 4D tensor)
-    frame_vec_len = len(videos[0][0])
+    frame_vec_len = len(videos[0][0][0])
     video_lengths = [min(VIDEO_MAX_LEN, len(frame)) for frame in videos]
     video_datas = torch.zeros(len(videos), max(video_lengths), frame_vec_len)
     video_means = torch.zeros(len(videos), frame_vec_len)
@@ -45,8 +41,9 @@ def collate(data):
 
     for i, video in enumerate(videos):
         end = video_lengths[i]
-        video = torch.Tensor(video)
-        video_datas[i, :end] = video[:end,:]
+        video = [v[0] for v in video]
+        video = torch.stack(video)
+        video_datas[i, :end, :] = video[:end, :]
         video_means[i, :] = torch.mean(video, 0)
         video_masks[i, :end] = 1.0
 
@@ -118,7 +115,7 @@ class TempuckeyDataSet(data.Dataset):
         return self.length
 
 
-def get_data_loader(batch_size=100, num_workers=2):
+def get_data_loader(batch_size=10, num_workers=2):
     """
     Returns torch.utils.data.DataLoader for train and validation datasets
     Args:
@@ -138,9 +135,9 @@ def get_data_loader(batch_size=100, num_workers=2):
 
 
 if __name__ == '__main__':
-    tt = TempuckeyDataSet(SSP)
-    item = tt.__getitem__(0)
-    print item
+    #tt = TempuckeyDataSet(SSP)
+    #item = tt.__getitem__(0)
+    #print item
     data_loader = get_data_loader()
     for i, (video_data, text_data) in enumerate(data_loader):
         print i
