@@ -187,7 +187,7 @@ def main():
     else:
         data_loaders = data.get_data_loaders(
             caption_files, visual_feats, rnn_vocab, bow2vec, opt.batch_size, opt.workers, opt.n_caption, video2frames=video2frames)
-       
+    print("=======================Data Loaded=================================")   
 
     # Construct the model
     # TODO: Change model here
