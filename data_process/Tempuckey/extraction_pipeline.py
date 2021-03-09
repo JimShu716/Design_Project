@@ -148,13 +148,14 @@ class ExtractionPipeline():
             self.log(f"Error: Loading frame error for video {video_name}")
             return None
 
-        captions = self.caption_to_feature(frames, captions, video_info)
+        captions,bow = self.caption_to_feature(frames, captions, video_info)
 
         feature = self.frame_to_feature(frames)
 
         file = {
             'video_info': video_info,
             'captions': captions,
+            'bow':bow,
             'feature': feature,
         }
 
@@ -355,10 +356,12 @@ class ExtractionPipeline():
         # ================ Create stop word list ===========
         #       all_stopwords = stopwords.words('english')
 
-        feature_result = self.caption_to_one_hot(feature, self.dictionary)  # generate one-hot encoding
+        bow_feature = self.caption_to_bow(feature, self.dictionary)
+        
+        caption_feature = self.caption_to_one_hot(feature, self.dictionary)  # generate one-hot encoding
         # feature_result = self.word2vec_embeddings(feature) # generate embeddings by word2vec
 
-        return feature_result
+        return caption_feature,bow_feature
 
     """
     Function to preprocess the raw caption text into one-hot encodings
@@ -370,12 +373,66 @@ class ExtractionPipeline():
     """
 
     def caption_to_one_hot(self, feature, word_vocab):
+ 
+           
+        dict_size= word_vocab.__len__()
 
+   
+        
+        for i in range(len(feature)):
+            for j in range(len(feature[i])):
+                    sentence = feature[i][j][1]
+                    
+                    sentence = sentence.lower() # to lower case
+                    sentence = sentence.translate(str.maketrans('', '', string.punctuation)) # remove all punctuations
+                    sentence_word =sentence.split()
+              
+                    
+                    integer_encoded_sentence =[]
+                    
+                    for word in sentence_word:
+                        word_integer = word_vocab.__call__(word)
+                    
+                        integer_encoded_sentence.append(word_integer)
+          
+                    #print(integer_encoded_sentence)
+                    
+                    
+                     # ================ Initialize matrix for one hot encoding=========== 
+                    one_hot_sentence = []
+                
+                    for idx in range(len(integer_encoded_sentence)):
+                            initial_arr = np.zeros(dict_size).tolist()
+                            initial_arr[integer_encoded_sentence[idx]] = 1.0
+                            one_hot_sentence.append(initial_arr)
+                            
+                    one_hot_sentence = np.array(one_hot_sentence)
+                    feature[i][j] = one_hot_sentence
+
+        
+        return feature
+    
+    
+    
+    
+    
+    """
+    Function to preprocess the raw caption text into one-hot encodings
+    
+    feature - raw caption feature
+    word_dict - dictionary of words to construct one- hot
+    
+    Return: the processed bow feature
+    """
+
+    def caption_to_bow(self, feature, word_vocab):
+       
         dict_size = word_vocab.__len__()
-
+        feature_bow =[]
         for i in range(len(feature)):
             sentence = ""
             for j in range(len(feature[i])):
+
                 timestamps = feature[i][j][0]
                 sentence += feature[i][j][1]
             # print("sentence is =",sentence)
@@ -401,9 +458,10 @@ class ExtractionPipeline():
                 # one_hot_sentence.append(initial_arr)
 
             one_hot_sentence = np.array(one_hot_sentence)
-            feature[i] = one_hot_sentence
+            feature_bow.append(one_hot_sentence)
 
-        return feature
+        return feature_bow
+
 
     """
     Function to preprocess the data in txt file into word vocabulary
@@ -491,7 +549,7 @@ class ExtractionPipeline():
                     sentence_embeddings.append(word_embeddings)
 
                 feature[i][j] = (timestamps, sentence_embeddings)
-
+                
                 return feature
 
 
@@ -521,9 +579,9 @@ class Vocabulary(object):
 
 if __name__ == '__main__':
     #pipe = ExtractionPipeline(num_video=-1, on_server=True, suppress_log=False)
-    pipe = ExtractionPipeline(num_video= 1, on_server=True, suppress_log=False)
-    pipe.read()
-    #file = pipe.read_once(VID_10)
+    pipe = ExtractionPipeline(num_video= 1, on_server=False, suppress_log=False)
+    #pipe.read()
+    file = pipe.read_once(VID_10)
 
     # file_2 = pipe.read_from_saved_binary_file(VID_1)
     print('end')
