@@ -4,6 +4,7 @@ import torch.utils.data as data
 import pickle
 import os
 import torch._utils
+import torch
 import io
 
 try:
@@ -29,6 +30,10 @@ def collate(data):
     # videos, captions, cap_bows, idxs, cap_ids, video_ids = zip(*data)
 
     videos, video_infos, captions, caption_lengths = zip(*data)
+    print type(videos[0])
+    print type(video_infos[0])
+    print type(captions[0])
+    print type(caption_lengths[0])
 
     # Merge videos (convert tuple of 1D tensor to 4D tensor)
     frame_vec_len = len(videos[0][0])
@@ -40,7 +45,8 @@ def collate(data):
 
     for i, video in enumerate(videos):
         end = video_lengths[i]
-        video_datas[i, :end, :] = video[:end, :]
+        video = torch.Tensor(video)
+        video_datas[i, :end] = video[:end,:]
         video_means[i, :] = torch.mean(video, 0)
         video_masks[i, :end] = 1.0
 
@@ -59,17 +65,18 @@ def collate(data):
     #TODO: bow2vec
     cap_bows = None
 
-    video_data = (video_datas,
-                  video_means,
-                  video_lengths,
-                  video_masks,
-                  video_names)
-    text_data = (cap_datas,
-                 cap_bows,
-                 cap_lengths,
-                 cap_masks)
+    video_data_pack = (video_datas,
+                       video_means,
+                       video_lengths,
+                       video_masks,
+                       video_names)
 
-    return video_data, text_data
+    text_data_pack = (cap_datas,
+                      cap_bows,
+                      cap_lengths,
+                      cap_masks)
+
+    return video_data_pack, text_data_pack
 
 
 """
@@ -85,7 +92,7 @@ class CPU_Unpickler(pickle.Unpickler,object):
 print (type(CPU_Unpickler))
 
 class TempuckeyDataSet(data.Dataset):
-    def __init__(self, read_path=SAVE_PATH):
+    def __init__(self, read_path=SSP):
         self.read_path = read_path
         _, _, self.file_pool = next(os.walk(read_path))
         self.length = len(self.file_pool)
@@ -111,11 +118,30 @@ class TempuckeyDataSet(data.Dataset):
         return self.length
 
 
+def get_data_loader(batch_size=100, num_workers=2):
+    """
+    Returns torch.utils.data.DataLoader for train and validation datasets
+    Args:
+        cap_files: caption files (dict) keys: [train, val]
+        visual_feats: image feats (dict) keys: [train, val]
+        :param num_workers: 
+        :param batch_size: 
+    """
+    
+    data_loader = torch.utils.data.DataLoader(dataset=TempuckeyDataSet(),
+                                    batch_size=batch_size,
+                                    shuffle=True,
+                                    pin_memory=True,
+                                    num_workers=num_workers,
+                                    collate_fn=collate)
+    return data_loader
+
+
 if __name__ == '__main__':
     tt = TempuckeyDataSet(SSP)
     item = tt.__getitem__(0)
-    data = []
-    for index in range(tt.length):
-        data.append(tt.__getitem__(index))
-    video_data, text_data = collate(data)
-    #print 'test break pt.'
+    print item
+    data_loader = get_data_loader()
+    for i, (video_data, text_data) in enumerate(data_loader):
+        print i
+    print 'test break pt.'
