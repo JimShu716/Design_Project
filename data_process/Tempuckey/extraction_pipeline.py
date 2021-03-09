@@ -31,7 +31,7 @@ from gensim.models import Word2Vec
 
 # from nltk.corpus import stopwords
 
-SAVE_PATH = '.\\feature\\'
+SAVE_PATH = '.\\feature_with_bow\\'
 VIDEO_SOURCE_PATH = '.\\videos\\'
 CAPTION_SOURCE_PATH = '.\\captions\\'
 LABEL_PATH = '.\\tempuckey_groundtruth_splits_videoinfo_20201026.csv'
@@ -580,9 +580,9 @@ class Vocabulary(object):
 
 if __name__ == '__main__':
     #pipe = ExtractionPipeline(num_video=-1, on_server=True, suppress_log=False)
-    pipe = ExtractionPipeline(num_video= 1, on_server=False, suppress_log=False)
-    #pipe.read()
-    file = pipe.read_once(VID_10)
+    pipe = ExtractionPipeline(num_video= -1, on_server=True, suppress_log=False)
+    pipe.read()
+    #file = pipe.read_once(VID_10)
 
     # file_2 = pipe.read_from_saved_binary_file(VID_1)
     print('end')
