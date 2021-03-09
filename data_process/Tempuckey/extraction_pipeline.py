@@ -166,6 +166,7 @@ class ExtractionPipeline():
                 file_patch = {
                     'video_info': video_info,
                     'captions': captions[i],
+                    'bow':bow[i],
                     'feature': feature[i],
                 }
                 file_pickle = pickle.dumps(file_patch, protocol=1)
