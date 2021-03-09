@@ -32,6 +32,7 @@ INFO = __file__
 def parse_args():
     # Hyper Parameters
     parser = argparse.ArgumentParser()
+    parser.add_argument('--dataset', type=str, default="tempuckey",help='dataset name')
     parser.add_argument('--rootpath', type=str, default=ROOT_PATH,
                         help='path to datasets. (default: %s)'%ROOT_PATH)
     parser.add_argument('trainCollection', type=str, help='train collection')
@@ -184,6 +185,10 @@ def main():
         val_video_ids_list = data.read_video_ids(caption_files['val'])
         val_vid_data_loader = data.get_vis_data_loader(visual_feats['val'], opt.batch_size, opt.workers, video2frames['val'], video_ids=val_video_ids_list)
         val_text_data_loader = data.get_txt_data_loader(caption_files['val'], rnn_vocab, bow2vec, opt.batch_size, opt.workers)
+    elif opt.dataset == "tempuckey":
+        #function input not consistent
+        data_loaders = data.get_tempuckey_data_loaders(
+            caption_files, visual_feats, rnn_vocab, bow2vec, opt.batch_size, opt.workers, opt.n_caption, video2frames=video2frames)
     else:
         data_loaders = data.get_data_loaders(
             caption_files, visual_feats, rnn_vocab, bow2vec, opt.batch_size, opt.workers, opt.n_caption, video2frames=video2frames)
