@@ -18,13 +18,16 @@ def l2norm(X):
     norm = np.linalg.norm(X, axis=1, keepdims=True)
     return 1.0 * X / norm
 
+
 def cal_error(videos, captions, measure='cosine'):
-    if measure == 'cosine':
+    if measure == 'euclidean':
+        errors = distance.cdist(captions, videos, 'euclidean')
+    else:
+        # use cosine by default
         captions = l2norm(captions)
         videos = l2norm(videos)
         errors = -1*numpy.dot(captions, videos.T)
-    elif measure == 'euclidean':
-        errors = distance.cdist(captions, videos, 'euclidean')
+
     return errors
 
 
