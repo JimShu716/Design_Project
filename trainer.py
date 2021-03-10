@@ -34,7 +34,7 @@ INFO = __file__
 def parse_args():
     # Hyper Parameters
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', type=str, default="tempuckey",help='dataset name')
+    parser.add_argument('--dataset', type=str, default="msrvtt",help='dataset name')
     parser.add_argument('--rootpath', type=str, default=ROOT_PATH,
                         help='path to datasets. (default: %s)'%ROOT_PATH)
     parser.add_argument('trainCollection', type=str, help='train collection')
