@@ -158,13 +158,13 @@ class ContrastiveLoss(nn.Module):
         else:
             raise NotImplemented
 
-    def forward(self, s, im, temperature=1, alpha=0):
+    def forward(self, s, im, temperature=0.75, alpha=0):
         """
             s: a 2d tensor with a shape of (batch_size, feature_size) Note: for original dual encoder, it is (batch_size, 2048)
             im: a 2d tensor with a shape of (batch_size, feature_size) Note: for original dual encoder, it is (batch_size, 2048)
             label: a 1d binary list stands the relativeness of a video-text pair (1 = pos, 0 = not-pos)
             tempurature: used for simliarity
-            alpha: used for negative sampling
+            alpha: used for negative sampling. Not used for the moment
         """
         # scores.shape = (batch_size, batch_size)
 
