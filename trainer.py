@@ -26,6 +26,8 @@ from basic.common import makedirsforfile, checkToSkip
 from basic.util import read_dict, AverageMeter, LogCollector
 from basic.generic_utils import Progbar
 
+from matplotlib import pyplot as plt
+
 INFO = __file__
 
 
@@ -225,11 +227,13 @@ def main():
     lr_counter = 0
     best_epoch = None
     fout_val_metric_hist = open(os.path.join(opt.logger_name, 'val_metric_hist.txt'), 'w')
+
+    loss_value = []
     for epoch in range(opt.num_epochs):
         print('Epoch[{0} / {1}] LR: {2}'.format(epoch, opt.num_epochs, get_learning_rate(model.optimizer)[0]))
         print('-'*10)
         # train for one epoch
-        train(opt, data_loaders['train'], model, epoch)
+        loss_value += train(opt, data_loaders['train'], model, epoch)
 
         # evaluate on validation set
         if testCollection.startswith('msvd'):
@@ -275,6 +279,14 @@ def main():
         else:
             no_impr_counter = 0
 
+    #loss_value
+    plt.title("Loss") 
+    plt.xlabel("Epoch") 
+    plt.xticks(np.arange(len(loss_value)))
+    plt.ylabel("Loss Value") 
+    plt.plot(np.arange(len(loss_value)), loss_value) 
+    plt.savefig("./result.png")
+
     fout_val_metric_hist.close()
 
     print('best performance on validation: {}\n'.format(best_rsum))
@@ -305,6 +317,7 @@ def train(opt, train_loader, model, epoch):
     batch_time = AverageMeter()
     data_time = AverageMeter()
     train_logger = LogCollector()
+    loss_value = []
 
     # switch to train mode
     model.train_start()
@@ -322,6 +335,8 @@ def train(opt, train_loader, model, epoch):
         # Update the model
         b_size, loss = model.train_emb(*train_data)
 
+        loss_value.append(loss)
+
         progbar.add(b_size, values=[('loss', loss)])
 
         # measure elapsed time
@@ -334,6 +349,8 @@ def train(opt, train_loader, model, epoch):
         tb_logger.log_value('batch_time', batch_time.val, step=model.Eiters)
         tb_logger.log_value('data_time', data_time.val, step=model.Eiters)
         model.logger.tb_log(tb_logger, step=model.Eiters)
+
+        return loss_value
 
 
 def validate(opt, val_loader, model, measure='cosine'):
