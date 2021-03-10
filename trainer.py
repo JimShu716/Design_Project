@@ -27,8 +27,7 @@ from basic.util import read_dict, AverageMeter, LogCollector
 from basic.generic_utils import Progbar
 
 from matplotlib import pyplot as plt
-
-INFO = __file__
+plt.switch_backend('agg')
 
 
 def parse_args():
@@ -280,6 +279,7 @@ def main():
             no_impr_counter = 0
 
     #loss_value
+    loss_value = np.array(loss_value)
     plt.title("Loss") 
     plt.xlabel("Epoch") 
     plt.xticks(np.arange(len(loss_value)))
@@ -334,8 +334,6 @@ def train(opt, train_loader, model, epoch):
 
         # Update the model
         b_size, loss = model.train_emb(*train_data)
-        print("loss: {} type: {}".format(loss, type(loss)))
-        exit(0)
 
         loss_value.append(loss)
 
