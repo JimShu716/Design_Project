@@ -38,7 +38,7 @@ class Text2Vec(object):
         if vec is not None:
             vec = np.array(vec)
         return vec
-
+#One-hot encoding?
 # Vocab
 class Bow2Vec(Text2Vec):
 
