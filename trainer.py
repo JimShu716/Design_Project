@@ -334,6 +334,8 @@ def train(opt, train_loader, model, epoch):
 
         # Update the model
         b_size, loss = model.train_emb(*train_data)
+        print("loss: {} type: {}".format(loss, type(loss)))
+        exit(0)
 
         loss_value.append(loss)
 
