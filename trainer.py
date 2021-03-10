@@ -187,8 +187,7 @@ def main():
         val_text_data_loader = data.get_txt_data_loader(caption_files['val'], rnn_vocab, bow2vec, opt.batch_size, opt.workers)
     elif opt.dataset == "tempuckey":
         #function input not consistent
-        data_loaders = data.get_tempuckey_data_loaders(
-            caption_files, visual_feats, rnn_vocab, bow2vec, opt.batch_size, opt.workers, opt.n_caption, video2frames=video2frames)
+        data_loaders = data.get_tempuckey_data_loaders()
     else:
         data_loaders = data.get_data_loaders(
             caption_files, visual_feats, rnn_vocab, bow2vec, opt.batch_size, opt.workers, opt.n_caption, video2frames=video2frames)
