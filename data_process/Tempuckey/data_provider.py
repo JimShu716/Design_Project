@@ -18,7 +18,7 @@ except AttributeError:
     torch._utils._rebuild_tensor_v2 = _rebuild_tensor_v2
 
 
-SAVE_PATH = '.\\feature\\'
+# SAVE_PATH = '.\\feature\\'
 SSP = '/usr/local/extstore01/zhouhan/Tempuckey/feature_somewhere'
 
 VIDEO_MAX_LEN = 100
@@ -29,7 +29,7 @@ def collate(data):
     #     data.sort(key=lambda x: len(x[1]), reverse=True)
     # videos, captions, cap_bows, idxs, cap_ids, video_ids = zip(*data)
 
-    videos, video_infos, captions, caption_lengths = zip(*data)
+    videos, video_infos, captions, bow = zip(*data)
 
     # Merge videos (convert tuple of 1D tensor to 4D tensor)
     frame_vec_len = len(videos[0][0][0])
@@ -41,19 +41,19 @@ def collate(data):
 
     for i, video in enumerate(videos):
         end = video_lengths[i]
-        video = [v[0] for v in video]
+        video = [v[0].float() for v in video]
         video = torch.stack(video)
         video_datas[i, :end, :] = video[:end, :]
         video_means[i, :] = torch.mean(video, 0)
         video_masks[i, :end] = 1.0
-
 
     # Merge captions (convert tuple of 1D tensor to 2D tensor)
     cap_lengths = [len(cap) for cap in captions]
     cap_datas = torch.zeros(len(captions), max(cap_lengths)).long()
     cap_masks = torch.zeros(len(captions), max(cap_lengths))
 
-    for i, cap in enumerate(captions):
+    for i, cap in enumerate(bow):
+        cap = torch.from_numpy(cap)
         end = cap_lengths[i]
         cap_datas[i, :end] = cap[:end]
         cap_masks[i, :end] = 1.0
@@ -86,7 +86,6 @@ class CPU_Unpickler(pickle.Unpickler,object):
             return lambda b: torch.load(io.BytesIO(b), map_location='cpu')
         else: return super(CPU_Unpickler,self).find_class(module, name)
 
-print (type(CPU_Unpickler))
 
 class TempuckeyDataSet(data.Dataset):
     def __init__(self, read_path=SSP):
@@ -107,9 +106,9 @@ class TempuckeyDataSet(data.Dataset):
         video = file['feature']
         video_info = file['video_info']
         caption = (file['captions'])
-        caption_length = np.count_nonzero(caption == 1.0)
+        bow = file['bow']
 
-        return video, video_info, caption, caption_length
+        return video, video_info, caption, bow
 
     def __len__(self):
         return self.length
@@ -135,10 +134,7 @@ def get_data_loader(batch_size=10, num_workers=2):
 
 
 if __name__ == '__main__':
-    #tt = TempuckeyDataSet(SSP)
-    #item = tt.__getitem__(0)
-    #print item
     data_loader = get_data_loader()
-    for i, (video_data, text_data) in enumerate(data_loader):
-        print i
+    for i, (video, caps) in enumerate(data_loader):
+        print 'enum ========== '+str(i)
     print 'test break pt.'
