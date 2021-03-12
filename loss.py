@@ -170,7 +170,7 @@ class ContrastiveLoss(nn.Module):
 
         scores = self.sim(im, s, t=temperature)
         batch_size = scores.shape[0]
-        print("=====================================",batch_size,"============================================")
+        #print("=====================================",batch_size,"============================================")
         mask = np.zeros([batch_size,batch_size])
                
         #this mask can handle both tempuckey and msrvtt
@@ -179,8 +179,8 @@ class ContrastiveLoss(nn.Module):
         for i,j in idx:
             mask[i:j,i:j] = 1                
             
-        m_match = torch.from_numpy(mask) == 0
-        m_cost = torch.from_numpy(mask) == 1
+        m_match = torch.from_numpy(mask) == 1
+        m_cost = torch.from_numpy(mask) == 0
         Imatch = Variable(m_match)
         Icost = Variable(m_cost)
         
