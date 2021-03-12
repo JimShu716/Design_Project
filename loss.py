@@ -170,6 +170,7 @@ class ContrastiveLoss(nn.Module):
 
         scores = self.sim(im, s, t=temperature)
         batch_size = scores.shape[0]
+        print("=====================================",batch_size,"============================================")
         mask = np.zeros([batch_size,batch_size])
                
         #this mask can handle both tempuckey and msrvtt
