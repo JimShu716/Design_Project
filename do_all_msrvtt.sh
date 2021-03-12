@@ -16,7 +16,7 @@ CUDA_VISIBLE_DEVICES=$gpu python trainer.py $trainCollection $valCollection $tes
                                             --concate $concate \
                                             --batch_size 120 \
                                             --loss_fun cont \
-                                            --measure cosine \
+                                            --measure exp \
                                             
 # evaluation (Notice that a script file do_test_${testCollection}.sh will be automatically generated when the training process ends.)
 ./do_test_dual_encoding_${testCollection}.sh
