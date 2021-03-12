@@ -28,7 +28,6 @@ from basic.generic_utils import Progbar
 
 from matplotlib import pyplot as plt
 
-import time
 plt.switch_backend('agg')
 
 
@@ -287,8 +286,7 @@ def main():
     plt.xticks(np.arange(len(loss_value)))
     plt.ylabel("Loss Value") 
     plt.plot(np.arange(len(loss_value)), loss_value) 
-    tmestp = time.localtime()
-    plt.savefig("./result_{}.png".format())
+    plt.savefig("./result_1.png")
 
     fout_val_metric_hist.close()
 
