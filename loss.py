@@ -231,6 +231,6 @@ class ContrastiveLoss(nn.Module):
             cost_im = Variable(torch.zeros(1), requires_grad = True).cuda()
             match_im = Variable(torch.zeros(1), requires_grad = True).cuda()        
         #MIL-NCE loss
-        return (cost_s.sum()+cost_im.sum()) #/ (cost_s.sum()+cost_im.sum() + match_s.sum() + match_im.sum())
+        return (cost_s.sum()+cost_im.sum()) / (cost_s.sum()+cost_im.sum() + match_s.sum() + match_im.sum())
         
 
