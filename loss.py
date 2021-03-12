@@ -210,9 +210,9 @@ class ContrastiveLoss(nn.Module):
                 
         if self.direction in ['t2i', 'all']:
                 # image retrieval
-            cost_im = scores.t().clamp(min=0)
+            cost_im = scores.clamp(min=0)
             cost_im = cost_im.masked_fill_(Imatch, 0)
-            match_im = scores.t().clamp(min=0)
+            match_im = scores.clamp(min=0)
             match_im = match_im.masked_fill_(Icost, 0) 
 
         #elif self.neg_sampling == 'progressive':
