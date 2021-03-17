@@ -10,7 +10,7 @@ concate=full
 # training
 gpu=0
 CUDA_VISIBLE_DEVICES=$gpu python trainer.py $trainCollection $valCollection $testCollection \
-                                            --dataset tempuckey
+                                            --dataset tempuckey \
                                             --overwrite 1 \
                                             --max_violation \
                                             --text_norm \
