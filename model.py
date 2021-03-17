@@ -307,12 +307,17 @@ class BaseModel(object):
 
         # measure accuracy and record loss
         self.optimizer.zero_grad()
-        loss = self.forward_loss(cap_emb, vid_emb)
+        pos_score, neg_score = self.forward_loss(cap_emb, vid_emb)
+        loss = neg_score / (neg_score+pos_score)
         
         if torch.__version__ == '0.3.1':
             loss_value = loss.data[0]
+            pos_value = pos_score.data[0]
+            neg_value = neg_score.data[0]
         else:
             loss_value = loss.item()
+            pos_value = pos_score.item()
+            neg_value = neg_score.item()
 
         # compute gradient and do SGD step
         loss.backward()
@@ -320,7 +325,7 @@ class BaseModel(object):
             clip_grad_norm(self.params, self.grad_clip)
         self.optimizer.step()
 
-        return vid_emb.size(0), loss_value
+        return vid_emb.size(0), loss_value, pos_value, neg_value
 
 
 

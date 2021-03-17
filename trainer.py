@@ -27,6 +27,7 @@ from basic.util import read_dict, AverageMeter, LogCollector
 from basic.generic_utils import Progbar
 
 from matplotlib import pyplot as plt
+
 plt.switch_backend('agg')
 
 
@@ -228,11 +229,17 @@ def main():
     fout_val_metric_hist = open(os.path.join(opt.logger_name, 'val_metric_hist.txt'), 'w')
 
     loss_value = []
+    pos_value = []
+    neg_value = []
     for epoch in range(opt.num_epochs):
         print('Epoch[{0} / {1}] LR: {2}'.format(epoch, opt.num_epochs, get_learning_rate(model.optimizer)[0]))
         print('-'*10)
         # train for one epoch
-        loss_value += train(opt, data_loaders['train'], model, epoch)
+        loss_t, pos_t, neg_t = train(opt, data_loaders['train'], model, epoch)
+
+        loss_value += loss_t
+        pos_value += pos_t
+        neg_value += neg_t
 
         # evaluate on validation set
         if testCollection.startswith('msvd'):
@@ -280,12 +287,32 @@ def main():
 
     #loss_value
     loss_value = np.array(loss_value)
-    plt.title("Loss") 
+    plt.title("Loss v. Time") 
     plt.xlabel("Epoch") 
     plt.xticks(np.arange(len(loss_value)))
     plt.ylabel("Loss Value") 
     plt.plot(np.arange(len(loss_value)), loss_value) 
-    plt.savefig("./result.png")
+    plt.savefig("./training_loss.png")
+    plt.close()
+
+    #pos_value
+    pos_value = np.array(pos_value)
+    plt.title("Pos Score v. Time") 
+    plt.xlabel("Epoch") 
+    plt.xticks(np.arange(len(pos_value)))
+    plt.ylabel("Pos Value") 
+    plt.plot(np.arange(len(pos_value)), pos_value) 
+    plt.savefig("./training_pos.png")
+
+    #neg_value
+    neg_value = np.array(neg_value)
+    plt.title("Neg Score v. Time") 
+    plt.xlabel("Epoch") 
+    plt.xticks(np.arange(len(neg_value)))
+    plt.ylabel("Neg Value") 
+    plt.plot(np.arange(len(neg_value)), neg_value) 
+    plt.savefig("./training_neg.png")
+    
 
     fout_val_metric_hist.close()
 
@@ -318,6 +345,8 @@ def train(opt, train_loader, model, epoch):
     data_time = AverageMeter()
     train_logger = LogCollector()
     loss_value = []
+    pos_value = []
+    neg_value = []
 
     # switch to train mode
     model.train_start()
@@ -333,9 +362,11 @@ def train(opt, train_loader, model, epoch):
         model.logger = train_logger
 
         # Update the model
-        b_size, loss = model.train_emb(*train_data)
+        b_size, loss, pos, neg = model.train_emb(*train_data)
 
         loss_value.append(loss)
+        pos_value.append(pos)
+        neg_value.append(neg)
 
         progbar.add(b_size, values=[('loss', loss)])
 
@@ -350,7 +381,7 @@ def train(opt, train_loader, model, epoch):
         tb_logger.log_value('data_time', data_time.val, step=model.Eiters)
         model.logger.tb_log(tb_logger, step=model.Eiters)
 
-        return loss_value
+        return loss_value, pos_value, neg_value
 
 
 def validate(opt, val_loader, model, measure='cosine'):
