@@ -1,0 +1,18 @@
+{
+  "rootpath": "../VisualSearch",
+  "collection": "msrvtt10ktrain",
+  "threshold": 5,
+  "overwrite": 0,
+  "text_style": "bow"
+}
+../VisualSearch/msrvtt10ktrain/TextData/vocabulary/bow/word_vocab_5.pkl exists.
+skip
+{
+  "rootpath": "../VisualSearch",
+  "collection": "msrvtt10ktrain",
+  "threshold": 5,
+  "overwrite": 0,
+  "text_style": "rnn"
+}
+../VisualSearch/msrvtt10ktrain/TextData/vocabulary/rnn/word_vocab_5.pkl exists.
+skip
