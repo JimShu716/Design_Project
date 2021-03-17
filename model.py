@@ -1,8 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.init
-import torchvision.model
-s as models
+import torchvision.models as models
 from torch.autograd import Variable
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 import torch.backends.cudnn as cudnn
