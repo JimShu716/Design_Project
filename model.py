@@ -284,12 +284,13 @@ class BaseModel(object):
     def forward_loss(self, cap_emb, vid_emb, *agrs, **kwargs):
         """Compute the loss given pairs of video and caption embeddings
         """
-        loss = self.criterion(cap_emb, vid_emb)
+        pos, neg = self.criterion(cap_emb, vid_emb)
+        loss = neg/(pos+neg)
         if torch.__version__ == '0.3.1':  # loss.item() for 0.4.0, loss.data[0] for 0.3.1
             self.logger.update('Le', loss.data[0], vid_emb.size(0)) 
         else:
             self.logger.update('Le', loss.item(), vid_emb.size(0)) 
-        return loss
+        return loss, pos, neg
 
     def train_emb(self, videos, captions, lengths, *args):
         """One training step given videos and captions.
@@ -307,8 +308,7 @@ class BaseModel(object):
 
         # measure accuracy and record loss
         self.optimizer.zero_grad()
-        pos_score, neg_score = self.forward_loss(cap_emb, vid_emb)
-        loss = neg_score / (neg_score+pos_score)
+        loss, pos_score, neg_score = self.forward_loss(cap_emb, vid_emb)
         
         if torch.__version__ == '0.3.1':
             loss_value = loss.data[0]
