@@ -27,6 +27,7 @@ from basic.util import read_dict, AverageMeter, LogCollector
 from basic.generic_utils import Progbar
 
 from matplotlib import pyplot as plt
+
 plt.switch_backend('agg')
 
 
@@ -285,7 +286,7 @@ def main():
     plt.xticks(np.arange(len(loss_value)))
     plt.ylabel("Loss Value") 
     plt.plot(np.arange(len(loss_value)), loss_value) 
-    plt.savefig("./result.png")
+    plt.savefig("./result_1.png")
 
     fout_val_metric_hist.close()
 
