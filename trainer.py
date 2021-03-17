@@ -303,6 +303,7 @@ def main():
     plt.ylabel("Pos Value") 
     plt.plot(np.arange(len(pos_value)), pos_value) 
     plt.savefig("./training_pos.png")
+    plt.close()
 
     #neg_value
     neg_value = np.array(neg_value)
@@ -312,7 +313,7 @@ def main():
     plt.ylabel("Neg Value") 
     plt.plot(np.arange(len(neg_value)), neg_value) 
     plt.savefig("./training_neg.png")
-    
+    plt.close()
 
     fout_val_metric_hist.close()
 
