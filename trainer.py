@@ -232,6 +232,7 @@ def main():
     for epoch in range(opt.num_epochs):
         print('Epoch[{0} / {1}] LR: {2}'.format(epoch, opt.num_epochs, get_learning_rate(model.optimizer)[0]))
         print('-'*10)
+
         # train for one epoch
         loss_value += train(opt, data_loaders['train'], model, epoch)
 
