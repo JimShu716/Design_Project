@@ -179,7 +179,7 @@ class ContrastiveLoss(nn.Module):
             n = self.start_idx[1:]
             idx = zip(self.start_idx,n)
             for i,j in idx:
-            mask[i:j,i:j] = 1  
+                mask[i:j,i:j] = 1  
                       
             
         m_match = torch.from_numpy(mask) == 1
