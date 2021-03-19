@@ -284,7 +284,7 @@ class BaseModel(object):
     def forward_loss(self, cap_emb, vid_emb, cap_ids=None, *agrs, **kwargs):
         """Compute the loss given pairs of video and caption embeddings
         """
-        pos, neg = self.criterion(cap_emb, vid_emb, cap_ids=None)
+        pos, neg = self.criterion(cap_emb, vid_emb, cap_ids)
         loss = neg#/(pos+neg)
         if torch.__version__ == '0.3.1':  # loss.item() for 0.4.0, loss.data[0] for 0.3.1
             self.logger.update('Le', loss.data[0], vid_emb.size(0)) 
@@ -298,7 +298,7 @@ class BaseModel(object):
         self.Eiters += 1
         self.logger.update('Eit', self.Eiters)
         self.logger.update('lr', self.optimizer.param_groups[0]['lr'])
-        print(cap_ids)
+        #print(cap_ids)
         
         # compute the embeddings
         vid_emb, cap_emb = self.forward_emb(videos, captions, volatile=False)

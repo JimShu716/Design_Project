@@ -1,0 +1,86 @@
+{
+  "threshold": 5, 
+  "text_style": "bow", 
+  "rootpath": "../VisualSearch", 
+  "collection": "msrvtt10ktrain", 
+  "overwrite": 0
+}
+../VisualSearch/msrvtt10ktrain/TextData/vocabulary/bow/word_vocab_5.pkl exists.
+skip
+{
+  "threshold": 5, 
+  "text_style": "rnn", 
+  "rootpath": "../VisualSearch", 
+  "collection": "msrvtt10ktrain", 
+  "overwrite": 0
+}
+../VisualSearch/msrvtt10ktrain/TextData/vocabulary/rnn/word_vocab_5.pkl exists.
+skip
+<type 'type'>
+{
+  "grad_clip": 2, 
+  "word_dim": 500, 
+  "text_mapping_layers": "0-2048", 
+  "num_epochs": 50, 
+  "dataset": "msrvtt", 
+  "text_kernel_sizes": "2-3-4", 
+  "measure": "exp", 
+  "lr_decay_rate": 0.99, 
+  "n_caption": 20, 
+  "overwrite": 1, 
+  "workers": 5, 
+  "text_norm": true, 
+  "neg_sampling": "default", 
+  "log_step": 10, 
+  "visual_norm": true, 
+  "max_violation": true, 
+  "visual_feature": "resnet-152-img1k-flatten0_outputos", 
+  "trainCollection": "msrvtt10ktrain", 
+  "learning_rate": 0.0001, 
+  "batch_padding": 0, 
+  "direction": "all", 
+  "optimizer": "adam", 
+  "resume": "", 
+  "dropout": 0.2, 
+  "visual_kernel_num": 512, 
+  "rootpath": "../VisualSearch", 
+  "batch_size": 120, 
+  "cv_name": "cvpr_2019", 
+  "text_kernel_num": 512, 
+  "testCollection": "msrvtt10ktest", 
+  "visual_mapping_layers": "0-2048", 
+  "cost_style": "sum", 
+  "text_rnn_size": 512, 
+  "vocab": "word_vocab_5", 
+  "loss_fun": "cont", 
+  "visual_rnn_size": 1024, 
+  "visual_kernel_sizes": "2-3-4-5", 
+  "concate": "full", 
+  "postfix": "runs_0", 
+  "val_metric": "recall", 
+  "valCollection": "msrvtt10kval", 
+  "model": "dual_encoding", 
+  "margin": 0.2
+}
+../VisualSearch/msrvtt10ktrain/cvpr_2019/msrvtt10kval/dual_encoding_concate_full_dp_0.2_measure_exp/vocab_word_vocab_5_word_dim_500_text_rnn_size_512_text_norm_True_kernel_sizes_2-3-4_num_512/visual_feature_resnet-152-img1k-flatten0_outputos_visual_rnn_size_1024_visual_norm_True_kernel_sizes_2-3-4-5_num_512/mapping_text_0-2048_img_0-2048/loss_func_cont_margin_0.2_direction_all_max_violation_True_cost_style_sum/optimizer_adam_lr_0.0001_decay_0.99_grad_clip_2.0_val_metric_recall/runs_0
+../VisualSearch/msrvtt10ktrain/cvpr_2019/msrvtt10kval/dual_encoding_concate_full_dp_0.2_measure_exp/vocab_word_vocab_5_word_dim_500_text_rnn_size_512_text_norm_True_kernel_sizes_2-3-4_num_512/visual_feature_resnet-152-img1k-flatten0_outputos_visual_rnn_size_1024_visual_norm_True_kernel_sizes_2-3-4-5_num_512/mapping_text_0-2048_img_0-2048/loss_func_cont_margin_0.2_direction_all_max_violation_True_cost_style_sum/optimizer_adam_lr_0.0001_decay_0.99_grad_clip_2.0_val_metric_recall/runs_0/model_best.pth.tar exists.
+overwrite
+../VisualSearch/msrvtt10ktrain/cvpr_2019/msrvtt10kval/dual_encoding_concate_full_dp_0.2_measure_exp/vocab_word_vocab_5_word_dim_500_text_rnn_size_512_text_norm_True_kernel_sizes_2-3-4_num_512/visual_feature_resnet-152-img1k-flatten0_outputos_visual_rnn_size_1024_visual_norm_True_kernel_sizes_2-3-4-5_num_512/mapping_text_0-2048_img_0-2048/loss_func_cont_margin_0.2_direction_all_max_violation_True_cost_style_sum/optimizer_adam_lr_0.0001_decay_0.99_grad_clip_2.0_val_metric_recall/runs_0/val_metric.txt exists.
+overwrite
+[BigFile] 305462x2048 instances loaded from ../VisualSearch/msrvtt10ktrain/FeatureData/resnet-152-img1k-flatten0_outputos
+[BigFile] 305462x2048 instances loaded from ../VisualSearch/msrvtt10kval/FeatureData/resnet-152-img1k-flatten0_outputos
+[BigFile] 1743364x500 instances loaded from ../VisualSearch/word2vec/flickr/vec500flickr30m
+('getting pre-trained parameter for word embedding initialization', (7811, 500))
+=======================Data Loaded=================================
+>>>>>>>>>>>>>>>>>>>>
+Contrastive Loss Used
+Epoch[0 / 50] LR: 0.0001
+----------
+['video2636#enc#2', 'video2636#enc#0', 'video2636#enc#19', 'video1844#enc#7', 'video3513#enc#7', 'video2636#enc#1', 'video2636#enc#5', 'video2960#enc#0', 'video2960#enc#3', 'video2960#enc#7', 'video2960#enc#18', 'video2636#enc#14', 'video4311#enc#14', 'video1844#enc#1', 'video3513#enc#1', 'video3513#enc#15', 'video2960#enc#11', 'video3513#enc#4', 'video2960#enc#1', 'video2960#enc#5', 'video2960#enc#6', 'video2960#enc#19', 'video2636#enc#4', 'video1844#enc#4', 'video3513#enc#0', 'video3513#enc#5', 'video3513#enc#19', 'video2960#enc#12', 'video2636#enc#12', 'video2213#enc#16', 'video2960#enc#10', 'video2960#enc#14', 'video2960#enc#16', 'video2636#enc#3', 'video2636#enc#10', 'video2636#enc#11', 'video2636#enc#13', 'video2213#enc#0', 'video2213#enc#6', 'video2213#enc#19', 'video3513#enc#9', 'video3513#enc#16', 'video2960#enc#2', 'video2960#enc#4', 'video2960#enc#8', 'video2960#enc#9', 'video2960#enc#13', 'video2960#enc#17', 'video2636#enc#8', 'video1844#enc#9', 'video1844#enc#14', 'video2213#enc#17', 'video3513#enc#10', 'video3513#enc#18', 'video2960#enc#15', 'video2636#enc#7', 'video2636#enc#9', 'video2636#enc#15', 'video2636#enc#18', 'video4311#enc#1', 'video4311#enc#3', 'video4311#enc#4', 'video4311#enc#13', 'video1844#enc#0', 'video1844#enc#5', 'video1844#enc#8', 'video1844#enc#19', 'video2213#enc#1', 'video2213#enc#7', 'video2213#enc#8', 'video2213#enc#11', 'video3513#enc#13', 'video2636#enc#6', 'video2636#enc#16', 'video2636#enc#17', 'video4311#enc#0', 'video4311#enc#11', 'video4311#enc#18', 'video4311#enc#19', 'video1844#enc#3', 'video1844#enc#6', 'video1844#enc#10', 'video1844#enc#11', 'video1844#enc#12', 'video1844#enc#13', 'video1844#enc#18', 'video2213#enc#5', 'video2213#enc#13', 'video2213#enc#18', 'video3513#enc#2', 'video3513#enc#3', 'video3513#enc#8', 'video3513#enc#11', 'video3513#enc#14', 'video3513#enc#17', 'video4311#enc#2', 'video4311#enc#5', 'video4311#enc#6', 'video4311#enc#9', 'video4311#enc#10', 'video4311#enc#15', 'video4311#enc#16', 'video4311#enc#17', 'video1844#enc#2', 'video1844#enc#16', 'video1844#enc#17', 'video2213#enc#2', 'video2213#enc#9', 'video2213#enc#10', 'video2213#enc#14', 'video2213#enc#15', 'video3513#enc#6', 'video3513#enc#12', 'video4311#enc#7', 'video4311#enc#8', 'video4311#enc#12', 'video1844#enc#15', 'video2213#enc#3', 'video2213#enc#4', 'video2213#enc#12']
+[[1. 0. 0. ... 0. 0. 0.]
+ [0. 1. 0. ... 0. 0. 0.]
+ [0. 0. 1. ... 0. 0. 0.]
+ ...
+ [0. 0. 0. ... 1. 0. 0.]
+ [0. 0. 0. ... 0. 1. 0.]
+ [0. 0. 0. ... 0. 0. 1.]]
