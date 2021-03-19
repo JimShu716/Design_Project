@@ -172,7 +172,7 @@ class ContrastiveLoss(nn.Module):
         batch_size = scores.shape[0]
         #print("=====================================",batch_size,"============================================")
         mask = np.zeros([batch_size,batch_size])
-        if(cap_ids!=None):
+        if(cap_ids):
             print(cap_ids)
         else:
             #this mask can handle both tempuckey and msrvtt
