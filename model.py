@@ -284,6 +284,7 @@ class BaseModel(object):
     def forward_loss(self, cap_emb, vid_emb, cap_ids=None, *agrs, **kwargs):
         """Compute the loss given pairs of video and caption embeddings
         """
+        print(cap_ids)
         pos, neg = self.criterion(cap_emb, vid_emb, cap_ids)
         loss = neg#/(pos+neg)
         if torch.__version__ == '0.3.1':  # loss.item() for 0.4.0, loss.data[0] for 0.3.1
