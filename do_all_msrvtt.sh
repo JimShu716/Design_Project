@@ -9,7 +9,8 @@ concate=full
 # training
 gpu=0
 CUDA_VISIBLE_DEVICES=$gpu python trainer.py $trainCollection $valCollection $testCollection \
-                                            --overwrite 1 \
+                                            --logtimestamp $1 \
+					--overwrite 1 \
                                             --max_violation \
                                             --text_norm \
                                             --visual_norm \
