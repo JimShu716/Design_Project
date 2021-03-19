@@ -54,7 +54,7 @@ class TripletLoss(nn.Module):
 
         self.max_violation = max_violation
 
-    def forward(self, s, im):
+    def forward(self, s, im, *args):
         """
             s.shape = (128, 2048)
             im.shape = (128, 2048)
@@ -158,7 +158,7 @@ class ContrastiveLoss(nn.Module):
         else:
             raise NotImplemented
 
-    def forward(self, s, im, temperature=0.75, alpha=0):
+    def forward(self, s, im, temperature=0.75, alpha=0, cap_ids=None):
         """
             s: a 2d tensor with a shape of (batch_size, feature_size) Note: for original dual encoder, it is (batch_size, 2048)
             im: a 2d tensor with a shape of (batch_size, feature_size) Note: for original dual encoder, it is (batch_size, 2048)
@@ -172,12 +172,15 @@ class ContrastiveLoss(nn.Module):
         batch_size = scores.shape[0]
         #print("=====================================",batch_size,"============================================")
         mask = np.zeros([batch_size,batch_size])
-               
-        #this mask can handle both tempuckey and msrvtt
-        n = self.start_idx[1:]
-        idx = zip(self.start_idx,n)
-        for i,j in idx:
-            mask[i:j,i:j] = 1                
+        if(cap_ids!=None){
+            print(cap_ids)
+        } else {
+            #this mask can handle both tempuckey and msrvtt
+            n = self.start_idx[1:]
+            idx = zip(self.start_idx,n)
+            for i,j in idx:
+            mask[i:j,i:j] = 1  
+        }              
             
         m_match = torch.from_numpy(mask) == 1
         m_cost = torch.from_numpy(mask) == 0
@@ -231,7 +234,7 @@ class ContrastiveLoss(nn.Module):
             cost_im = Variable(torch.zeros(1), requires_grad = True).cuda()
             match_im = Variable(torch.zeros(1), requires_grad = True).cuda()        
         #MIL-NCE loss
-        
+       
         neg_score = cost_s.sum()+cost_im.sum()
         pos_score = match_s.sum() + match_im.sum()
         
