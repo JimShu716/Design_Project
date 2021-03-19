@@ -183,11 +183,10 @@ class ContrastiveLoss(nn.Module):
             for i in range(cap_ids.shape[0]):
                 for j in range(cap_ids.shape[0]):
                     mask[i][j] = np.where(cap_ids[j].split("#")[0]==v_ids[i],1,0)
-             print(mask)
         else:
             #if caption ids are not loaded, only positive on the diagonal
             np.fill_diagonal(mask, 1)
-            
+       # print(mask)    
         m_match = torch.from_numpy(mask) == 1
         m_cost = torch.from_numpy(mask) == 0
         Imatch = Variable(m_match)
