@@ -19,4 +19,4 @@ CUDA_VISIBLE_DEVICES=$gpu python trainer.py $trainCollection $valCollection $tes
                                             --measure exp \
                                             
 # evaluation (Notice that a script file do_test_${testCollection}.sh will be automatically generated when the training process ends.)
-./do_test_dual_encoding_${testCollection}.sh
+#./do_test_dual_encoding_${testCollection}.sh

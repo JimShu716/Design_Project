@@ -174,6 +174,7 @@ class ContrastiveLoss(nn.Module):
         mask = np.zeros([batch_size,batch_size])
         
         v_ids = []
+        print("in loss: cap_ids", cap_ids)
         if(cap_ids):
             print("cap_ids",cap_ids)
             cap_ids = np.array(cap_ids)
