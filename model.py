@@ -299,6 +299,8 @@ class BaseModel(object):
         self.logger.update('Eit', self.Eiters)
         self.logger.update('lr', self.optimizer.param_groups[0]['lr'])
 
+        print(cap_ids)
+
         # compute the embeddings
         vid_emb, cap_emb = self.forward_emb(videos, captions, volatile=False)
 
