@@ -178,7 +178,7 @@ class ContrastiveLoss(nn.Module):
             cap_ids = np.array(cap_ids)
             v_ids = np.empty(cap_ids.shape, dtype="<U10")#S10 generates b in front 
             for index in range(cap_ids.shape[0]):
-            v_ids[index] = cap_ids[index].split("#")[0]
+                v_ids[index] = cap_ids[index].split("#")[0]
             for i in range(cap_ids.shape[0]):
                 for j in range(cap_ids.shape[0]):
                     mask[i][j] = np.where(cap_ids[j].split("#")[0]==v_ids[i],1,0)
