@@ -281,10 +281,10 @@ class BaseModel(object):
         self.text_encoding.eval()
 
 
-    def forward_loss(self, cap_emb, vid_emb, *agrs, **kwargs):
+    def forward_loss(self, cap_emb, vid_emb, cap_ids=None, *agrs, **kwargs):
         """Compute the loss given pairs of video and caption embeddings
         """
-        pos, neg = self.criterion(cap_emb, vid_emb)
+        pos, neg = self.criterion(cap_emb, vid_emb, cap_ids=None)
         loss = neg/(pos+neg)
         if torch.__version__ == '0.3.1':  # loss.item() for 0.4.0, loss.data[0] for 0.3.1
             self.logger.update('Le', loss.data[0], vid_emb.size(0)) 
@@ -292,7 +292,7 @@ class BaseModel(object):
             self.logger.update('Le', loss.item(), vid_emb.size(0)) 
         return loss, pos, neg
 
-    def train_emb(self, videos, captions, lengths, *args):
+    def train_emb(self, videos, captions, lengths, cap_ids, *args):
         """One training step given videos and captions.
         """
         self.Eiters += 1
@@ -300,7 +300,7 @@ class BaseModel(object):
         self.logger.update('lr', self.optimizer.param_groups[0]['lr'])
 
         # compute the embeddings
-        vid_emb, cap_emb = self.forward_emb(videos, captions, False)
+        vid_emb, cap_emb = self.forward_emb(videos, captions, volatile=False)
 
         # Output shape for MSR_VTT:
         # vid_emb.shape = torch.Size([128, 2048])
@@ -308,7 +308,7 @@ class BaseModel(object):
 
         # measure accuracy and record loss
         self.optimizer.zero_grad()
-        loss, pos_score, neg_score = self.forward_loss(cap_emb, vid_emb)
+        loss, pos_score, neg_score = self.forward_loss(cap_emb, vid_emb, cap_ids=cap_ids)
         
         if torch.__version__ == '0.3.1':
             loss_value = loss.data[0]
