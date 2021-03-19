@@ -172,15 +172,19 @@ class ContrastiveLoss(nn.Module):
         batch_size = scores.shape[0]
         #print("=====================================",batch_size,"============================================")
         mask = np.zeros([batch_size,batch_size])
+        
+        v_ids = []
         if(cap_ids):
-            print(cap_ids)
+            cap_ids = np.array(cap_ids)
+            v_ids = np.empty(cap_ids.shape, dtype="<U10")#S10 generates b in front 
+            for index in range(cap_ids.shape[0]):
+            v_ids[index] = cap_ids[index].split("#")[0]
+            for i in range(cap_ids.shape[0]):
+                for j in range(cap_ids.shape[0]):
+                    mask[i][j] = np.where(cap_ids[j].split("#")[0]==v_ids[i],1,0)
         else:
-            #this mask can handle both tempuckey and msrvtt
-            n = self.start_idx[1:]
-            idx = zip(self.start_idx,n)
-            for i,j in idx:
-                mask[i:j,i:j] = 1  
-                      
+            #if caption ids are not loaded, only positive on the diagonal
+            np.fill_diagonal(mask, 1)
             
         m_match = torch.from_numpy(mask) == 1
         m_cost = torch.from_numpy(mask) == 0
