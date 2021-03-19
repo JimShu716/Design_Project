@@ -293,7 +293,7 @@ def main():
     plt.xticks(np.arange(len(loss_value)))
     plt.ylabel("Loss Value") 
     plt.plot(np.arange(len(loss_value)), loss_value) 
-    plt.savefig("./training_loss.png")
+    plt.savefig("./plots/training_loss_03170245.png")
     plt.close()
 
     #pos_value
@@ -303,7 +303,7 @@ def main():
     plt.xticks(np.arange(len(pos_value)))
     plt.ylabel("Pos Value") 
     plt.plot(np.arange(len(pos_value)), pos_value) 
-    plt.savefig("./training_pos.png")
+    plt.savefig("./plots/training_pos_03170245.png")
     plt.close()
 
     #neg_value
@@ -313,7 +313,7 @@ def main():
     plt.xticks(np.arange(len(neg_value)))
     plt.ylabel("Neg Value") 
     plt.plot(np.arange(len(neg_value)), neg_value) 
-    plt.savefig("./training_neg.png")
+    plt.savefig("./plots/training_neg_03170245.png")
     plt.close()
 
     fout_val_metric_hist.close()
