@@ -172,15 +172,15 @@ class ContrastiveLoss(nn.Module):
         batch_size = scores.shape[0]
         #print("=====================================",batch_size,"============================================")
         mask = np.zeros([batch_size,batch_size])
-        if(cap_ids!=None){
+        if(cap_ids!=None):
             print(cap_ids)
-        } else {
+        else:
             #this mask can handle both tempuckey and msrvtt
             n = self.start_idx[1:]
             idx = zip(self.start_idx,n)
             for i,j in idx:
             mask[i:j,i:j] = 1  
-        }              
+                      
             
         m_match = torch.from_numpy(mask) == 1
         m_cost = torch.from_numpy(mask) == 0
