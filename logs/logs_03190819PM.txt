@@ -1,0 +1,534 @@
+{
+  "threshold": 5, 
+  "text_style": "bow", 
+  "rootpath": "../VisualSearch", 
+  "collection": "msrvtt10ktrain", 
+  "overwrite": 0
+}
+../VisualSearch/msrvtt10ktrain/TextData/vocabulary/bow/word_vocab_5.pkl exists.
+skip
+{
+  "threshold": 5, 
+  "text_style": "rnn", 
+  "rootpath": "../VisualSearch", 
+  "collection": "msrvtt10ktrain", 
+  "overwrite": 0
+}
+../VisualSearch/msrvtt10ktrain/TextData/vocabulary/rnn/word_vocab_5.pkl exists.
+skip
+<type 'type'>
+{
+  "grad_clip": 2, 
+  "word_dim": 500, 
+  "text_mapping_layers": "0-2048", 
+  "num_epochs": 50, 
+  "dataset": "msrvtt", 
+  "logtimestamp": "03190819PM", 
+  "text_kernel_sizes": "2-3-4", 
+  "measure": "exp", 
+  "lr_decay_rate": 0.99, 
+  "n_caption": 20, 
+  "overwrite": 1, 
+  "workers": 5, 
+  "text_norm": true, 
+  "neg_sampling": "default", 
+  "log_step": 10, 
+  "visual_norm": true, 
+  "max_violation": true, 
+  "visual_feature": "resnet-152-img1k-flatten0_outputos", 
+  "trainCollection": "msrvtt10ktrain", 
+  "learning_rate": 0.0001, 
+  "batch_padding": 0, 
+  "direction": "all", 
+  "optimizer": "adam", 
+  "resume": "", 
+  "dropout": 0.2, 
+  "visual_kernel_num": 512, 
+  "rootpath": "../VisualSearch", 
+  "batch_size": 120, 
+  "cv_name": "cvpr_2019", 
+  "text_kernel_num": 512, 
+  "testCollection": "msrvtt10ktest", 
+  "visual_mapping_layers": "0-2048", 
+  "cost_style": "sum", 
+  "text_rnn_size": 512, 
+  "vocab": "word_vocab_5", 
+  "loss_fun": "mrl", 
+  "visual_rnn_size": 1024, 
+  "visual_kernel_sizes": "2-3-4-5", 
+  "concate": "full", 
+  "postfix": "runs_0", 
+  "val_metric": "recall", 
+  "valCollection": "msrvtt10kval", 
+  "model": "dual_encoding", 
+  "margin": 0.2
+}
+../VisualSearch/msrvtt10ktrain/cvpr_2019/msrvtt10kval/dual_encoding_concate_full_dp_0.2_measure_exp/vocab_word_vocab_5_word_dim_500_text_rnn_size_512_text_norm_True_kernel_sizes_2-3-4_num_512/visual_feature_resnet-152-img1k-flatten0_outputos_visual_rnn_size_1024_visual_norm_True_kernel_sizes_2-3-4-5_num_512/mapping_text_0-2048_img_0-2048/loss_func_mrl_margin_0.2_direction_all_max_violation_True_cost_style_sum/optimizer_adam_lr_0.0001_decay_0.99_grad_clip_2.0_val_metric_recall/runs_0
+[BigFile] 305462x2048 instances loaded from ../VisualSearch/msrvtt10ktrain/FeatureData/resnet-152-img1k-flatten0_outputos
+[BigFile] 305462x2048 instances loaded from ../VisualSearch/msrvtt10kval/FeatureData/resnet-152-img1k-flatten0_outputos
+[BigFile] 1743364x500 instances loaded from ../VisualSearch/word2vec/flickr/vec500flickr30m
+('getting pre-trained parameter for word embedding initialization', (7811, 500))
+=======================Data Loaded=================================
+Epoch[0 / 50] LR: 0.0001
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 47:00 - loss: 61.1647 * Text to video:
+ * r_1_5_10: [0.151, 0.865, 1.851]
+ * medr, meanr: [228.0, 234.397]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.402, 1.207, 2.012]
+ * medr, meanr: [383.0, 667.507]
+ * ----------
+ * Current perf: 6.48893360161
+ * Best perf: 6.48893360161
+
+Epoch[1 / 50] LR: 9.9e-05
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 12:01 - loss: 59.0743 * Text to video:
+ * r_1_5_10: [0.181, 0.915, 1.982]
+ * medr, meanr: [224.0, 231.065]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.402, 1.006, 2.213]
+ * medr, meanr: [354.0, 632.855]
+ * ----------
+ * Current perf: 6.70020120724
+ * Best perf: 6.70020120724
+
+Epoch[2 / 50] LR: 9.801e-05
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 12:33 - loss: 58.5406 * Text to video:
+ * r_1_5_10: [0.211, 0.915, 2.062]
+ * medr, meanr: [219.0, 228.377]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.805, 1.408, 2.213]
+ * medr, meanr: [361.0, 603.495]
+ * ----------
+ * Current perf: 7.61569416499
+ * Best perf: 7.61569416499
+
+Epoch[3 / 50] LR: 9.70299e-05
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 15:14 - loss: 58.3949 * Text to video:
+ * r_1_5_10: [0.241, 1.046, 2.103]
+ * medr, meanr: [219.0, 227.607]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.604, 1.408, 2.414]
+ * medr, meanr: [368.0, 593.911]
+ * ----------
+ * Current perf: 7.81690140845
+ * Best perf: 7.81690140845
+
+Epoch[4 / 50] LR: 9.6059601e-05
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 12:31 - loss: 57.2964 * Text to video:
+ * r_1_5_10: [0.272, 1.066, 2.364]
+ * medr, meanr: [217.0, 226.834]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.604, 1.61, 2.817]
+ * medr, meanr: [346.0, 603.924]
+ * ----------
+ * Current perf: 8.7323943662
+ * Best perf: 8.7323943662
+
+Epoch[5 / 50] LR: 9.509900499e-05
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 14:53 - loss: 57.3139 * Text to video:
+ * r_1_5_10: [0.302, 1.026, 2.414]
+ * medr, meanr: [217.0, 226.695]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.604, 1.408, 2.213]
+ * medr, meanr: [365.0, 616.01]
+ * ----------
+ * Current perf: 7.96780684105
+ * Best perf: 8.7323943662
+
+Epoch[6 / 50] LR: 4.70740074701e-05
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 14:49 - loss: 56.7166 * Text to video:
+ * r_1_5_10: [0.312, 1.087, 2.505]
+ * medr, meanr: [216.0, 226.313]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.604, 1.408, 2.012]
+ * medr, meanr: [368.0, 619.889]
+ * ----------
+ * Current perf: 7.92756539235
+ * Best perf: 8.7323943662
+
+Epoch[7 / 50] LR: 4.66032673953e-05
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 11:48 - loss: 58.1843 * Text to video:
+ * r_1_5_10: [0.332, 1.177, 2.505]
+ * medr, meanr: [216.0, 225.786]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.402, 1.207, 2.213]
+ * medr, meanr: [360.0, 618.592]
+ * ----------
+ * Current perf: 7.8370221328
+ * Best perf: 8.7323943662
+
+Epoch[8 / 50] LR: 4.61372347214e-05
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 12:16 - loss: 56.6427 * Text to video:
+ * r_1_5_10: [0.302, 1.217, 2.535]
+ * medr, meanr: [214.0, 224.846]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.805, 1.61, 2.817]
+ * medr, meanr: [371.0, 620.093]
+ * ----------
+ * Current perf: 9.28571428571
+ * Best perf: 9.28571428571
+
+Epoch[9 / 50] LR: 4.56758623742e-05
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 13:38 - loss: 56.7928 * Text to video:
+ * r_1_5_10: [0.312, 1.247, 2.565]
+ * medr, meanr: [215.0, 224.231]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [1.006, 1.61, 2.616]
+ * medr, meanr: [370.0, 624.298]
+ * ----------
+ * Current perf: 9.35613682093
+ * Best perf: 9.35613682093
+
+Epoch[10 / 50] LR: 4.52191037504e-05
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 13:51 - loss: 56.3519 * Text to video:
+ * r_1_5_10: [0.262, 1.278, 2.666]
+ * medr, meanr: [213.0, 223.894]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.604, 1.61, 3.622]
+ * medr, meanr: [386.0, 626.787]
+ * ----------
+ * Current perf: 10.0402414487
+ * Best perf: 10.0402414487
+
+Epoch[11 / 50] LR: 4.47669127129e-05
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 12:42 - loss: 56.4634 * Text to video:
+ * r_1_5_10: [0.241, 1.298, 2.757]
+ * medr, meanr: [213.0, 223.786]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.604, 1.61, 3.622]
+ * medr, meanr: [382.0, 624.602]
+ * ----------
+ * Current perf: 10.1307847082
+ * Best perf: 10.1307847082
+
+Epoch[12 / 50] LR: 4.43192435858e-05
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 12:44 - loss: 57.2175 * Text to video:
+ * r_1_5_10: [0.252, 1.318, 2.746]
+ * medr, meanr: [211.0, 223.631]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.604, 1.811, 3.421]
+ * medr, meanr: [375.0, 622.195]
+ * ----------
+ * Current perf: 10.1509054326
+ * Best perf: 10.1509054326
+
+Epoch[13 / 50] LR: 4.38760511499e-05
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 12:42 - loss: 56.1772 * Text to video:
+ * r_1_5_10: [0.282, 1.268, 2.626]
+ * medr, meanr: [211.0, 223.741]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.604, 1.811, 3.421]
+ * medr, meanr: [375.0, 622.245]
+ * ----------
+ * Current perf: 10.0100603622
+ * Best perf: 10.1509054326
+
+Epoch[14 / 50] LR: 2.17186453192e-05
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 14:42 - loss: 56.5510 * Text to video:
+ * r_1_5_10: [0.282, 1.308, 2.586]
+ * medr, meanr: [212.0, 223.966]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.402, 2.012, 3.622]
+ * medr, meanr: [363.0, 622.833]
+ * ----------
+ * Current perf: 10.2112676056
+ * Best perf: 10.2112676056
+
+Epoch[15 / 50] LR: 2.1501458866e-05
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 12:40 - loss: 57.1194 * Text to video:
+ * r_1_5_10: [0.231, 1.348, 2.596]
+ * medr, meanr: [213.0, 224.213]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.805, 2.213, 3.823]
+ * medr, meanr: [362.0, 624.853]
+ * ----------
+ * Current perf: 11.0160965795
+ * Best perf: 11.0160965795
+
+Epoch[16 / 50] LR: 2.12864442774e-05
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 12:51 - loss: 56.6608 * Text to video:
+ * r_1_5_10: [0.241, 1.388, 2.525]
+ * medr, meanr: [213.0, 224.59]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.805, 2.414, 3.622]
+ * medr, meanr: [364.0, 626.433]
+ * ----------
+ * Current perf: 10.9959758551
+ * Best perf: 11.0160965795
+
+Epoch[17 / 50] LR: 1.05367899173e-05
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 13:05 - loss: 55.8606 * Text to video:
+ * r_1_5_10: [0.231, 1.388, 2.475]
+ * medr, meanr: [214.0, 224.918]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.604, 2.012, 3.421]
+ * medr, meanr: [366.0, 626.755]
+ * ----------
+ * Current perf: 10.1307847082
+ * Best perf: 11.0160965795
+
+Epoch[18 / 50] LR: 1.04314220181e-05
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 11:49 - loss: 56.1982 * Text to video:
+ * r_1_5_10: [0.231, 1.378, 2.515]
+ * medr, meanr: [214.0, 225.286]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.805, 1.811, 3.622]
+ * medr, meanr: [368.0, 627.105]
+ * ----------
+ * Current perf: 10.3621730382
+ * Best perf: 11.0160965795
+
+Epoch[19 / 50] LR: 1.03271077979e-05
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 12:08 - loss: 56.1651 * Text to video:
+ * r_1_5_10: [0.231, 1.358, 2.586]
+ * medr, meanr: [215.0, 225.554]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.402, 2.012, 3.823]
+ * medr, meanr: [371.0, 627.596]
+ * ----------
+ * Current perf: 10.4124748491
+ * Best perf: 11.0160965795
+
+Epoch[20 / 50] LR: 5.11191835998e-06
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 12:13 - loss: 55.1647 * Text to video:
+ * r_1_5_10: [0.241, 1.348, 2.555]
+ * medr, meanr: [216.0, 225.733]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.604, 2.012, 3.622]
+ * medr, meanr: [370.0, 625.757]
+ * ----------
+ * Current perf: 10.3822937626
+ * Best perf: 11.0160965795
+
+Epoch[21 / 50] LR: 5.06079917638e-06
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 14:57 - loss: 55.9329 * Text to video:
+ * r_1_5_10: [0.241, 1.338, 2.575]
+ * medr, meanr: [215.0, 225.992]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.201, 2.213, 3.622]
+ * medr, meanr: [376.0, 624.477]
+ * ----------
+ * Current perf: 10.1911468813
+ * Best perf: 11.0160965795
+
+Epoch[22 / 50] LR: 5.01019118462e-06
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 12:12 - loss: 56.3583 * Text to video:
+ * r_1_5_10: [0.231, 1.318, 2.636]
+ * medr, meanr: [215.0, 226.149]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.201, 2.012, 3.421]
+ * medr, meanr: [384.0, 624.654]
+ * ----------
+ * Current perf: 9.81891348089
+ * Best perf: 11.0160965795
+
+Epoch[23 / 50] LR: 2.48004463639e-06
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 14:40 - loss: 56.8951 * Text to video:
+ * r_1_5_10: [0.241, 1.348, 2.656]
+ * medr, meanr: [216.0, 226.308]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.201, 2.012, 3.622]
+ * medr, meanr: [382.0, 624.36]
+ * ----------
+ * Current perf: 10.0804828974
+ * Best perf: 11.0160965795
+
+Epoch[24 / 50] LR: 2.45524419002e-06
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 12:13 - loss: 56.4145 * Text to video:
+ * r_1_5_10: [0.231, 1.298, 2.626]
+ * medr, meanr: [215.0, 226.44]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.604, 1.811, 3.622]
+ * medr, meanr: [389.0, 623.495]
+ * ----------
+ * Current perf: 10.1911468813
+ * Best perf: 11.0160965795
+
+Epoch[25 / 50] LR: 2.43069174812e-06
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 12:11 - loss: 56.6996 * Text to video:
+ * r_1_5_10: [0.231, 1.308, 2.666]
+ * medr, meanr: [216.0, 226.551]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.805, 1.61, 3.421]
+ * medr, meanr: [386.0, 623.181]
+ * ----------
+ * Current perf: 10.0402414487
+ * Best perf: 11.0160965795
+
+Epoch[26 / 50] LR: 1.20319241532e-06
+----------
+shape of sentence: torch.Size([120, 2048])
+shape of image: torch.Size([120, 2048])
+shape of scores: torch.Size([120, 120])
+
+   120/130260 [..............................] - ETA: 12:09 - loss: 56.4205 * Text to video:
+ * r_1_5_10: [0.231, 1.348, 2.646]
+ * medr, meanr: [216.0, 226.707]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.201, 1.61, 3.622]
+ * medr, meanr: [391.0, 622.634]
+ * ----------
+ * Current perf: 9.65794768612
+ * Best perf: 11.0160965795
+
+Early stopping happended.
+
+best performance on validation: 11.0160965795
+

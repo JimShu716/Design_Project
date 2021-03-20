@@ -9,14 +9,15 @@ concate=full
 # training
 gpu=0
 CUDA_VISIBLE_DEVICES=$gpu python trainer.py $trainCollection $valCollection $testCollection \
-                                            --overwrite 1 \
+                                            --logtimestamp $1 \
+					--overwrite 1 \
                                             --max_violation \
                                             --text_norm \
                                             --visual_norm \
                                             --concate $concate \
                                             --batch_size 120 \
-                                            --loss_fun cont \
+                                            --loss_fun mrl \
                                             --measure exp \
                                             
 # evaluation (Notice that a script file do_test_${testCollection}.sh will be automatically generated when the training process ends.)
-./do_test_dual_encoding_${testCollection}.sh
+#./do_test_dual_encoding_${testCollection}.sh

@@ -35,6 +35,7 @@ def parse_args():
     # Hyper Parameters
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', type=str, default="msrvtt",help='dataset name')
+    parser.add_argument('--logtimestamp',type=str,default="none",help = 'name of logs and plots')
     parser.add_argument('--rootpath', type=str, default=ROOT_PATH,
                         help='path to datasets. (default: %s)'%ROOT_PATH)
     parser.add_argument('trainCollection', type=str, help='train collection')
@@ -293,7 +294,7 @@ def main():
     plt.xticks(np.arange(len(loss_value)))
     plt.ylabel("Loss Value") 
     plt.plot(np.arange(len(loss_value)), loss_value) 
-    plt.savefig("./training_loss.png")
+    plt.savefig("./plots/training_loss_{}.png".format(opt.logtimestamp))
     plt.close()
 
     #pos_value
@@ -303,7 +304,7 @@ def main():
     plt.xticks(np.arange(len(pos_value)))
     plt.ylabel("Pos Value") 
     plt.plot(np.arange(len(pos_value)), pos_value) 
-    plt.savefig("./training_pos.png")
+    plt.savefig("./plots/training_pos_{}.png".format(opt.logtimestamp))
     plt.close()
 
     #neg_value
@@ -313,7 +314,7 @@ def main():
     plt.xticks(np.arange(len(neg_value)))
     plt.ylabel("Neg Value") 
     plt.plot(np.arange(len(neg_value)), neg_value) 
-    plt.savefig("./training_neg.png")
+    plt.savefig("./plots/training_neg_{}.png".format(opt.logtimestamp))
     plt.close()
 
     fout_val_metric_hist.close()

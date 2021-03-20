@@ -1,0 +1,236 @@
+{
+  "threshold": 5, 
+  "text_style": "bow", 
+  "rootpath": "../VisualSearch", 
+  "collection": "msrvtt10ktrain", 
+  "overwrite": 0
+}
+../VisualSearch/msrvtt10ktrain/TextData/vocabulary/bow/word_vocab_5.pkl exists.
+skip
+{
+  "threshold": 5, 
+  "text_style": "rnn", 
+  "rootpath": "../VisualSearch", 
+  "collection": "msrvtt10ktrain", 
+  "overwrite": 0
+}
+../VisualSearch/msrvtt10ktrain/TextData/vocabulary/rnn/word_vocab_5.pkl exists.
+skip
+<type 'type'>
+{
+  "grad_clip": 2, 
+  "word_dim": 500, 
+  "text_mapping_layers": "0-2048", 
+  "num_epochs": 50, 
+  "dataset": "msrvtt", 
+  "text_kernel_sizes": "2-3-4", 
+  "measure": "exp", 
+  "lr_decay_rate": 0.99, 
+  "n_caption": 20, 
+  "overwrite": 1, 
+  "workers": 5, 
+  "text_norm": true, 
+  "neg_sampling": "default", 
+  "log_step": 10, 
+  "visual_norm": true, 
+  "max_violation": true, 
+  "visual_feature": "resnet-152-img1k-flatten0_outputos", 
+  "trainCollection": "msrvtt10ktrain", 
+  "learning_rate": 0.0001, 
+  "batch_padding": 0, 
+  "direction": "all", 
+  "optimizer": "adam", 
+  "resume": "", 
+  "dropout": 0.2, 
+  "visual_kernel_num": 512, 
+  "rootpath": "../VisualSearch", 
+  "batch_size": 120, 
+  "cv_name": "cvpr_2019", 
+  "text_kernel_num": 512, 
+  "testCollection": "msrvtt10ktest", 
+  "visual_mapping_layers": "0-2048", 
+  "cost_style": "sum", 
+  "text_rnn_size": 512, 
+  "vocab": "word_vocab_5", 
+  "loss_fun": "cont", 
+  "visual_rnn_size": 1024, 
+  "visual_kernel_sizes": "2-3-4-5", 
+  "concate": "full", 
+  "postfix": "runs_0", 
+  "val_metric": "recall", 
+  "valCollection": "msrvtt10kval", 
+  "model": "dual_encoding", 
+  "margin": 0.2
+}
+../VisualSearch/msrvtt10ktrain/cvpr_2019/msrvtt10kval/dual_encoding_concate_full_dp_0.2_measure_exp/vocab_word_vocab_5_word_dim_500_text_rnn_size_512_text_norm_True_kernel_sizes_2-3-4_num_512/visual_feature_resnet-152-img1k-flatten0_outputos_visual_rnn_size_1024_visual_norm_True_kernel_sizes_2-3-4-5_num_512/mapping_text_0-2048_img_0-2048/loss_func_cont_margin_0.2_direction_all_max_violation_True_cost_style_sum/optimizer_adam_lr_0.0001_decay_0.99_grad_clip_2.0_val_metric_recall/runs_0
+../VisualSearch/msrvtt10ktrain/cvpr_2019/msrvtt10kval/dual_encoding_concate_full_dp_0.2_measure_exp/vocab_word_vocab_5_word_dim_500_text_rnn_size_512_text_norm_True_kernel_sizes_2-3-4_num_512/visual_feature_resnet-152-img1k-flatten0_outputos_visual_rnn_size_1024_visual_norm_True_kernel_sizes_2-3-4-5_num_512/mapping_text_0-2048_img_0-2048/loss_func_cont_margin_0.2_direction_all_max_violation_True_cost_style_sum/optimizer_adam_lr_0.0001_decay_0.99_grad_clip_2.0_val_metric_recall/runs_0/model_best.pth.tar exists.
+overwrite
+../VisualSearch/msrvtt10ktrain/cvpr_2019/msrvtt10kval/dual_encoding_concate_full_dp_0.2_measure_exp/vocab_word_vocab_5_word_dim_500_text_rnn_size_512_text_norm_True_kernel_sizes_2-3-4_num_512/visual_feature_resnet-152-img1k-flatten0_outputos_visual_rnn_size_1024_visual_norm_True_kernel_sizes_2-3-4-5_num_512/mapping_text_0-2048_img_0-2048/loss_func_cont_margin_0.2_direction_all_max_violation_True_cost_style_sum/optimizer_adam_lr_0.0001_decay_0.99_grad_clip_2.0_val_metric_recall/runs_0/val_metric.txt exists.
+overwrite
+[BigFile] 305462x2048 instances loaded from ../VisualSearch/msrvtt10ktrain/FeatureData/resnet-152-img1k-flatten0_outputos
+[BigFile] 305462x2048 instances loaded from ../VisualSearch/msrvtt10kval/FeatureData/resnet-152-img1k-flatten0_outputos
+[BigFile] 1743364x500 instances loaded from ../VisualSearch/word2vec/flickr/vec500flickr30m
+('getting pre-trained parameter for word embedding initialization', (7811, 500))
+=======================Data Loaded=================================
+>>>>>>>>>>>>>>>>>>>>
+Contrastive Loss Used
+Epoch[0 / 50] LR: 0.0001
+----------
+
+   120/130260 [..............................] - ETA: 50:10 - loss: 1.7238 * Text to video:
+ * r_1_5_10: [0.201, 1.227, 2.223]
+ * medr, meanr: [255.0, 252.397]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.201, 1.006, 1.207]
+ * medr, meanr: [496.0, 816.815]
+ * ----------
+ * Current perf: 6.06639839034
+ * Best perf: 6.06639839034
+
+Epoch[1 / 50] LR: 9.9e-05
+----------
+
+   120/130260 [..............................] - ETA: 13:32 - loss: 1.7184 * Text to video:
+ * r_1_5_10: [0.292, 1.157, 2.294]
+ * medr, meanr: [254.0, 252.891]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.201, 0.604, 1.811]
+ * medr, meanr: [480.0, 797.036]
+ * ----------
+ * Current perf: 6.35814889336
+ * Best perf: 6.35814889336
+
+Epoch[2 / 50] LR: 9.801e-05
+----------
+
+   120/130260 [..............................] - ETA: 14:59 - loss: 1.7158 * Text to video:
+ * r_1_5_10: [0.312, 1.167, 2.334]
+ * medr, meanr: [253.0, 252.794]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.402, 0.604, 1.61]
+ * medr, meanr: [459.0, 772.105]
+ * ----------
+ * Current perf: 6.42857142857
+ * Best perf: 6.42857142857
+
+Epoch[3 / 50] LR: 9.70299e-05
+----------
+
+   120/130260 [..............................] - ETA: 14:39 - loss: 1.7147 * Text to video:
+ * r_1_5_10: [0.292, 1.227, 2.495]
+ * medr, meanr: [252.0, 251.513]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.402, 0.604, 1.61]
+ * medr, meanr: [422.0, 759.302]
+ * ----------
+ * Current perf: 6.62977867203
+ * Best perf: 6.62977867203
+
+Epoch[4 / 50] LR: 9.6059601e-05
+----------
+
+   120/130260 [..............................] - ETA: 12:42 - loss: 1.7135 * Text to video:
+ * r_1_5_10: [0.322, 1.227, 2.435]
+ * medr, meanr: [250.0, 249.651]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.402, 0.805, 1.61]
+ * medr, meanr: [415.0, 758.871]
+ * ----------
+ * Current perf: 6.80080482897
+ * Best perf: 6.80080482897
+
+Epoch[5 / 50] LR: 9.509900499e-05
+----------
+
+   120/130260 [..............................] - ETA: 15:42 - loss: 1.7121 * Text to video:
+ * r_1_5_10: [0.362, 1.318, 2.565]
+ * medr, meanr: [248.0, 247.661]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.402, 0.805, 1.408]
+ * medr, meanr: [435.0, 762.384]
+ * ----------
+ * Current perf: 6.86116700201
+ * Best perf: 6.86116700201
+
+Epoch[6 / 50] LR: 9.41480149401e-05
+----------
+
+   120/130260 [..............................] - ETA: 15:41 - loss: 1.7103 * Text to video:
+ * r_1_5_10: [0.332, 1.419, 2.706]
+ * medr, meanr: [245.0, 245.882]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.402, 1.006, 2.012]
+ * medr, meanr: [458.0, 766.684]
+ * ----------
+ * Current perf: 7.87726358149
+ * Best perf: 7.87726358149
+
+Epoch[7 / 50] LR: 9.32065347907e-05
+----------
+
+   120/130260 [..............................] - ETA: 13:38 - loss: 1.7098 * Text to video:
+ * r_1_5_10: [0.302, 1.499, 2.767]
+ * medr, meanr: [244.0, 244.744]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.604, 0.805, 1.811]
+ * medr, meanr: [458.0, 774.239]
+ * ----------
+ * Current perf: 7.78672032193
+ * Best perf: 7.87726358149
+
+Epoch[8 / 50] LR: 4.61372347214e-05
+----------
+
+   120/130260 [..............................] - ETA: 14:51 - loss: 1.7087 * Text to video:
+ * r_1_5_10: [0.282, 1.449, 2.847]
+ * medr, meanr: [244.0, 244.438]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.805, 1.207, 1.61]
+ * medr, meanr: [469.0, 782.185]
+ * ----------
+ * Current perf: 8.19919517103
+ * Best perf: 8.19919517103
+
+Epoch[9 / 50] LR: 4.56758623742e-05
+----------
+
+   120/130260 [..............................] - ETA: 13:03 - loss: 1.7084 * Text to video:
+ * r_1_5_10: [0.312, 1.449, 2.847]
+ * medr, meanr: [244.0, 244.314]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.805, 1.006, 1.408]
+ * medr, meanr: [473.0, 788.857]
+ * ----------
+ * Current perf: 7.82696177062
+ * Best perf: 8.19919517103
+
+Epoch[10 / 50] LR: 4.52191037504e-05
+----------
+<type 'type'>
+{
+  "checkpoint_name": "model_best.pth.tar", 
+  "workers": 5, 
+  "rootpath": "../VisualSearch", 
+  "batch_size": 128, 
+  "log_step": 10, 
+  "logger_name": "../VisualSearch/msrvtt10ktrain/cvpr_2019/msrvtt10kval/dual_encoding_concate_full_dp_0.2_measure_exp/vocab_word_vocab_5_word_dim_500_text_rnn_size_512_text_norm_True_kernel_sizes_2-3-4_num_512/visual_feature_resnet-152-img1k-flatten0_outputos_visual_rnn_size_1024_visual_norm_True_kernel_sizes_2-3-4-5_num_512/mapping_text_0-2048_img_0-2048/loss_func_cont_margin_0.2_direction_all_max_violation_True_cost_style_sum/optimizer_adam_lr_0.0001_decay_0.99_grad_clip_2.0_val_metric_recall/runs_0", 
+  "testCollection": "msrvtt10ktest", 
+  "n_caption": 20, 
+  "overwrite": 1
+}
+=> loaded checkpoint '../VisualSearch/msrvtt10ktrain/cvpr_2019/msrvtt10kval/dual_encoding_concate_full_dp_0.2_measure_exp/vocab_word_vocab_5_word_dim_500_text_rnn_size_512_text_norm_True_kernel_sizes_2-3-4_num_512/visual_feature_resnet-152-img1k-flatten0_outputos_visual_rnn_size_1024_visual_norm_True_kernel_sizes_2-3-4-5_num_512/mapping_text_0-2048_img_0-2048/loss_func_cont_margin_0.2_direction_all_max_violation_True_cost_style_sum/optimizer_adam_lr_0.0001_decay_0.99_grad_clip_2.0_val_metric_recall/runs_0/model_best.pth.tar' (epoch 9, best_rsum 8.19919517103)
+../VisualSearch/msrvtt10ktest/results/msrvtt10ktrain/msrvtt10kval/dual_encoding_concate_full_dp_0.2_measure_exp/vocab_word_vocab_5_word_dim_500_text_rnn_size_512_text_norm_True_kernel_sizes_2-3-4_num_512/visual_feature_resnet-152-img1k-flatten0_outputos_visual_rnn_size_1024_visual_norm_True_kernel_sizes_2-3-4-5_num_512/mapping_text_0-2048_img_0-2048/loss_func_cont_margin_0.2_direction_all_max_violation_True_cost_style_sum/optimizer_adam_lr_0.0001_decay_0.99_grad_clip_2.0_val_metric_recall/runs_0/model_best.pth.tar/pred_errors_matrix.pth.tar exists.
+overwrite
+[BigFile] 305462x2048 instances loaded from ../VisualSearch/msrvtt10ktest/FeatureData/resnet-152-img1k-flatten0_outputos
+>>>>>>>>>>>>>>>>>>>>
+Contrastive Loss Used

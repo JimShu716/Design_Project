@@ -275,7 +275,7 @@ class TxtDataSet4DualEncoding(data.Dataset):
     def __len__(self):
         return self.length
 
-def get_data_loaders(cap_files, visual_feats, vocab, bow2vec, batch_size=100, num_workers=2, n_caption=2, video2frames=None, padding_size=0):
+def get_data_loaders(cap_files, visual_feats, vocab, bow2vec, batch_size=100, num_workers=1, n_caption=2, video2frames=None, padding_size=0):
     """
     Returns torch.utils.data.DataLoader for train and validation datasets
     Args:
@@ -295,7 +295,7 @@ def get_data_loaders(cap_files, visual_feats, vocab, bow2vec, batch_size=100, nu
     return data_loaders
 
 
-def get_train_data_loaders(cap_files, visual_feats, vocab, bow2vec, batch_size=100, num_workers=2, n_caption=2, video2frames=None):
+def get_train_data_loaders(cap_files, visual_feats, vocab, bow2vec, batch_size=100, num_workers=1, n_caption=2, video2frames=None):
     """
     Returns torch.utils.data.DataLoader for train and validation datasets
     Args:
@@ -314,7 +314,7 @@ def get_train_data_loaders(cap_files, visual_feats, vocab, bow2vec, batch_size=1
     return data_loaders
 
 
-def get_test_data_loaders(cap_files, visual_feats, vocab, bow2vec, batch_size=100, num_workers=2, n_caption=2, video2frames = None):
+def get_test_data_loaders(cap_files, visual_feats, vocab, bow2vec, batch_size=100, num_workers=1, n_caption=2, video2frames = None):
     """
     Returns torch.utils.data.DataLoader for test dataset
     Args:
@@ -334,7 +334,7 @@ def get_test_data_loaders(cap_files, visual_feats, vocab, bow2vec, batch_size=10
     return data_loaders
 
 
-def get_vis_data_loader(vis_feat, batch_size=100, num_workers=2, video2frames=None, video_ids=None):
+def get_vis_data_loader(vis_feat, batch_size=100, num_workers=1, video2frames=None, video_ids=None):
     dset = VisDataSet4DualEncoding(vis_feat, video2frames, video_ids=video_ids)
 
     data_loader = torch.utils.data.DataLoader(dataset=dset,
@@ -346,7 +346,7 @@ def get_vis_data_loader(vis_feat, batch_size=100, num_workers=2, video2frames=No
     return data_loader
 
 
-def get_txt_data_loader(cap_file, vocab, bow2vec, batch_size=100, num_workers=2):
+def get_txt_data_loader(cap_file, vocab, bow2vec, batch_size=100, num_workers=1):
     dset = TxtDataSet4DualEncoding(cap_file, bow2vec, vocab)
 
     data_loader = torch.utils.data.DataLoader(dataset=dset,
@@ -449,7 +449,7 @@ class TempuckeyDataSet(data.Dataset):
         return self.length
 
 
-def get_tempuckey_data_loader(batch_size=10, num_workers=2):
+def get_tempuckey_data_loader(batch_size=10, num_workers=1):
     """
     Returns torch.utils.data.DataLoader for train and validation datasets
     Args:
