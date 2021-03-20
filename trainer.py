@@ -366,10 +366,10 @@ def train(opt, train_loader, model, epoch):
 
         # Update the model
 
-        for i, content in enumerate(train_data):
-            print(i)
+        # for i, content in enumerate(train_data):
+        #     print(i)
 
-        exit(0)
+        # exit(0)
 
         b_size, loss, pos, neg = model.train_emb(*train_data)
 
