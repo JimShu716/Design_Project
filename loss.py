@@ -54,7 +54,7 @@ class TripletLoss(nn.Module):
 
         self.max_violation = max_violation
 
-    def forward(self, s, im, *args,cap_ids = None):
+    def forward(self, s, im,cap_ids, *args):
         """
             s.shape = (128, 2048)
             im.shape = (128, 2048)
