@@ -1,0 +1,394 @@
+{
+  "threshold": 5, 
+  "text_style": "bow", 
+  "rootpath": "../VisualSearch", 
+  "collection": "msrvtt10ktrain", 
+  "overwrite": 0
+}
+../VisualSearch/msrvtt10ktrain/TextData/vocabulary/bow/word_vocab_5.pkl exists.
+skip
+{
+  "threshold": 5, 
+  "text_style": "rnn", 
+  "rootpath": "../VisualSearch", 
+  "collection": "msrvtt10ktrain", 
+  "overwrite": 0
+}
+../VisualSearch/msrvtt10ktrain/TextData/vocabulary/rnn/word_vocab_5.pkl exists.
+skip
+<type 'type'>
+{
+  "grad_clip": 2, 
+  "word_dim": 500, 
+  "text_mapping_layers": "0-2048", 
+  "num_epochs": 50, 
+  "dataset": "msrvtt", 
+  "logtimestamp": "none", 
+  "text_kernel_sizes": "2-3-4", 
+  "measure": "exp", 
+  "lr_decay_rate": 0.99, 
+  "n_caption": 20, 
+  "overwrite": 1, 
+  "workers": 5, 
+  "text_norm": true, 
+  "neg_sampling": "default", 
+  "log_step": 10, 
+  "visual_norm": true, 
+  "max_violation": true, 
+  "visual_feature": "resnet-152-img1k-flatten0_outputos", 
+  "trainCollection": "msrvtt10ktrain", 
+  "learning_rate": 0.0001, 
+  "batch_padding": 0, 
+  "direction": "all", 
+  "optimizer": "adam", 
+  "resume": "", 
+  "dropout": 0.2, 
+  "visual_kernel_num": 512, 
+  "rootpath": "../VisualSearch", 
+  "batch_size": 120, 
+  "cv_name": "cvpr_2019", 
+  "text_kernel_num": 512, 
+  "testCollection": "msrvtt10ktest", 
+  "visual_mapping_layers": "0-2048", 
+  "cost_style": "sum", 
+  "text_rnn_size": 512, 
+  "vocab": "word_vocab_5", 
+  "loss_fun": "cont", 
+  "visual_rnn_size": 1024, 
+  "visual_kernel_sizes": "2-3-4-5", 
+  "concate": "full", 
+  "postfix": "runs_0", 
+  "val_metric": "recall", 
+  "valCollection": "msrvtt10kval", 
+  "model": "dual_encoding", 
+  "margin": 0.2
+}
+../VisualSearch/msrvtt10ktrain/cvpr_2019/msrvtt10kval/dual_encoding_concate_full_dp_0.2_measure_exp/vocab_word_vocab_5_word_dim_500_text_rnn_size_512_text_norm_True_kernel_sizes_2-3-4_num_512/visual_feature_resnet-152-img1k-flatten0_outputos_visual_rnn_size_1024_visual_norm_True_kernel_sizes_2-3-4-5_num_512/mapping_text_0-2048_img_0-2048/loss_func_cont_margin_0.2_direction_all_max_violation_True_cost_style_sum/optimizer_adam_lr_0.0001_decay_0.99_grad_clip_2.0_val_metric_recall/runs_0
+../VisualSearch/msrvtt10ktrain/cvpr_2019/msrvtt10kval/dual_encoding_concate_full_dp_0.2_measure_exp/vocab_word_vocab_5_word_dim_500_text_rnn_size_512_text_norm_True_kernel_sizes_2-3-4_num_512/visual_feature_resnet-152-img1k-flatten0_outputos_visual_rnn_size_1024_visual_norm_True_kernel_sizes_2-3-4-5_num_512/mapping_text_0-2048_img_0-2048/loss_func_cont_margin_0.2_direction_all_max_violation_True_cost_style_sum/optimizer_adam_lr_0.0001_decay_0.99_grad_clip_2.0_val_metric_recall/runs_0/model_best.pth.tar exists.
+overwrite
+../VisualSearch/msrvtt10ktrain/cvpr_2019/msrvtt10kval/dual_encoding_concate_full_dp_0.2_measure_exp/vocab_word_vocab_5_word_dim_500_text_rnn_size_512_text_norm_True_kernel_sizes_2-3-4_num_512/visual_feature_resnet-152-img1k-flatten0_outputos_visual_rnn_size_1024_visual_norm_True_kernel_sizes_2-3-4-5_num_512/mapping_text_0-2048_img_0-2048/loss_func_cont_margin_0.2_direction_all_max_violation_True_cost_style_sum/optimizer_adam_lr_0.0001_decay_0.99_grad_clip_2.0_val_metric_recall/runs_0/val_metric.txt exists.
+overwrite
+[BigFile] 305462x2048 instances loaded from ../VisualSearch/msrvtt10ktrain/FeatureData/resnet-152-img1k-flatten0_outputos
+[BigFile] 305462x2048 instances loaded from ../VisualSearch/msrvtt10kval/FeatureData/resnet-152-img1k-flatten0_outputos
+[BigFile] 1743364x500 instances loaded from ../VisualSearch/word2vec/flickr/vec500flickr30m
+('getting pre-trained parameter for word embedding initialization', (7811, 500))
+=======================Data Loaded=================================
+>>>>>>>>>>>>>>>>>>>>
+Contrastive Loss Used
+Epoch[0 / 50] LR: 0.0001
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 47:15 - loss: 28572.6934 * Text to video:
+ * r_1_5_10: [0.221, 1.036, 2.274]
+ * medr, meanr: [237.0, 239.749]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.604, 1.61, 3.018]
+ * medr, meanr: [392.0, 670.121]
+ * ----------
+ * Current perf: 8.76257545272
+ * Best perf: 8.76257545272
+
+Epoch[1 / 50] LR: 9.9e-05
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 16:05 - loss: 28594.8789 * Text to video:
+ * r_1_5_10: [0.211, 1.207, 2.243]
+ * medr, meanr: [242.0, 242.764]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.402, 1.408, 2.616]
+ * medr, meanr: [409.0, 660.451]
+ * ----------
+ * Current perf: 8.08853118712
+ * Best perf: 8.76257545272
+
+Epoch[2 / 50] LR: 9.801e-05
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 12:40 - loss: 28564.3242 * Text to video:
+ * r_1_5_10: [0.211, 0.996, 2.022]
+ * medr, meanr: [248.0, 245.945]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.201, 1.408, 2.012]
+ * medr, meanr: [427.0, 678.209]
+ * ----------
+ * Current perf: 6.85110663984
+ * Best perf: 8.76257545272
+
+Epoch[3 / 50] LR: 4.851495e-05
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 12:59 - loss: 28567.1660 * Text to video:
+ * r_1_5_10: [0.201, 0.986, 2.022]
+ * medr, meanr: [246.0, 245.297]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.402, 1.006, 2.213]
+ * medr, meanr: [430.0, 689.155]
+ * ----------
+ * Current perf: 6.83098591549
+ * Best perf: 8.76257545272
+
+Epoch[4 / 50] LR: 4.80298005e-05
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 12:09 - loss: 28566.7695 * Text to video:
+ * r_1_5_10: [0.191, 0.976, 1.982]
+ * medr, meanr: [243.0, 243.741]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.402, 1.006, 2.414]
+ * medr, meanr: [426.0, 695.441]
+ * ----------
+ * Current perf: 6.97183098592
+ * Best perf: 8.76257545272
+
+Epoch[5 / 50] LR: 4.7549502495e-05
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 12:17 - loss: 28567.1348 * Text to video:
+ * r_1_5_10: [0.151, 1.036, 2.153]
+ * medr, meanr: [239.0, 241.67]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.604, 1.61, 2.616]
+ * medr, meanr: [414.0, 691.71]
+ * ----------
+ * Current perf: 8.16901408451
+ * Best perf: 8.76257545272
+
+Epoch[6 / 50] LR: 2.3537003735e-05
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 12:11 - loss: 28569.0508 * Text to video:
+ * r_1_5_10: [0.201, 1.087, 2.254]
+ * medr, meanr: [238.0, 240.646]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.604, 1.61, 3.018]
+ * medr, meanr: [413.0, 679.416]
+ * ----------
+ * Current perf: 8.77263581489
+ * Best perf: 8.77263581489
+
+Epoch[7 / 50] LR: 2.33016336977e-05
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 16:00 - loss: 28558.5684 * Text to video:
+ * r_1_5_10: [0.211, 1.137, 2.153]
+ * medr, meanr: [236.0, 239.807]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.805, 1.006, 3.421]
+ * medr, meanr: [393.0, 667.586]
+ * ----------
+ * Current perf: 8.7323943662
+ * Best perf: 8.77263581489
+
+Epoch[8 / 50] LR: 2.30686173607e-05
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 12:22 - loss: 28561.9258 * Text to video:
+ * r_1_5_10: [0.191, 1.197, 2.233]
+ * medr, meanr: [234.0, 239.019]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.805, 1.408, 2.213]
+ * medr, meanr: [404.0, 653.696]
+ * ----------
+ * Current perf: 8.04828973843
+ * Best perf: 8.77263581489
+
+Epoch[9 / 50] LR: 1.14189655935e-05
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 13:05 - loss: 28562.1445 * Text to video:
+ * r_1_5_10: [0.191, 1.147, 2.284]
+ * medr, meanr: [234.0, 238.59]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.805, 1.811, 3.018]
+ * medr, meanr: [409.0, 644.431]
+ * ----------
+ * Current perf: 9.2555331992
+ * Best perf: 9.2555331992
+
+Epoch[10 / 50] LR: 1.13047759376e-05
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 13:06 - loss: 28562.4492 * Text to video:
+ * r_1_5_10: [0.171, 1.177, 2.284]
+ * medr, meanr: [234.0, 238.271]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.604, 1.811, 2.817]
+ * medr, meanr: [402.0, 635.984]
+ * ----------
+ * Current perf: 8.86317907445
+ * Best perf: 9.2555331992
+
+Epoch[11 / 50] LR: 1.11917281782e-05
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 12:25 - loss: 28565.5059 * Text to video:
+ * r_1_5_10: [0.151, 1.107, 2.314]
+ * medr, meanr: [234.0, 238.071]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.402, 2.012, 3.018]
+ * medr, meanr: [412.0, 631.895]
+ * ----------
+ * Current perf: 9.00402414487
+ * Best perf: 9.2555331992
+
+Epoch[12 / 50] LR: 5.53990544823e-06
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 12:42 - loss: 28563.1406 * Text to video:
+ * r_1_5_10: [0.141, 1.066, 2.344]
+ * medr, meanr: [234.0, 237.855]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.604, 1.61, 2.616]
+ * medr, meanr: [400.0, 628.056]
+ * ----------
+ * Current perf: 8.38028169014
+ * Best perf: 9.2555331992
+
+Epoch[13 / 50] LR: 5.48450639374e-06
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 12:21 - loss: 28559.3926 * Text to video:
+ * r_1_5_10: [0.151, 1.117, 2.314]
+ * medr, meanr: [235.0, 237.756]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.402, 1.408, 2.616]
+ * medr, meanr: [382.0, 623.356]
+ * ----------
+ * Current perf: 8.00804828974
+ * Best perf: 9.2555331992
+
+Epoch[14 / 50] LR: 5.42966132981e-06
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 12:22 - loss: 28560.8457 * Text to video:
+ * r_1_5_10: [0.171, 1.127, 2.274]
+ * medr, meanr: [234.0, 237.726]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.201, 1.61, 2.817]
+ * medr, meanr: [386.0, 618.29]
+ * ----------
+ * Current perf: 8.19919517103
+ * Best perf: 9.2555331992
+
+Epoch[15 / 50] LR: 2.68768235825e-06
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 12:26 - loss: 28562.3125 * Text to video:
+ * r_1_5_10: [0.171, 1.187, 2.354]
+ * medr, meanr: [234.0, 237.71]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.201, 1.61, 3.219]
+ * medr, meanr: [385.0, 617.682]
+ * ----------
+ * Current perf: 8.74245472837
+ * Best perf: 9.2555331992
+
+Epoch[16 / 50] LR: 2.66080553467e-06
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 14:47 - loss: 28562.8320 * Text to video:
+ * r_1_5_10: [0.191, 1.177, 2.374]
+ * medr, meanr: [235.0, 237.729]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.0, 1.811, 3.219]
+ * medr, meanr: [385.0, 620.519]
+ * ----------
+ * Current perf: 8.77263581489
+ * Best perf: 9.2555331992
+
+Epoch[17 / 50] LR: 2.63419747932e-06
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 14:55 - loss: 28561.6523 * Text to video:
+ * r_1_5_10: [0.191, 1.107, 2.414]
+ * medr, meanr: [235.0, 237.824]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.0, 1.811, 3.421]
+ * medr, meanr: [389.0, 625.652]
+ * ----------
+ * Current perf: 8.94366197183
+ * Best perf: 9.2555331992
+
+Epoch[18 / 50] LR: 1.30392775227e-06
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 12:20 - loss: 28561.7695 * Text to video:
+ * r_1_5_10: [0.201, 1.087, 2.425]
+ * medr, meanr: [234.0, 237.8]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.201, 2.213, 2.817]
+ * medr, meanr: [398.0, 629.475]
+ * ----------
+ * Current perf: 8.94366197183
+ * Best perf: 9.2555331992
+
+Epoch[19 / 50] LR: 1.29088847474e-06
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 13:24 - loss: 28558.3359 * Text to video:
+ * r_1_5_10: [0.191, 1.087, 2.445]
+ * medr, meanr: [234.0, 237.832]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.201, 2.012, 2.817]
+ * medr, meanr: [402.0, 635.155]
+ * ----------
+ * Current perf: 8.75251509054
+ * Best perf: 9.2555331992
+
+Epoch[20 / 50] LR: 1.27797959e-06
+----------
+('in loss: cap_ids', None)
+
+   120/130260 [..............................] - ETA: 12:14 - loss: 28564.2695 * Text to video:
+ * r_1_5_10: [0.201, 1.087, 2.414]
+ * medr, meanr: [234.0, 237.835]
+ * ----------
+ * Video to text:
+ * r_1_5_10: [0.201, 1.811, 2.817]
+ * medr, meanr: [392.0, 639.899]
+ * ----------
+ * Current perf: 8.53118712274
+ * Best perf: 9.2555331992
+
+Early stopping happended.
+

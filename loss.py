@@ -54,7 +54,7 @@ class TripletLoss(nn.Module):
 
         self.max_violation = max_violation
 
-    def forward(self, s, im, *args):
+    def forward(self, s, im,cap_ids, *args):
         """
             s.shape = (128, 2048)
             im.shape = (128, 2048)
@@ -111,11 +111,16 @@ class TripletLoss(nn.Module):
         if cost_im is None:
             cost_im = Variable(torch.zeros(1)).cuda()
 
+        pos_score = 0
+        neg_score = 0
         if self.cost_style == 'sum':
-            return cost_s.sum() + cost_im.sum()
+             neg_score = cost_s.sum()+cost_im.sum()
+             pos_score = d1.sum()
+        
         else:
-            return cost_s.mean() + cost_im.mean()
-
+            neg_score = cost_s.mean()+cost_im.mean()
+            pos_score = d1.mean()
+        return pos_score, neg_score
 
 class ContrastiveLoss(nn.Module):
 
@@ -172,16 +177,26 @@ class ContrastiveLoss(nn.Module):
         batch_size = scores.shape[0]
         #print("=====================================",batch_size,"============================================")
         mask = np.zeros([batch_size,batch_size])
+        
+        v_ids = []
+        print("in loss: cap_ids", cap_ids)
         if(cap_ids):
-            print(cap_ids)
+            print("cap_ids",cap_ids)
+            cap_ids = np.array(cap_ids)
+            v_ids = np.empty(cap_ids.shape, dtype="<U10")#S10 generates b in front 
+            print("v_ids",v_ids)
+            print("cap_shape",cap_ids.shape[0])
+            for index in range(cap_ids.shape[0]):
+                v_ids[index] = cap_ids[index].split("#")[0]
+            for i in range(cap_ids.shape[0]):
+                for j in range(cap_ids.shape[0]):
+                    print(v_ids[i])
+                    mask[i][j] = np.where(cap_ids[j].split("#")[0]==v_ids[i],1,0)
+
+        
         else:
-            #this mask can handle both tempuckey and msrvtt
-            n = self.start_idx[1:]
-            idx = zip(self.start_idx,n)
-            for i,j in idx:
-                mask[i:j,i:j] = 1  
-                      
-            
+            #if caption ids are not loaded, only positive on the diagonal
+            np.fill_diagonal(mask, 1)
         m_match = torch.from_numpy(mask) == 1
         m_cost = torch.from_numpy(mask) == 0
         Imatch = Variable(m_match)
@@ -235,8 +250,10 @@ class ContrastiveLoss(nn.Module):
             match_im = Variable(torch.zeros(1), requires_grad = True).cuda()        
         #MIL-NCE loss
        
-        neg_score = cost_s.mean()+cost_im.mean()
-        pos_score = match_s.mean() + match_im.mean()
+        #neg_score = cost_s.mean()+cost_im.mean()
+        #pos_score = match_s.mean() + match_im.mean()
+        neg_score = cost_s.sum()+cost_im.sum()
+        pos_score = match_s.sum() + match_im.sum()
         
         return pos_score, neg_score
 
