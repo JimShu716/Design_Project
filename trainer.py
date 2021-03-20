@@ -365,6 +365,12 @@ def train(opt, train_loader, model, epoch):
         model.logger = train_logger
 
         # Update the model
+
+        for i, content in enumerate(train_data):
+            print(i)
+
+        exit(0)
+
         b_size, loss, pos, neg = model.train_emb(*train_data)
 
         loss_value.append(loss)
