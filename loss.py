@@ -111,11 +111,16 @@ class TripletLoss(nn.Module):
         if cost_im is None:
             cost_im = Variable(torch.zeros(1)).cuda()
 
+        pos_score = 0
+        neg_score = 0
         if self.cost_style == 'sum':
-            return cost_s.sum() + cost_im.sum()
+             neg_score = cost_s.sum()+cost_im.sum()
+             pos_score = d1.sum()
+        
         else:
-            return cost_s.mean() + cost_im.mean()
-
+            neg_score = cost_s.mean()+cost_im.mean()
+            pos_score = d1.mean()
+        return pos_score, neg_score
 
 class ContrastiveLoss(nn.Module):
 
