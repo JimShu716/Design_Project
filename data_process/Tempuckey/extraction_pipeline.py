@@ -11,25 +11,14 @@ import pickle
 import os
 import cv2
 import pandas as pd
+import numpy as np
 import math
 import torch
-from tensorflow.keras.applications.resnet50 import ResNet50
-import tensorflow.keras.preprocessing
-
-from tensorflow.keras.applications.resnet50 import preprocess_input
-
-from PIL import Image
+#from tensorflow.keras.applications.resnet50 import ResNet50
+#from tensorflow.keras.applications.resnet50 import preprocess_input
 import skimage.transform as st
-import numpy as np
-import string
-from sklearn.preprocessing import LabelEncoder
-from sklearn.preprocessing import OneHotEncoder
-from numpy import argmax
 
-import gensim.models.keyedvectors
-from gensim.models import Word2Vec
-
-# from nltk.corpus import stopwords
+from data_process.Tempuckey.caption_encoder import caption_to_bow, caption_to_one_hot, Vocabulary, compress_sentences
 
 SAVE_PATH = '.\\feature_with_bow\\'
 VIDEO_SOURCE_PATH = '.\\videos\\'
@@ -51,7 +40,7 @@ VID_10 = '10_TRIPPING_2017-11-07-vgk-mtl-home_00_42_14.766000_to_00_42_24.142000
 VID_606 = '606_TRIPPING_2017-12-30-mtl-fla-home_01_42_36.517000_to_01_42_45.660000.mp4'
 
 
-class ExtractionPipeline():
+class ExtractionPipeline:
     def __init__(self, num_video=10, extracted_fps=10, frame_per_package=15, on_server=False, suppress_log=True):
         self.caption_list = []
         self.video_list = []
@@ -116,7 +105,7 @@ class ExtractionPipeline():
             for i in range(self.num_video):
                 self.log(f"=== Task {i + 1}/{self.num_video}:")
                 file = self.read_once(self.video_list[i], save, over_write)
-                if not file == None:
+                if file is not None:
                     task_cnt += 1
                 self.log("===")
         except:
@@ -127,7 +116,7 @@ class ExtractionPipeline():
             fp.write(self.logging)
             fp.close()
 
-    def read_once(self, video_name, save=True, over_write=False):
+    def read_once(self, video_name, save=True, over_write=False, msrvtt=False):
         self.log(f'{video_name}:')
         if not over_write:
             save_filepath = os.path.join(self.SAVE_PATH, video_name[:-4] + '_0.bin')
@@ -147,17 +136,20 @@ class ExtractionPipeline():
         if len(frames) == 0:
             self.log(f"Error: Loading frame error for video {video_name}")
             return None
+        captions, bow = self.caption_to_feature(frames, captions, video_info, in_words=msrvtt)
 
-        captions,bow = self.caption_to_feature(frames, captions, video_info)
-
-        feature = self.frame_to_feature(frames)
+        #feature = self.frame_to_feature(frames)
+        feature = frames
 
         file = {
             'video_info': video_info,
             'captions': captions,
-            'bow':bow,
+            'bow': bow,
             'feature': feature,
         }
+
+        if msrvtt:
+            return file
 
         assert len(feature) == len(captions)
         if save:
@@ -166,7 +158,7 @@ class ExtractionPipeline():
                 file_patch = {
                     'video_info': video_info,
                     'captions': captions[i],
-                    'bow':bow[i],
+                    'bow': bow[i],
                     'feature': feature[i],
                 }
                 file_pickle = pickle.dumps(file_patch, protocol=1)
@@ -179,6 +171,34 @@ class ExtractionPipeline():
             self.log("File not saved.")
 
         return file
+
+    def read_all_msrvtt(self, save=True, over_write=False):
+        self.log(f"Start reading msrvtt format process...(Total Task number:{self.num_video})\n")
+        total_file_list = []
+        task_cnt = 0
+        try:
+            for i in range(self.num_video):
+                self.log(f"=== Task {i + 1}/{self.num_video}:")
+                file = self.read_once(self.video_list[i], save, over_write, msrvtt=True)
+                if file is not None:
+                    task_cnt += 1
+                    total_file_list.append(file)
+                self.log("===")
+        except:
+            logging.exception("message")
+            self.log(f"Job disrrupted, video file: {self.video_list[i]} skipped.")
+        self.log(f"Finish job with {task_cnt} file generated.")
+
+        for file in total_file_list:
+            del file['feature']
+            del file['bow']
+            for i, cap in enumerate(file['captions']):
+                file['captions'][i] = compress_sentences(cap)[2]
+
+        with open(os.path.join(self.SAVE_PATH, "log.txt"), "w") as fp:
+            fp.write(self.logging)
+            fp.close()
+
 
     def read_from_saved_binary_file(self, file_name):
         file_name = file_name[:-4] + '.bin'
@@ -323,7 +343,7 @@ class ExtractionPipeline():
         feature = model.predict(x)
         return feature
 
-    def caption_to_feature(self, frames, captions, video_info):
+    def caption_to_feature(self, frames, captions, video_info, in_words=False):
         all_sentence = ""  # String to store all the sentence
         feature = [[] for i in range(len(frames))]
         frame_start_time = video_info['start_time']
@@ -357,232 +377,18 @@ class ExtractionPipeline():
         # ================ Create stop word list ===========
         #       all_stopwords = stopwords.words('english')
 
-        bow_feature = self.caption_to_bow(feature, self.dictionary)
+        if in_words:
+            return feature, []
+
+        bow_feature = caption_to_bow(feature, self.dictionary)
         
-        caption_feature = self.caption_to_one_hot(feature, self.dictionary)  # generate one-hot encoding
+        caption_feature = caption_to_one_hot(feature, self.dictionary)  # generate one-hot encoding
         # feature_result = self.word2vec_embeddings(feature) # generate embeddings by word2vec
 
-        return caption_feature,bow_feature
-
-    """
-    Function to preprocess the raw caption text into one-hot encodings
-    
-    feature - raw caption feature
-    word_dict - dictionary of words to construct one- hot
-    
-    Return: the processed caption feature
-    """
-
-    def caption_to_one_hot(self, feature, word_vocab):
- 
-           
-        dict_size= word_vocab.__len__()
-
-   
-        
-        for i in range(len(feature)):
-            for j in range(len(feature[i])):
-                    sentence = feature[i][j][1]
-                    
-                    sentence = sentence.lower() # to lower case
-                    sentence = sentence.translate(str.maketrans('', '', string.punctuation)) # remove all punctuations
-                    sentence_word =sentence.split()
-              
-                    
-                    integer_encoded_sentence =[]
-                    
-                    for word in sentence_word:
-                        word_integer = word_vocab.__call__(word)
-                    
-                        integer_encoded_sentence.append(word_integer)
-          
-                    #print(integer_encoded_sentence)
-                    
-                    
-                     # ================ Initialize matrix for one hot encoding=========== 
-                    one_hot_sentence = []
-                
-                    for idx in range(len(integer_encoded_sentence)):
-                            initial_arr = np.zeros(dict_size).tolist()
-                            initial_arr[integer_encoded_sentence[idx]] = 1.0
-                            one_hot_sentence.append(initial_arr)
-                            
-                    one_hot_sentence = np.array(one_hot_sentence)
-                    feature[i][j] = one_hot_sentence
-
-        
-        return feature
-    
-    
-    
-    
-    
-    """
-    Function to preprocess the raw caption text into one-hot encodings
-    
-    feature - raw caption feature
-    word_dict - dictionary of words to construct one- hot
-    
-    Return: the processed bow feature
-    """
-
-    def caption_to_bow(self, feature, word_vocab):
-       
-        dict_size = word_vocab.__len__()
-        feature_bow =[]
-        for i in range(len(feature)):
-            sentence = ""
-            for j in range(len(feature[i])):
-
-                timestamps = feature[i][j][0]
-                sentence += feature[i][j][1]
-            # print("sentence is =",sentence)
-            sentence = sentence.lower()  # to lower case
-            sentence = sentence.translate(str.maketrans('', '', string.punctuation))  # remove all punctuations
-            sentence_word = sentence.split()
-
-            integer_encoded_sentence = []
-
-            for word in sentence_word:
-                word_integer = word_vocab.__call__(word)
-                if word_integer == -1:
-                    continue
-                integer_encoded_sentence.append(word_integer)
-
-            # print(integer_encoded_sentence)
-
-            # ================ Initialize matrix for one hot encoding===========
-            # one_hot_sentence = []
-            one_hot_sentence = np.zeros(dict_size).tolist()
-            for idx in range(len(integer_encoded_sentence)):
-                one_hot_sentence[integer_encoded_sentence[idx]] = 1.0
-                # one_hot_sentence.append(initial_arr)
-
-            one_hot_sentence = np.array(one_hot_sentence)
-            feature_bow.append(one_hot_sentence)
-
-        return feature_bow
-
-
-    """
-    Function to preprocess the data in txt file into word vocabulary
-    
-    Return: the extracted word vocabulary
-    """
-
-    def txt_to_vocabulary(self, file_path):
-        word_vocab = ""
-
-        # print("====== Start processing vocabulary ====")
-        with open(file_path, 'rb') as reader:
-            for line in reader:
-                line = line.decode("utf-8")
-                cap_id, caption = line.split(' ', 1)
-                caption = caption.lower()  # all to lower case
-                caption = caption.translate(str.maketrans('', '', string.punctuation))  # remove all punctuations
-                word_vocab += ""
-                word_vocab += caption
-
-        vocab_result = word_vocab.split()
-
-        # ========= Remove duplicates in the vocabulary ========
-        vocab_set = set()
-        final_vocab = []
-
-        for word in vocab_result:
-            if word not in vocab_set:
-                vocab_set.add(word)
-                final_vocab.append(word)
-
-        return final_vocab
-
-    """
-    Function to preprocess the word vocabulary into word dictionary for one-hot
-    
-    Return: the word dictionary
-    """
-
-    def vocab_to_dict(self, vocabulary):
-
-        # print("====== Start constructing dictionary ====")
-        # integer encode
-        label_encoder = LabelEncoder()
-        integer_encoded = label_encoder.fit_transform(vocabulary)  # encode labels
-        integer_encoded_list = integer_encoded.tolist()
-
-        # ================ Construct a word dictionary===========
-        word_dict = {}
-
-        for key in vocabulary:
-            for value in integer_encoded_list:
-                word_dict[key] = value
-                integer_encoded_list.remove(value)
-                break
-        # print("==== Dictionary Construction Completed =====")
-        return (word_dict)
-
-    """
-    Function to generate word embedding by word2vec
-    
-    feature - feature with raw caption texts
-    
-    Return: the feature with sentence embeddings
-    """
-
-    def word2vec_embeddings(self, feature):
-        # Load pretrained model 
-        model = gensim.models.KeyedVectors.load_word2vec_format(WORD2VEC_PATH, binary=True, unicode_errors='ignore')
-
-        for i in range(len(feature)):
-            for j in range(len(feature[i])):
-                timestamps = feature[i][j][0]
-                sentence = feature[i][j][1]
-
-                sentence = sentence.lower()  # to lower case
-                sentence = sentence.translate(str.maketrans('', '', string.punctuation))  # remove all punctuations
-                sentence_word = sentence.split()
-
-                sentence_embeddings = []
-
-                # ======== Generate word embeddings and sentence embeddings by pretrained word2vec
-                for word in sentence_word:
-                    word_embeddings = model[word]
-                    sentence_embeddings.append(word_embeddings)
-
-                feature[i][j] = (timestamps, sentence_embeddings)
-                
-                return feature
-
-
-class Vocabulary(object):
-    """Simple vocabulary wrapper."""
-
-    def __init__(self, text_style):
-        self.word2idx = {}
-        self.idx2word = {}
-        self.idx = 0
-        self.text_style = text_style
-
-    def add_word(self, word):
-        if word not in self.word2idx:
-            self.word2idx[word] = self.idx
-            self.idx2word[self.idx] = word
-            self.idx += 1
-
-    def __call__(self, word):
-        if word not in self.word2idx:
-            return -1
-        return self.word2idx[word]
-
-    def __len__(self):
-        return len(self.word2idx)
+        return caption_feature, bow_feature
 
 
 if __name__ == '__main__':
-    #pipe = ExtractionPipeline(num_video=-1, on_server=True, suppress_log=False)
-    pipe = ExtractionPipeline(num_video= -1, on_server=True, suppress_log=False)
-    pipe.read()
-    #file = pipe.read_once(VID_10)
-
-    # file_2 = pipe.read_from_saved_binary_file(VID_1)
+    pipe = ExtractionPipeline(num_video=5, on_server=False, suppress_log=False)
+    pipe.read_all_msrvtt()
     print('end')
