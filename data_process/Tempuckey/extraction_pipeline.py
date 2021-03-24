@@ -20,8 +20,8 @@ import torch
 #from tensorflow.keras.applications.resnet50 import preprocess_input
 import skimage.transform as st
 
-from data_process.Tempuckey.caption_encoder import caption_to_bow, caption_to_one_hot, Vocabulary, compress_sentences, \
-    save_frame_to_binary
+from caption_encoder import caption_to_bow, caption_to_one_hot, Vocabulary, compress_sentences
+from process_frame import save_frame_to_binary
 
 SAVE_PATH = '.\\feature_with_bow\\'
 VIDEO_SOURCE_PATH = '.\\videos\\'
@@ -144,6 +144,7 @@ class ExtractionPipeline:
 
         #feature = self.frame_to_feature(frames)
         feature = frames
+
 
         file = {
             'video_info': video_info,
