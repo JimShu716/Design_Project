@@ -9,6 +9,8 @@ import datetime
 import logging
 import pickle
 import os
+import string
+
 import cv2
 import pandas as pd
 import numpy as np
@@ -18,7 +20,8 @@ import torch
 #from tensorflow.keras.applications.resnet50 import preprocess_input
 import skimage.transform as st
 
-from data_process.Tempuckey.caption_encoder import caption_to_bow, caption_to_one_hot, Vocabulary, compress_sentences
+from data_process.Tempuckey.caption_encoder import caption_to_bow, caption_to_one_hot, Vocabulary, compress_sentences, \
+    save_frame_to_binary
 
 SAVE_PATH = '.\\feature_with_bow\\'
 VIDEO_SOURCE_PATH = '.\\videos\\'
@@ -31,9 +34,10 @@ CAPTION_SOURCE_PATH_SERVER = '/usr/local/data01/zahra/datasets/NHL_ClosedCaption
 LABEL_PATH_SERVER = '/usr/local/data02/zahra/datasets/Tempuckey/labels/tempuckey_groundtruth_splits_videoinfo_20201026.csv'
 
 # VOCABULARY_DATA_PATH = '.\\30flickr.txt'
-
 VOCABULARY_PATH = './vocab/word_vocab_5_bow.pkl'
 # WORD2VEC_PATH = '..\\word2vec\\feature.bin'
+
+MSRVTT_SAVE_PATH = '.\\'
 
 VID_1 = '1_TRIPPING_2017-11-28-fla-nyr-home_00_44_55.826000_to_00_45_06.437000.mp4'
 VID_10 = '10_TRIPPING_2017-11-07-vgk-mtl-home_00_42_14.766000_to_00_42_24.142000.mp4'
@@ -190,10 +194,16 @@ class ExtractionPipeline:
         self.log(f"Finish job with {task_cnt} file generated.")
 
         for file in total_file_list:
-            del file['feature']
-            del file['bow']
-            for i, cap in enumerate(file['captions']):
-                file['captions'][i] = compress_sentences(cap)[2]
+            file['video_dict'] = {}
+            video_name = 'video_' + file['video_info']['video_id']
+            assert len(file['captions']) == len(file['captions'])
+            for i, (cap, frame) in enumerate(zip(file['captions'], file['feature'])):
+                sentence = compress_sentences(cap)[2]
+                sentence = sentence.lower()  # to lower case
+                sentence = sentence.translate(str.maketrans('', '', string.punctuation))
+                video_id = video_name + '_' + str(i)
+                file['video_dict'][video_id] = (frame, sentence)
+        self.save_msrvtt('msrvtt', total_file_list)
 
         with open(os.path.join(self.SAVE_PATH, "log.txt"), "w") as fp:
             fp.write(self.logging)
@@ -387,6 +397,33 @@ class ExtractionPipeline:
 
         return caption_feature, bow_feature
 
+    def save_msrvtt(self, subset_name, total_file):
+        textdata_savepath = os.path.join(MSRVTT_SAVE_PATH, subset_name, 'TextData', f'{subset_name}.caption.txt')
+        imageset_savepath = os.path.join(MSRVTT_SAVE_PATH, subset_name, 'ImageSets', f'{subset_name}.txt')
+        for p in [MSRVTT_SAVE_PATH,
+                  os.path.join(MSRVTT_SAVE_PATH, 'TextData'),
+                  os.path.join(MSRVTT_SAVE_PATH, 'ImageSets'),]:
+            if not os.path.exists(p):
+                os.mkdir(p)
+
+        textdata = ''
+        imageid = ''
+        video_dict = {}
+
+        for file in total_file:
+            for video_id, (frame, cap) in file['video_dict'].items():
+                video_dict[video_id] = frame
+                textdata += f'{video_id} {cap}' + '\n'
+                imageid += video_id + ' ' + '\n'
+
+        with open(textdata_savepath, 'w') as f:
+            f.write(textdata)
+        with open(imageset_savepath, 'w') as f:
+            f.write(imageid)
+
+        save_frame_to_binary(video_dict)
+
+        print('done')
 
 if __name__ == '__main__':
     pipe = ExtractionPipeline(num_video=5, on_server=False, suppress_log=False)

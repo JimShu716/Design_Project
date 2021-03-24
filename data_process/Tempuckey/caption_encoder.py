@@ -234,4 +234,5 @@ class Vocabulary(object):
         return len(self.word2idx)
 
 
-print('1')
+def save_frame_to_binary(video_dict: dict):
+    pass
