@@ -400,9 +400,11 @@ class ExtractionPipeline:
     def save_msrvtt(self, subset_name, total_file):
         textdata_savepath = os.path.join(MSRVTT_SAVE_PATH, subset_name, 'TextData', f'{subset_name}.caption.txt')
         imageset_savepath = os.path.join(MSRVTT_SAVE_PATH, subset_name, 'ImageSets', f'{subset_name}.txt')
+        feature_savepath = os.path.join(MSRVTT_SAVE_PATH, subset_name, 'FeatureData')
         for p in [MSRVTT_SAVE_PATH,
                   os.path.join(MSRVTT_SAVE_PATH, 'TextData'),
-                  os.path.join(MSRVTT_SAVE_PATH, 'ImageSets'),]:
+                  os.path.join(MSRVTT_SAVE_PATH, 'ImageSets'),
+                  feature_savepath]:
             if not os.path.exists(p):
                 os.mkdir(p)
 
@@ -421,7 +423,7 @@ class ExtractionPipeline:
         with open(imageset_savepath, 'w') as f:
             f.write(imageid)
 
-        save_frame_to_binary(video_dict)
+        save_frame_to_binary(video_dict, feature_savepath)
 
         print('done')
 
