@@ -1,0 +1,30 @@
+<type 'type'>
+<type 'type'>
+{
+  "checkpoint_name": "model_best.pth.tar", 
+  "workers": 5, 
+  "rootpath": "../VisualSearch", 
+  "batch_size": 128, 
+  "log_step": 10, 
+  "logger_name": "../VisualSearch/msrvtt10ktrain/cvpr_2019/msrvtt10kval/dual_encoding_concate_full_dp_0.2_measure_exp/vocab_word_vocab_5_word_dim_500_text_rnn_size_512_text_norm_True_kernel_sizes_2-3-4_num_512/visual_feature_resnet-152-img1k-flatten0_outputos_visual_rnn_size_1024_visual_norm_True_kernel_sizes_2-3-4-5_num_512/mapping_text_0-2048_img_0-2048/loss_func_cont_margin_0.2_direction_all_max_violation_True_cost_style_sum/optimizer_adam_lr_0.0001_decay_0.99_grad_clip_2.0_val_metric_recall/runs_0", 
+  "testCollection": "msrvtt10ktest", 
+  "n_caption": 20, 
+  "overwrite": 1
+}
+=> loaded checkpoint '../VisualSearch/msrvtt10ktrain/cvpr_2019/msrvtt10kval/dual_encoding_concate_full_dp_0.2_measure_exp/vocab_word_vocab_5_word_dim_500_text_rnn_size_512_text_norm_True_kernel_sizes_2-3-4_num_512/visual_feature_resnet-152-img1k-flatten0_outputos_visual_rnn_size_1024_visual_norm_True_kernel_sizes_2-3-4-5_num_512/mapping_text_0-2048_img_0-2048/loss_func_cont_margin_0.2_direction_all_max_violation_True_cost_style_sum/optimizer_adam_lr_0.0001_decay_0.99_grad_clip_2.0_val_metric_recall/runs_0/model_best.pth.tar' (epoch 12, best_rsum 9.75855130785)
+../VisualSearch/msrvtt10ktest/results/msrvtt10ktrain/msrvtt10kval/dual_encoding_concate_full_dp_0.2_measure_exp/vocab_word_vocab_5_word_dim_500_text_rnn_size_512_text_norm_True_kernel_sizes_2-3-4_num_512/visual_feature_resnet-152-img1k-flatten0_outputos_visual_rnn_size_1024_visual_norm_True_kernel_sizes_2-3-4-5_num_512/mapping_text_0-2048_img_0-2048/loss_func_cont_margin_0.2_direction_all_max_violation_True_cost_style_sum/optimizer_adam_lr_0.0001_decay_0.99_grad_clip_2.0_val_metric_recall/runs_0/model_best.pth.tar/pred_errors_matrix.pth.tar exists.
+overwrite
+[BigFile] 305462x2048 instances loaded from ../VisualSearch/msrvtt10ktest/FeatureData/resnet-152-img1k-flatten0_outputos
+>>>>>>>>>>>>>>>>>>>>
+Contrastive Loss Used
+write into: ../VisualSearch/msrvtt10ktest/results/msrvtt10ktrain/msrvtt10kval/dual_encoding_concate_full_dp_0.2_measure_exp/vocab_word_vocab_5_word_dim_500_text_rnn_size_512_text_norm_True_kernel_sizes_2-3-4_num_512/visual_feature_resnet-152-img1k-flatten0_outputos_visual_rnn_size_1024_visual_norm_True_kernel_sizes_2-3-4-5_num_512/mapping_text_0-2048_img_0-2048/loss_func_cont_margin_0.2_direction_all_max_violation_True_cost_style_sum/optimizer_adam_lr_0.0001_decay_0.99_grad_clip_2.0_val_metric_recall/runs_0/model_best.pth.tar/pred_errors_matrix.pth.tar
+ * Text to Video:
+ * r_1_5_10, medr, meanr: [0.0, 0.2, 0.5, 1332.0, 1379.9]
+ * recall sum: 0.8
+ * mAP: 0.004
+ * ----------
+ * Video to text:
+ * r_1_5_10, medr, meanr: [0.1, 0.2, 0.6, 2428.0, 4058.4]
+ * recall sum: 0.9
+ * mAP: 0.001
+ * ----------
