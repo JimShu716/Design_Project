@@ -49,8 +49,10 @@ class TripletLoss(nn.Module):
             self.sim = euclidean_sim
         elif measure == 'exp':
             self.sim = exponential_sim
+            print("Exp")
         else:
             self.sim = cosine_sim
+            print("Cosine")
 
         self.max_violation = max_violation
 
@@ -62,12 +64,12 @@ class TripletLoss(nn.Module):
             Colab with step running: https://colab.research.google.com/drive/1sjW0Eo1zJYbiopXShf186NoKk7GHUzGd?usp=sharing
         """
         # compute image-sentence score matrix
-        print("shape of sentence: {}\nshape of image: {}".format(s.shape, im.shape))
+        #print("shape of sentence: {}\nshape of image: {}".format(s.shape, im.shape))
         
         scores = self.sim(im, s)
         # after sim: scores.shape = (128, 128)
         
-        print("shape of scores: {}".format(scores.shape))
+        #print("shape of scores: {}".format(scores.shape))
 
         # get the diagonal of the similiarty matrix
         diagonal = scores.diag().view(im.size(0), 1)
