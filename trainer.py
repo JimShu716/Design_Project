@@ -76,7 +76,7 @@ def parse_args():
     parser.add_argument('--learning_rate', type=float, default=0.0001, help='initial learning rate')
     parser.add_argument('--lr_decay_rate', default=0.99, type=float, help='learning rate decay rate. (default: 0.99)')
     parser.add_argument('--grad_clip', type=float, default=2, help='gradient clipping threshold')
-    parser.add_argument('--resume', default='', type=str, metavar='PATH', help='path to latest checkpoint (default: none)')
+    parser.add_argument('--resume', default=Null, type=str, metavar='PATH', help='path to latest checkpoint (default: none)')
     parser.add_argument('--val_metric', default='recall', type=str, help='performance metric for validation (mir|recall)')
     # misc
     parser.add_argument('--num_epochs', default=50, type=int, help='Number of training epochs.')
