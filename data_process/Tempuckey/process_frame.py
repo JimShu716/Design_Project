@@ -20,7 +20,7 @@ from tensorflow.keras.applications import ResNet152
 from tensorflow.keras.applications.resnet50 import preprocess_input
 import skimage.transform as st
 
-txtfile = null
+txtfile =''
 id_feature_dir = '.\\feature\\'
 def extract_feature( frame, model):
     # ==========resize the frame to fit the model ========
@@ -93,24 +93,27 @@ def process(feat_dim, inputTextFiles, resultdir, overwrite):
 
 
 
-def save_frame_to_binary(video_dict: dict, save_path: str):
+def save_frame_to_binary(frame_dict: dict, save_path: str):
     
+    print("saving frame into txt .....")
     model = ResNet152(weights='imagenet',pooling="avg")
     res_txt_file = os.path.join(id_feature_dir, 'id.feature.txt')
     f = open(res_txt_file, 'w')
     
-    for key in video_dict:
+    for key in frame_dict:
         
-        frame_list = video_dict[key]
+        frame = frame_dict[key]
         f.write(str(key)+" ")
-        for frame in frame_list:
-            feature = extract_feature(frame,model)
+
+        feature = extract_feature(frame,model)
+        
+        for feature_elem in feature:
             f.write(str(feature)+" ")
             
         f.write("\n")
     
     f.close()
-    
+    print("txt file saved！")
      
         
     pass
