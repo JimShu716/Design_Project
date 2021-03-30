@@ -45,7 +45,7 @@ VID_606 = '606_TRIPPING_2017-12-30-mtl-fla-home_01_42_36.517000_to_01_42_45.6600
 
 
 class ExtractionPipeline:
-    def __init__(self, num_video=10, extracted_fps=10, frame_per_package=15, on_server=False, suppress_log=True):
+    def __init__(self, num_video=10, extracted_fps=2, frame_per_package=20, on_server=False, suppress_log=True):
         self.caption_list = []
         self.video_list = []
         self.logging = ""
@@ -411,20 +411,26 @@ class ExtractionPipeline:
 
         textdata = ''
         imageid = ''
-        video_dict = {}
+        frame_dict = {}
+        video_img_dict = {}
 
         for file in total_file:
-            for video_id, (frame, cap) in file['video_dict'].items():
-                video_dict[video_id] = frame
+            for video_id, (frames, cap) in file['video_dict'].items():
+                video_img_dict[video_id] = []
+                for i, frame in enumerate(frames):
+                    img_id = video_id+'_'+str(i)
+                    frame_dict[img_id] = frame
+                    imageid += img_id + ' ' + '\n'
+                    video_img_dict[video_id].append(img_id)
                 textdata += f'{video_id} {cap}' + '\n'
-                imageid += video_id + ' ' + '\n'
+
 
         with open(textdata_savepath, 'w') as f:
             f.write(textdata)
         with open(imageset_savepath, 'w') as f:
             f.write(imageid)
 
-        save_frame_to_binary(video_dict, feature_savepath)
+        save_frame_to_binary(frame_dict, feature_savepath)
 
         print('done')
 
