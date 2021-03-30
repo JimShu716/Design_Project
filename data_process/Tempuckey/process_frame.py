@@ -97,7 +97,7 @@ def save_frame_to_binary(frame_dict: dict, save_path: str):
     
     print("saving frame into txt .....")
     model = ResNet152(weights='imagenet',pooling="avg")
-    res_txt_file = os.path.join(id_feature_dir, 'id.feature.txt')
+    res_txt_file = os.path.join(save_path, 'id.feature.txt')
     f = open(res_txt_file, 'w')
     
     for key in frame_dict:
