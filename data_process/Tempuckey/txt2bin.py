@@ -47,7 +47,7 @@ def process(feat_dim, inputTextFiles, resultdir, overwrite):
             processed.add(name)
 
             del elems[0]
-            vec = np.array(map(float, elems), dtype=np.float32)
+            vec = np.fromiter(map(float, elems), dtype=np.float32)
             okay = True
             for x in vec:
                 if math.isnan(x):
@@ -57,7 +57,7 @@ def process(feat_dim, inputTextFiles, resultdir, overwrite):
                 failed += 1
                 continue
           
-            assert(len(vec) == feat_dim), "dimensionality mismatch: required %d, input %d, id=%s, inputfile=%s" % (feat_dim, len(vec), name, filename)
+            ##assert(len(vec) == feat_dim), "dimensionality mismatch: required %d, input %d, id=%s, inputfile=%s" % (feat_dim, len(vec), name, filename)
             vec.tofile(fw)
             #print name, vec
             imset.append(name)
@@ -75,3 +75,4 @@ txt_file = os.path.join(id_feature_dir, 'id.feature.txt')
 res_txt_file =[]
 res_txt_file.append(txt_file)
 process(1,res_txt_file,id_feature_dir,False)
+

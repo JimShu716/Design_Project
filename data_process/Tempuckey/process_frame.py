@@ -108,7 +108,8 @@ def save_frame_to_binary(frame_dict: dict, save_path: str):
         feature = extract_feature(frame,model)
         
         for feature_elem in feature:
-            f.write(str(feature)+" ")
+            for feature_item in feature_elem:
+                f.write(str(feature_item)+" ")
             
         f.write("\n")
     
