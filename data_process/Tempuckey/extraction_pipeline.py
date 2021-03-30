@@ -422,7 +422,7 @@ class ExtractionPipeline:
                     frame_dict[img_id] = frame
                     imageid += img_id + ' ' + '\n'
                     video_img_dict[video_id].append(img_id)
-                textdata += f'{video_id} {cap}' + '\n'
+                textdata += f'{video_id}#0 {cap}' + '\n'
 
 
         with open(textdata_savepath, 'w') as f:
