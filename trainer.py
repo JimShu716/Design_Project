@@ -358,6 +358,9 @@ def train(opt, train_loader, model, epoch):
     loss_value = []
     pos_value = []
     neg_value = []
+    loss_value = np.array(loss_value)
+    pos_value = np.array(pos_value)
+    neg_value = np.array(neg_value)
 
     # switch to train mode
     model.train_start()

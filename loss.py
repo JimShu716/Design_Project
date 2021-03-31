@@ -183,7 +183,7 @@ class ContrastiveLoss(nn.Module):
         v_ids = []
         #print("in loss: cap_ids", cap_ids)
         if(cap_ids):
-            #print("cap_ids",cap_ids)
+            print("Using cap_ids")
             cap_ids = np.array(cap_ids)
             v_ids = np.empty(cap_ids.shape, dtype="<U10")#S10 generates b in front 
             #print("v_ids",v_ids)
