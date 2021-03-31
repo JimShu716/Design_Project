@@ -240,60 +240,55 @@ def main():
         # train for one epoch
         loss_t, pos_t, neg_t = train(opt, data_loaders['train'], model, epoch)
         
-        if loss_t is 'nan':
-            print("loss:",loss)
-            print("pos:",pos_t)
-            print("neg:",neg_t)
-            break
+        
+
+        loss_value.append(loss_t) 
+        pos_value.append(pos_t) 
+        neg_value.append(neg_t) 
+
+        # evaluate on validation set
+        if testCollection.startswith('msvd'):
+            rsum = validate_split(opt, val_vid_data_loader, val_text_data_loader, model, measure=opt.measure)
         else:
-
-            loss_value.append(loss_t) 
-            pos_value.append(pos_t) 
-            neg_value.append(neg_t) 
-
-            # evaluate on validation set
-            if testCollection.startswith('msvd'):
-                rsum = validate_split(opt, val_vid_data_loader, val_text_data_loader, model, measure=opt.measure)
-            else:
-                rsum = validate(opt, data_loaders['val'], model, measure=opt.measure)
+            rsum = validate(opt, data_loaders['val'], model, measure=opt.measure)
 
 
-            # remember best R@ sum and save checkpoint
-            is_best = rsum > best_rsum
-            best_rsum = max(rsum, best_rsum)
-            print(' * Current perf: {}'.format(rsum))
-            print(' * Best perf: {}'.format(best_rsum))
-            print('')
-            fout_val_metric_hist.write('epoch_%d: %f\n' % (epoch, rsum))
-            fout_val_metric_hist.flush()
+        # remember best R@ sum and save checkpoint
+        is_best = rsum > best_rsum
+        best_rsum = max(rsum, best_rsum)
+        print(' * Current perf: {}'.format(rsum))
+        print(' * Best perf: {}'.format(best_rsum))
+        print('')
+        fout_val_metric_hist.write('epoch_%d: %f\n' % (epoch, rsum))
+        fout_val_metric_hist.flush()
 
-            if is_best:
-                save_checkpoint({
-                    'epoch': epoch + 1,
-                    'model': model.state_dict(),
-                    'best_rsum': best_rsum,
-                    'opt': opt,
-                    'Eiters': model.Eiters,
-                }, is_best, filename='checkpoint_epoch_%s.pth.tar'%epoch, prefix=opt.logger_name + '/', best_epoch=best_epoch)
-                best_epoch = epoch
+        if is_best:
+            save_checkpoint({
+                'epoch': epoch + 1,
+                'model': model.state_dict(),
+                'best_rsum': best_rsum,
+                'opt': opt,
+                'Eiters': model.Eiters,
+            }, is_best, filename='checkpoint_epoch_%s.pth.tar'%epoch, prefix=opt.logger_name + '/', best_epoch=best_epoch)
+            best_epoch = epoch
 
-            lr_counter += 1
-            decay_learning_rate(opt, model.optimizer, opt.lr_decay_rate)
-            if not is_best:
-                # Early stop occurs if the validation performance does not improve in ten consecutive epochs
-                no_impr_counter += 1
-                if no_impr_counter > 10:
-                    print('Early stopping happended.\n')
-                    break
+        lr_counter += 1
+        decay_learning_rate(opt, model.optimizer, opt.lr_decay_rate)
+        if not is_best:
+            # Early stop occurs if the validation performance does not improve in ten consecutive epochs
+            no_impr_counter += 1
+            if no_impr_counter > 10:
+                print('Early stopping happended.\n')
+                break
 
-                # When the validation performance decreased after an epoch,
-                # we divide the learning rate by 2 and continue training;
-                # but we use each learning rate for at least 3 epochs.
-                if lr_counter > 2:
-                    decay_learning_rate(opt, model.optimizer, 0.5)
-                    lr_counter = 0
-            else:
-                no_impr_counter = 0
+            # When the validation performance decreased after an epoch,
+            # we divide the learning rate by 2 and continue training;
+            # but we use each learning rate for at least 3 epochs.
+            if lr_counter > 2:
+                decay_learning_rate(opt, model.optimizer, 0.5)
+                lr_counter = 0
+        else:
+            no_impr_counter = 0
 
     #loss_value
     loss_value = np.array(loss_value)
