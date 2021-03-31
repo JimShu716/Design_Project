@@ -256,7 +256,7 @@ class ContrastiveLoss(nn.Module):
         #pos_score = match_s.mean() + match_im.mean()
         neg_score = cost_s.sum()+cost_im.sum()
         pos_score = match_s.sum() + match_im.sum()
-        loss = neg_score
+        loss = neg_score/(neg_score+pos_score)
 
         return loss, pos_score, neg_score
 
