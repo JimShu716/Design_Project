@@ -56,8 +56,11 @@ def process(feat_dim, inputTextFiles, resultdir, overwrite):
             if not okay:
                 failed += 1
                 continue
-          
-            ##assert(len(vec) == feat_dim), "dimensionality mismatch: required %d, input %d, id=%s, inputfile=%s" % (feat_dim, len(vec), name, filename)
+            
+            if feat_dim == 0:
+               feat_dim = len(vec)
+            else: 
+                assert(len(vec) == feat_dim), "dimensionality mismatch: required %d, input %d, id=%s, inputfile=%s" % (feat_dim, len(vec), name, filename)
             vec.tofile(fw)
             #print name, vec
             imset.append(name)
@@ -74,5 +77,5 @@ def process(feat_dim, inputTextFiles, resultdir, overwrite):
 txt_file = os.path.join(id_feature_dir, 'id.feature.txt')
 res_txt_file =[]
 res_txt_file.append(txt_file)
-process(1,res_txt_file,id_feature_dir,False)
+process(0,res_txt_file,id_feature_dir,False)
 
