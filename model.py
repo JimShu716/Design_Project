@@ -286,7 +286,7 @@ class BaseModel(object):
         """
         #print(cap_ids)
 
-        loss, pos, neg = self.criterion(cap_emb, vid_emb, cap_ids = None)
+        loss, pos, neg = self.criterion(cap_emb, vid_emb, cap_ids = cap_ids)
         if torch.__version__ == '0.3.1':  # loss.item() for 0.4.0, loss.data[0] for 0.3.1
             self.logger.update('Le', loss.data[0], vid_emb.size(0)) 
         else:
