@@ -182,7 +182,7 @@ def main():
     # set data loader
     video2frames = {x: read_dict(os.path.join(rootpath, collections[x], 'FeatureData', opt.visual_feature, 'video2frames.txt'))
                     for x in collections }
-    print("========================================================\n",video2frames['val'])
+    #print("========================================================\n",video2frames['val'])
     if testCollection.startswith('msvd'):
         data_loaders = data.get_train_data_loaders(
             caption_files, visual_feats, rnn_vocab, bow2vec, opt.batch_size, opt.workers, opt.n_caption, video2frames=video2frames, padding_size=opt.batch_padding)
