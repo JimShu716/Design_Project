@@ -82,7 +82,7 @@ def parse_args():
     parser.add_argument('--num_epochs', default=50, type=int, help='Number of training epochs.')
     parser.add_argument('--batch_size', default=128, type=int, help='Size of a training mini-batch.')
     parser.add_argument('--batch_padding', default=0, type=int, help='Size of padding for mini-batch')
-    parser.add_argument('--workers', default=5, type=int, help='Number of data loader workers.')
+    parser.add_argument('--workers', default=4, type=int, help='Number of data loader workers.')
     parser.add_argument('--postfix', default='runs_0', help='Path to save the model and Tensorboard log.')
     parser.add_argument('--log_step', default=10, type=int, help='Number of steps to print and record the log.')
     parser.add_argument('--cv_name', default='cvpr_2019', type=str, help='')
@@ -366,6 +366,12 @@ def train(opt, train_loader, model, epoch):
         model.logger = train_logger
 
         # Update the model
+
+        # for i, content in enumerate(train_data):
+        #     print(i)
+
+        # exit(0)
+
         b_size, loss, pos, neg = model.train_emb(*train_data)
 
         loss_value.append(loss)
