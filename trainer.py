@@ -240,9 +240,9 @@ def main():
         # train for one epoch
         loss_t, pos_t, neg_t = train(opt, data_loaders['train'], model, epoch)
 
-        loss_value += loss_t
-        pos_value += pos_t
-        neg_value += neg_t
+        loss_value.append(loss_t) 
+        pos_value.append(pos_t) 
+        neg_value.append(neg_t) 
 
         # evaluate on validation set
         if testCollection.startswith('msvd'):
