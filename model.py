@@ -285,8 +285,8 @@ class BaseModel(object):
         """Compute the loss given pairs of video and caption embeddings
         """
         #print(cap_ids)
-        pos, neg = self.criterion(cap_emb, vid_emb, cap_ids = cap_ids)
-        loss = neg#/(pos+neg)
+
+        loss, pos, neg = self.criterion(cap_emb, vid_emb, cap_ids = None)
         if torch.__version__ == '0.3.1':  # loss.item() for 0.4.0, loss.data[0] for 0.3.1
             self.logger.update('Le', loss.data[0], vid_emb.size(0)) 
         else:
@@ -310,6 +310,7 @@ class BaseModel(object):
 
         # measure accuracy and record loss
         self.optimizer.zero_grad()
+        print(cap_ids)
         loss, pos_score, neg_score = self.forward_loss(cap_emb, vid_emb, cap_ids=cap_ids)
         
         if torch.__version__ == '0.3.1':

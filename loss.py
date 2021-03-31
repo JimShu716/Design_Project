@@ -49,12 +49,14 @@ class TripletLoss(nn.Module):
             self.sim = euclidean_sim
         elif measure == 'exp':
             self.sim = exponential_sim
+            print("Exp")
         else:
             self.sim = cosine_sim
+            print("Cosine")
 
         self.max_violation = max_violation
 
-    def forward(self, s, im,cap_ids, *args):
+    def forward(self, s, im, cap_ids=None):
         """
             s.shape = (128, 2048)
             im.shape = (128, 2048)
@@ -62,12 +64,12 @@ class TripletLoss(nn.Module):
             Colab with step running: https://colab.research.google.com/drive/1sjW0Eo1zJYbiopXShf186NoKk7GHUzGd?usp=sharing
         """
         # compute image-sentence score matrix
-        print("shape of sentence: {}\nshape of image: {}".format(s.shape, im.shape))
+        #print("shape of sentence: {}\nshape of image: {}".format(s.shape, im.shape))
         
         scores = self.sim(im, s)
         # after sim: scores.shape = (128, 128)
         
-        print("shape of scores: {}".format(scores.shape))
+        #print("shape of scores: {}".format(scores.shape))
 
         # get the diagonal of the similiarty matrix
         diagonal = scores.diag().view(im.size(0), 1)
@@ -120,7 +122,7 @@ class TripletLoss(nn.Module):
         else:
             neg_score = cost_s.mean()+cost_im.mean()
             pos_score = d1.mean()
-        return pos_score, neg_score
+        return neg_score, neg_score, pos_score
 
 class ContrastiveLoss(nn.Module):
 
@@ -254,6 +256,7 @@ class ContrastiveLoss(nn.Module):
         #pos_score = match_s.mean() + match_im.mean()
         neg_score = cost_s.sum()+cost_im.sum()
         pos_score = match_s.sum() + match_im.sum()
-        
-        return pos_score, neg_score
+        loss = neg_score
+
+        return loss, pos_score, neg_score
 
