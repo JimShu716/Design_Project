@@ -310,7 +310,7 @@ class BaseModel(object):
 
         # measure accuracy and record loss
         self.optimizer.zero_grad()
-        print(cap_ids)
+        #print(cap_ids)
         loss, pos_score, neg_score = self.forward_loss(cap_emb, vid_emb, cap_ids=cap_ids)
         
         if torch.__version__ == '0.3.1':
