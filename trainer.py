@@ -390,8 +390,7 @@ def train(opt, train_loader, model, epoch):
         tb_logger.log_value('batch_time', batch_time.val, step=model.Eiters)
         tb_logger.log_value('data_time', data_time.val, step=model.Eiters)
         model.logger.tb_log(tb_logger, step=model.Eiters)
-
-        return loss_value, pos_value, neg_value
+    return loss_value[0], pos_value[0], neg_value[0]
 
 
 def validate(opt, val_loader, model, measure='cosine'):
