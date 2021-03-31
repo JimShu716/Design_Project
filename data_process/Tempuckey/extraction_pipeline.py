@@ -28,7 +28,7 @@ VIDEO_SOURCE_PATH = '.\\videos\\'
 CAPTION_SOURCE_PATH = '.\\captions\\'
 LABEL_PATH = '.\\tempuckey_groundtruth_splits_videoinfo_20201026.csv'
 
-SAVE_PATH_SERVER = '.\\feature_with_bow\\'
+SAVE_PATH_SERVER = '/usr/local/extstore01/haoshu/Design_Project/data_process/Tempuckey/feature_tempuckey'
 VIDEO_SOURCE_PATH_SERVER = '/usr/local/data02/zahra/datasets/Tempuckey/all_videos_UNLABELED/TRIPPING'
 CAPTION_SOURCE_PATH_SERVER = '/usr/local/data01/zahra/datasets/NHL_ClosedCaption/corpus_with_timestamp'
 LABEL_PATH_SERVER = '/usr/local/data02/zahra/datasets/Tempuckey/labels/tempuckey_groundtruth_splits_videoinfo_20201026.csv'
@@ -204,14 +204,14 @@ class ExtractionPipeline:
                 sentence = sentence.translate(str.maketrans('', '', string.punctuation))
                 video_id = video_name + '_' + str(i)
                 file['video_dict'][video_id] = (frame, sentence)
-        if len(total_file_list) < 10:
-            self.log('Length of the file list is too small. End program')
-            return
-        len_unit = len(total_file_list)/10
+        #if len(total_file_list) < 10:
+            #self.log('Length of the file list is too small. End program')
+            #return
+        len_unit = len(total_file_list)//10
         self.save_msrvtt('msrvtt_test', total_file_list[:len_unit])
         self.save_msrvtt('msrvtt_eval', total_file_list[len_unit:len_unit * 3])
         self.save_msrvtt('msrvtt_train', total_file_list[len_unit * 3:])
-
+        
         with open(os.path.join(self.SAVE_PATH, "log.txt"), "w") as fp:
             fp.write(self.logging)
             fp.close()
@@ -406,9 +406,12 @@ class ExtractionPipeline:
 
     def save_msrvtt(self, subset_name, total_file):
         textdata_savepath = os.path.join(MSRVTT_SAVE_PATH, subset_name, 'TextData')
-        imageset_savepath = os.path.join(MSRVTT_SAVE_PATH, subset_name, 'ImageSets'),
+        imageset_savepath = os.path.join(MSRVTT_SAVE_PATH, subset_name, 'ImageSets')
         feature_savepath = os.path.join(MSRVTT_SAVE_PATH, subset_name, 'FeatureData')
+        
+        
         for p in [MSRVTT_SAVE_PATH,
+                  os.path.join(MSRVTT_SAVE_PATH, subset_name),
                   textdata_savepath,
                   imageset_savepath,
                   feature_savepath,
