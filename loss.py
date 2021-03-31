@@ -182,6 +182,7 @@ class ContrastiveLoss(nn.Module):
         
         v_ids = []
         #print("in loss: cap_ids", cap_ids)
+        '''
         if(cap_ids):
             #print("cap_ids",cap_ids)
             cap_ids = np.array(cap_ids)
@@ -199,6 +200,8 @@ class ContrastiveLoss(nn.Module):
         else:
             #if caption ids are not loaded, only positive on the diagonal
             np.fill_diagonal(mask, 1)
+        '''
+        np.fill_diagonal(mask,1)
         m_match = torch.from_numpy(mask) == 1
         m_cost = torch.from_numpy(mask) == 0
         Imatch = Variable(m_match)
@@ -256,7 +259,7 @@ class ContrastiveLoss(nn.Module):
         #pos_score = match_s.mean() + match_im.mean()
         neg_score = cost_s.sum()+cost_im.sum()
         pos_score = match_s.sum() + match_im.sum()
-        loss = neg_score #/(1+neg_score+pos_score)
+        loss = neg_score /(1+neg_score+pos_score)
 
         return loss, pos_score, neg_score
 
