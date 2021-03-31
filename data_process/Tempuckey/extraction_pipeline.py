@@ -204,7 +204,13 @@ class ExtractionPipeline:
                 sentence = sentence.translate(str.maketrans('', '', string.punctuation))
                 video_id = video_name + '_' + str(i)
                 file['video_dict'][video_id] = (frame, sentence)
-        self.save_msrvtt('msrvtt', total_file_list)
+        if len(total_file_list) < 10:
+            self.log('Length of the file list is too small. End program')
+            return
+        len_unit = len(total_file_list)/10
+        self.save_msrvtt('msrvtt_test', total_file_list[:len_unit])
+        self.save_msrvtt('msrvtt_eval', total_file_list[len_unit:len_unit * 3])
+        self.save_msrvtt('msrvtt_train', total_file_list[len_unit * 3:])
 
         with open(os.path.join(self.SAVE_PATH, "log.txt"), "w") as fp:
             fp.write(self.logging)
@@ -399,13 +405,14 @@ class ExtractionPipeline:
         return caption_feature, bow_feature
 
     def save_msrvtt(self, subset_name, total_file):
-        textdata_savepath = os.path.join(MSRVTT_SAVE_PATH, subset_name, 'TextData', f'{subset_name}.caption.txt')
-        imageset_savepath = os.path.join(MSRVTT_SAVE_PATH, subset_name, 'ImageSets', f'{subset_name}.txt')
+        textdata_savepath = os.path.join(MSRVTT_SAVE_PATH, subset_name, 'TextData')
+        imageset_savepath = os.path.join(MSRVTT_SAVE_PATH, subset_name, 'ImageSets'),
         feature_savepath = os.path.join(MSRVTT_SAVE_PATH, subset_name, 'FeatureData')
         for p in [MSRVTT_SAVE_PATH,
-                  os.path.join(MSRVTT_SAVE_PATH, 'TextData'),
-                  os.path.join(MSRVTT_SAVE_PATH, 'ImageSets'),
-                  feature_savepath]:
+                  textdata_savepath,
+                  imageset_savepath,
+                  feature_savepath,
+                  ]:
             if not os.path.exists(p):
                 os.mkdir(p)
 
@@ -424,10 +431,9 @@ class ExtractionPipeline:
                     video_img_dict[video_id].append(img_id)
                 textdata += f'{video_id}#0 {cap}' + '\n'
 
-
-        with open(textdata_savepath, 'w') as f:
+        with open(os.path.join(textdata_savepath, f'{subset_name}.caption.txt'), 'w') as f:
             f.write(textdata)
-        with open(imageset_savepath, 'w') as f:
+        with open(os.path.join(imageset_savepath, f'{subset_name}.txt'), 'w') as f:
             f.write(imageid)
 
         save_frame_to_binary(frame_dict, feature_savepath)
