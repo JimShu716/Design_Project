@@ -76,13 +76,13 @@ def parse_args():
     parser.add_argument('--learning_rate', type=float, default=0.0001, help='initial learning rate')
     parser.add_argument('--lr_decay_rate', default=0.99, type=float, help='learning rate decay rate. (default: 0.99)')
     parser.add_argument('--grad_clip', type=float, default=2, help='gradient clipping threshold')
-    parser.add_argument('--resume', default='', type=str, metavar='PATH', help='path to latest checkpoint (default: none)')
+    parser.add_argument('--resume', default=None, type=str, metavar='PATH', help='path to latest checkpoint (default: none)')
     parser.add_argument('--val_metric', default='recall', type=str, help='performance metric for validation (mir|recall)')
     # misc
     parser.add_argument('--num_epochs', default=50, type=int, help='Number of training epochs.')
     parser.add_argument('--batch_size', default=128, type=int, help='Size of a training mini-batch.')
     parser.add_argument('--batch_padding', default=0, type=int, help='Size of padding for mini-batch')
-    parser.add_argument('--workers', default=5, type=int, help='Number of data loader workers.')
+    parser.add_argument('--workers', default=4, type=int, help='Number of data loader workers.')
     parser.add_argument('--postfix', default='runs_0', help='Path to save the model and Tensorboard log.')
     parser.add_argument('--log_step', default=10, type=int, help='Number of steps to print and record the log.')
     parser.add_argument('--cv_name', default='cvpr_2019', type=str, help='')
@@ -182,6 +182,7 @@ def main():
     # set data loader
     video2frames = {x: read_dict(os.path.join(rootpath, collections[x], 'FeatureData', opt.visual_feature, 'video2frames.txt'))
                     for x in collections }
+    print("========================================================\n",video2frames['val'])
     if testCollection.startswith('msvd'):
         data_loaders = data.get_train_data_loaders(
             caption_files, visual_feats, rnn_vocab, bow2vec, opt.batch_size, opt.workers, opt.n_caption, video2frames=video2frames, padding_size=opt.batch_padding)
