@@ -122,7 +122,7 @@ class TripletLoss(nn.Module):
         else:
             neg_score = cost_s.mean()+cost_im.mean()
             pos_score = d1.mean()
-        return pos_score, neg_score
+        return neg_score, neg_score, pos_score
 
 class ContrastiveLoss(nn.Module):
 
@@ -256,6 +256,7 @@ class ContrastiveLoss(nn.Module):
         #pos_score = match_s.mean() + match_im.mean()
         neg_score = cost_s.sum()+cost_im.sum()
         pos_score = match_s.sum() + match_im.sum()
-        
-        return pos_score, neg_score
+        loss = neg_score
+
+        return loss, pos_score, neg_score
 
