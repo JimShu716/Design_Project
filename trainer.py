@@ -358,9 +358,6 @@ def train(opt, train_loader, model, epoch):
     loss_value = []
     pos_value = []
     neg_value = []
-    loss_value = np.array(loss_value)
-    pos_value = np.array(pos_value)
-    neg_value = np.array(neg_value)
 
     # switch to train mode
     model.train_start()
@@ -400,6 +397,9 @@ def train(opt, train_loader, model, epoch):
         tb_logger.log_value('batch_time', batch_time.val, step=model.Eiters)
         tb_logger.log_value('data_time', data_time.val, step=model.Eiters)
         model.logger.tb_log(tb_logger, step=model.Eiters)
+    loss_value = np.array(loss_value)
+    pos_value = np.array(pos_value)
+    neg_value = np.array(neg_value)
     return loss_value.mean(), pos_value.mean(), neg_value.mean()
 
 
