@@ -93,11 +93,13 @@ def process(feat_dim, inputTextFiles, resultdir, overwrite):
 
 
 
-def save_frame_to_binary(frame_dict: dict, save_path: str):
+def save_frame_to_binary(frame_dict: dict, save_path: str,video_img_dict: dict,):
     
     print("saving frame into txt .....")
     model = ResNet152(weights='imagenet',pooling="avg")
     res_txt_file = os.path.join(save_path, 'id.feature.txt')
+    video2frame_txt_file = os.path.join(save_path, 'video2frame.txt')
+    
     f = open(res_txt_file, 'w')
     
     for key in frame_dict:
@@ -115,7 +117,12 @@ def save_frame_to_binary(frame_dict: dict, save_path: str):
     
     f.close()
     print("txt file saved！")
-     
+   
+    #-----------Save video2frame-------------
+    f = open(video2frame_txt_file, 'w')
+    f.write(str(video_img_dict))
+    f.close()
+    print("video2frame file saved！")
         
     pass
 

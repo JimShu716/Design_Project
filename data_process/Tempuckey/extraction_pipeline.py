@@ -439,11 +439,12 @@ class ExtractionPipeline:
         with open(os.path.join(imageset_savepath, f'{subset_name}.txt'), 'w') as f:
             f.write(imageid)
 
-        save_frame_to_binary(frame_dict, feature_savepath)
+        save_frame_to_binary(frame_dict, feature_savepath,video_img_dict)
+        
 
         print('done')
 
 if __name__ == '__main__':
-    pipe = ExtractionPipeline(num_video=-1, on_server=True, suppress_log=False)
+    pipe = ExtractionPipeline(num_video=-1, on_server=False, suppress_log=False)
     pipe.read_all_msrvtt()
     print('end')
