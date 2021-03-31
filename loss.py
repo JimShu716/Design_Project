@@ -181,18 +181,18 @@ class ContrastiveLoss(nn.Module):
         mask = np.zeros([batch_size,batch_size])
         
         v_ids = []
-        print("in loss: cap_ids", cap_ids)
+        #print("in loss: cap_ids", cap_ids)
         if(cap_ids):
-            print("cap_ids",cap_ids)
+            #print("cap_ids",cap_ids)
             cap_ids = np.array(cap_ids)
             v_ids = np.empty(cap_ids.shape, dtype="<U10")#S10 generates b in front 
-            print("v_ids",v_ids)
-            print("cap_shape",cap_ids.shape[0])
+            #print("v_ids",v_ids)
+            #print("cap_shape",cap_ids.shape[0])
             for index in range(cap_ids.shape[0]):
                 v_ids[index] = cap_ids[index].split("#")[0]
             for i in range(cap_ids.shape[0]):
                 for j in range(cap_ids.shape[0]):
-                    print(v_ids[i])
+                    #print(v_ids[i])
                     mask[i][j] = np.where(cap_ids[j].split("#")[0]==v_ids[i],1,0)
 
         
@@ -256,7 +256,7 @@ class ContrastiveLoss(nn.Module):
         #pos_score = match_s.mean() + match_im.mean()
         neg_score = cost_s.sum()+cost_im.sum()
         pos_score = match_s.sum() + match_im.sum()
-        loss = neg_score/(neg_score+pos_score)
+        loss = neg_score #/(1+neg_score+pos_score)
 
         return loss, pos_score, neg_score
 
