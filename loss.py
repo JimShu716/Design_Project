@@ -165,7 +165,7 @@ class ContrastiveLoss(nn.Module):
         else:
             raise NotImplemented
 
-    def forward(self, s, im, temperature=0.75, alpha=0, cap_ids=None):
+    def forward(self, s, im, temperature=0.6, alpha=0, cap_ids=None):
         """
             s: a 2d tensor with a shape of (batch_size, feature_size) Note: for original dual encoder, it is (batch_size, 2048)
             im: a 2d tensor with a shape of (batch_size, feature_size) Note: for original dual encoder, it is (batch_size, 2048)
@@ -257,7 +257,7 @@ class ContrastiveLoss(nn.Module):
         #pos_score = match_s.mean() + match_im.mean()
         neg_score = cost_s.sum()+cost_im.sum()
         pos_score = match_s.sum() + match_im.sum()
-        loss = neg_score /(neg_score+pos_score)
+        loss = torch.log(neg_score /(pos_score+neg_score))
 
         return loss, pos_score, neg_score
 
