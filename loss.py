@@ -126,7 +126,7 @@ class TripletLoss(nn.Module):
 
 class ContrastiveLoss(nn.Module):
 
-    def __init__(self, start_idx=None, measure='cosine',margin=0, neg_sampling='all', cost_style='sum', direction='all',dataset='msrvtt', num_of_pairs=20):
+    def __init__(self, measure='cosine', cost_style='sum', direction='all'):
 
         super(ContrastiveLoss, self).__init__()
         """ margin: the margin used to select negative samples (see the Negative Sampling Methods slides)
@@ -140,20 +140,8 @@ class ContrastiveLoss(nn.Module):
 
         print(">"*20)
         print("Contrastive Loss Used")
-        self.margin = margin
         self.cost_style = cost_style
-
         self.direction = direction
-        self.neg_sampling = neg_sampling
-        #could be a number(msrvtt) or a list of numbers indicating the number of positive pairs of one clip
-        self.num_of_pairs = num_of_pairs
-        self.dataset = dataset
-        
-        if dataset == 'tempuckey':
-            self.start_idx = start_idx
-        else:
-            self.start_idx = list(range(0,120,self.num_of_pairs))
-            
         if measure == 'order':
             self.sim = order_sim
         elif measure == 'euclidean':
