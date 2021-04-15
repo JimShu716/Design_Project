@@ -360,9 +360,9 @@ class Dual_Encoding(BaseModel):
                                             cost_style=opt.cost_style,
                                             direction=opt.direction)
         elif opt.loss_fun == 'cont':
-            # implement contrastive loss here
-            self.criterion = ContrastiveLoss(start_idx = [], measure=opt.measure, neg_sampling=opt.neg_sampling,  direction=opt.direction)
-            #raise NotImplementedError
+            
+            self.criterion = ContrastiveLoss(measure=opt.measure,cost_styleopt.cost_style, direction=opt.direction)
+           
 
         params = list(self.text_encoding.parameters())
         params += list(self.vid_encoding.parameters())

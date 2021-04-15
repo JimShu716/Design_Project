@@ -61,7 +61,6 @@ class TripletLoss(nn.Module):
             s.shape = (128, 2048)
             im.shape = (128, 2048)
 
-            Colab with step running: https://colab.research.google.com/drive/1sjW0Eo1zJYbiopXShf186NoKk7GHUzGd?usp=sharing
         """
         # compute image-sentence score matrix
         #print("shape of sentence: {}\nshape of image: {}".format(s.shape, im.shape))
@@ -126,34 +125,20 @@ class TripletLoss(nn.Module):
 
 class ContrastiveLoss(nn.Module):
 
-    def __init__(self, start_idx=None, measure='cosine',margin=0, neg_sampling='all', cost_style='sum', direction='all',dataset='msrvtt', num_of_pairs=20):
+    def __init__(self, measure='cosine', cost_style='sum', direction='all'):
 
         super(ContrastiveLoss, self).__init__()
-        """ margin: the margin used to select negative samples (see the Negative Sampling Methods slides)
+        """ 
             measure: how to compute similiarity
-            neg_sampling: 'random', 'progressive': from easy to hard
             cost_style: used to decide how to add up sentence and image loss (sum or avg)
             direction: 'i2t' image to text retrieval, 't2i' text to image retrieval, 'all': both
-            neg_n: number of negative samples
         """
         
 
         print(">"*20)
         print("Contrastive Loss Used")
-        self.margin = margin
         self.cost_style = cost_style
-
         self.direction = direction
-        self.neg_sampling = neg_sampling
-        #could be a number(msrvtt) or a list of numbers indicating the number of positive pairs of one clip
-        self.num_of_pairs = num_of_pairs
-        self.dataset = dataset
-        
-        if dataset == 'tempuckey':
-            self.start_idx = start_idx
-        else:
-            self.start_idx = list(range(0,120,self.num_of_pairs))
-            
         if measure == 'order':
             self.sim = order_sim
         elif measure == 'euclidean':
@@ -169,37 +154,27 @@ class ContrastiveLoss(nn.Module):
         """
             s: a 2d tensor with a shape of (batch_size, feature_size) Note: for original dual encoder, it is (batch_size, 2048)
             im: a 2d tensor with a shape of (batch_size, feature_size) Note: for original dual encoder, it is (batch_size, 2048)
-            label: a 1d binary list stands the relativeness of a video-text pair (1 = pos, 0 = not-pos)
             tempurature: used for simliarity
-            alpha: used for negative sampling. Not used for the moment
         """
-        # scores.shape = (batch_size, batch_size)
 
         scores = self.sim(im, s, t=temperature)
-        batch_size = scores.shape[0]
-        #print("=====================================",batch_size,"============================================")
+        batch_size = scores.shape[0]       
         mask = np.zeros([batch_size,batch_size])
         
-        v_ids = []
-        #print("in loss: cap_ids", cap_ids)
+        v_ids = []     
         if(cap_ids):
-            print("Using cap_ids")
+            print("/n--Using cap_ids")
             cap_ids = np.array(cap_ids)
             v_ids = np.empty(cap_ids.shape, dtype="<U10")#S10 generates b in front 
-            #print("v_ids",v_ids)
-            #print("cap_shape",cap_ids.shape[0])
             for index in range(cap_ids.shape[0]):
                 v_ids[index] = cap_ids[index].split("#")[0]
             for i in range(cap_ids.shape[0]):
                 for j in range(cap_ids.shape[0]):
-                    #print(v_ids[i])
-                    mask[i][j] = np.where(cap_ids[j].split("#")[0]==v_ids[i],1,0)
-
-        
+                    mask[i][j] = np.where(cap_ids[j].split("#")[0]==v_ids[i],1,0)       
         else:
             #if caption ids are not loaded, only positive on the diagonal
             np.fill_diagonal(mask, 1)
-        #np.fill_diagonal(mask,1)
+        
         m_match = torch.from_numpy(mask) == 1
         m_cost = torch.from_numpy(mask) == 0
         Imatch = Variable(m_match)
@@ -245,18 +220,24 @@ class ContrastiveLoss(nn.Module):
         
         # Sum up and return
         if cost_s is None:
-           # print("sum up =============================================")
             cost_s = Variable(torch.zeros(1), requires_grad = True).cuda()
+        if match_s is None:
             match_s = Variable(torch.zeros(1), requires_grad = True).cuda()
         if cost_im is None:
             cost_im = Variable(torch.zeros(1), requires_grad = True).cuda()
-            match_im = Variable(torch.zeros(1), requires_grad = True).cuda()        
+        if match_im is None:
+            match_im = Variable(torch.zeros(1), requires_grad = True).cuda()    
+            
+            
         #MIL-NCE loss
-       
-        neg_score = cost_s.mean()+cost_im.mean()
-        pos_score = match_s.mean() + match_im.mean()
-        #neg_score = cost_s.sum()+cost_im.sum()
-        #pos_score = match_s.sum() + match_im.sum()
+        if self.cost_style == 'sum': 
+            neg_score = cost_s.sum()+cost_im.sum()
+            pos_score = match_s.sum() + match_im.sum()
+        else:
+            neg_score = cost_s.mean()+cost_im.mean()
+            pos_score = match_s.mean() + match_im.mean()
+            
+        
         loss = -torch.log(pos_score /(pos_score+neg_score))
 
         return loss, pos_score, neg_score
