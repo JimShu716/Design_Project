@@ -440,11 +440,8 @@ class ExtractionPipeline:
             f.write(imageid)
 
         save_frame_to_binary(frame_dict, feature_savepath,video_img_dict)
-        
 
-        print('done')
 
 if __name__ == '__main__':
     pipe = ExtractionPipeline(num_video=-1, on_server=True, suppress_log=False)
     pipe.read_all_msrvtt()
-    print('end')
