@@ -161,33 +161,25 @@ class ContrastiveLoss(nn.Module):
             tempurature: used for simliarity
             alpha: used for negative sampling. Not used for the moment
         """
-        # scores.shape = (batch_size, batch_size)
 
         scores = self.sim(im, s, t=temperature)
-        batch_size = scores.shape[0]
-        #print("=====================================",batch_size,"============================================")
+        batch_size = scores.shape[0]       
         mask = np.zeros([batch_size,batch_size])
         
-        v_ids = []
-        #print("in loss: cap_ids", cap_ids)
+        v_ids = []     
         if(cap_ids):
-            print("Using cap_ids")
+            print("/n--Using cap_ids")
             cap_ids = np.array(cap_ids)
             v_ids = np.empty(cap_ids.shape, dtype="<U10")#S10 generates b in front 
-            #print("v_ids",v_ids)
-            #print("cap_shape",cap_ids.shape[0])
             for index in range(cap_ids.shape[0]):
                 v_ids[index] = cap_ids[index].split("#")[0]
             for i in range(cap_ids.shape[0]):
                 for j in range(cap_ids.shape[0]):
-                    #print(v_ids[i])
-                    mask[i][j] = np.where(cap_ids[j].split("#")[0]==v_ids[i],1,0)
-
-        
+                    mask[i][j] = np.where(cap_ids[j].split("#")[0]==v_ids[i],1,0)       
         else:
             #if caption ids are not loaded, only positive on the diagonal
             np.fill_diagonal(mask, 1)
-        #np.fill_diagonal(mask,1)
+        
         m_match = torch.from_numpy(mask) == 1
         m_cost = torch.from_numpy(mask) == 0
         Imatch = Variable(m_match)
@@ -233,18 +225,24 @@ class ContrastiveLoss(nn.Module):
         
         # Sum up and return
         if cost_s is None:
-           # print("sum up =============================================")
             cost_s = Variable(torch.zeros(1), requires_grad = True).cuda()
+        if match_s is None:
             match_s = Variable(torch.zeros(1), requires_grad = True).cuda()
         if cost_im is None:
             cost_im = Variable(torch.zeros(1), requires_grad = True).cuda()
-            match_im = Variable(torch.zeros(1), requires_grad = True).cuda()        
+        if match_im is None:
+            match_im = Variable(torch.zeros(1), requires_grad = True).cuda()    
+            
+            
         #MIL-NCE loss
-       
-        #neg_score = cost_s.mean()+cost_im.mean()
-        #pos_score = match_s.mean() + match_im.mean()
-        neg_score = cost_s.sum()+cost_im.sum()
-        pos_score = match_s.sum() + match_im.sum()
+        if self.cost_style == 'sum': 
+            neg_score = cost_s.sum()+cost_im.sum()
+            pos_score = match_s.sum() + match_im.sum()
+        else:
+            neg_score = cost_s.mean()+cost_im.mean()
+            pos_score = match_s.mean() + match_im.mean()
+            
+        
         loss = torch.log(neg_score /(pos_score+neg_score))
 
         return loss, pos_score, neg_score
