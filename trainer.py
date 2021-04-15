@@ -34,7 +34,6 @@ plt.switch_backend('agg')
 def parse_args():
     # Hyper Parameters
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', type=str, default="msrvtt",help='dataset name')
     parser.add_argument('--logtimestamp',type=str,default="none",help = 'name of logs and plots')
     parser.add_argument('--rootpath', type=str, default=ROOT_PATH,
                         help='path to datasets. (default: %s)'%ROOT_PATH)
@@ -182,23 +181,19 @@ def main():
     # set data loader
     video2frames = {x: read_dict(os.path.join(rootpath, collections[x], 'FeatureData', opt.visual_feature, 'video2frames.txt'))
                     for x in collections }
-    #print("========================================================\n",video2frames['val'])
+    
     if testCollection.startswith('msvd'):
         data_loaders = data.get_train_data_loaders(
             caption_files, visual_feats, rnn_vocab, bow2vec, opt.batch_size, opt.workers, opt.n_caption, video2frames=video2frames, padding_size=opt.batch_padding)
         val_video_ids_list = data.read_video_ids(caption_files['val'])
         val_vid_data_loader = data.get_vis_data_loader(visual_feats['val'], opt.batch_size, opt.workers, video2frames['val'], video_ids=val_video_ids_list)
         val_text_data_loader = data.get_txt_data_loader(caption_files['val'], rnn_vocab, bow2vec, opt.batch_size, opt.workers)
-    elif opt.dataset == "tempuckey":
-        #function input not consistent
-        data_loaders = data.get_tempuckey_data_loaders()
     else:
         data_loaders = data.get_data_loaders(
             caption_files, visual_feats, rnn_vocab, bow2vec, opt.batch_size, opt.workers, opt.n_caption, video2frames=video2frames)
     print("=======================Data Loaded=================================")   
 
     # Construct the model
-    # TODO: Change model here
     model = get_model(opt.model)(opt)
     opt.we_parameter = None
     
