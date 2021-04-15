@@ -93,7 +93,7 @@ def process(feat_dim, inputTextFiles, resultdir, overwrite):
 
 
 
-def save_frame_to_binary(frame_dict: dict, save_path: str,video_img_dict: dict,):
+def save_frame_to_binary(frame_dict: dict, save_path: str,video_img_dict: dict):
     
     print("saving frame into txt .....")
     model = ResNet152(weights='imagenet',pooling="avg")

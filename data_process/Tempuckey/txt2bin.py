@@ -20,6 +20,7 @@ from tensorflow.keras.applications import ResNet152
 from tensorflow.keras.applications.resnet50 import preprocess_input
 import skimage.transform as st
 
+
 train_id_feature_dir = './feature_tempuckey/msrvtt_train/FeatureData/'
 test_id_feature_dir = './feature_tempuckey/msrvtt_test/FeatureData/'
 eval_id_feature_dir = './feature_tempuckey/msrvtt_eval/FeatureData/'
