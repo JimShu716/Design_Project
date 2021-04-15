@@ -445,6 +445,6 @@ class ExtractionPipeline:
         print('done')
 
 if __name__ == '__main__':
-    pipe = ExtractionPipeline(num_video=-1, on_server=False, suppress_log=False)
+    pipe = ExtractionPipeline(num_video=20, on_server=True, suppress_log=False)
     pipe.read_all_msrvtt()
     print('end')
