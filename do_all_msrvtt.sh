@@ -1,6 +1,6 @@
-trainCollection=msrvtt10ktrain
-valCollection=msrvtt10kval
-testCollection=msrvtt10ktest
+trainCollection=msrvtt_train
+valCollection=msrvtt_eval
+testCollection=msrvtt_test
 concate=full
 
 # Generate a vocabulary on the training set
@@ -13,6 +13,7 @@ CUDA_VISIBLE_DEVICES=$gpu python trainer.py $trainCollection $valCollection $tes
 					                        --overwrite 1 \
                                             --max_violation \
                                             --text_norm \
+					    --n_caption 1 \
                                             --visual_norm \
                                             --concate $concate \
                                             --batch_size 128 \
