@@ -125,7 +125,7 @@ class TripletLoss(nn.Module):
 
 class ContrastiveLoss(nn.Module):
 
-    def __init__(self, measure='cosine', cost_style='sum', direction='all'):
+    def __init__(self, measure='cosine', cost_style='sum', direction='all',temperature = 0.6):
 
         super(ContrastiveLoss, self).__init__()
         """ 
@@ -139,6 +139,7 @@ class ContrastiveLoss(nn.Module):
         print("Contrastive Loss Used")
         self.cost_style = cost_style
         self.direction = direction
+        self.temperature = temperature
         if measure == 'order':
             self.sim = order_sim
         elif measure == 'euclidean':
@@ -150,7 +151,7 @@ class ContrastiveLoss(nn.Module):
         else:
             raise NotImplemented
 
-    def forward(self, s, im, temperature=0.75, alpha=0, cap_ids=None):
+    def forward(self, s, im, temperature=self.temperature, alpha=0, cap_ids=None):
         """
             s: a 2d tensor with a shape of (batch_size, feature_size) Note: for original dual encoder, it is (batch_size, 2048)
             im: a 2d tensor with a shape of (batch_size, feature_size) Note: for original dual encoder, it is (batch_size, 2048)
@@ -163,7 +164,7 @@ class ContrastiveLoss(nn.Module):
         
         v_ids = []     
         if(cap_ids):
-            print("/n--Using cap_ids")
+            #print("--Using cap_ids")
             cap_ids = np.array(cap_ids)
             v_ids = np.empty(cap_ids.shape, dtype="<U10")#S10 generates b in front 
             for index in range(cap_ids.shape[0]):
