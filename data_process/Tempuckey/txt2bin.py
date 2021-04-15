@@ -20,7 +20,7 @@ from tensorflow.keras.applications import ResNet152
 from tensorflow.keras.applications.resnet50 import preprocess_input
 import skimage.transform as st
 
-id_feature_dir = '.\\msrvtt\msrvtt_train\FeatureData\\'
+id_feature_dir = '/usr/local/extstore01/zhouhan/Tempuckey/tempuckey_msrvtt/msrvtt_eval/FeatureData'
 def process(feat_dim, inputTextFiles, resultdir, overwrite):
     res_binary_file = os.path.join(resultdir, 'feature.bin')
     res_id_file = os.path.join(resultdir, 'id.txt')
