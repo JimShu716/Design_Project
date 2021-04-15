@@ -20,7 +20,11 @@ from tensorflow.keras.applications import ResNet152
 from tensorflow.keras.applications.resnet50 import preprocess_input
 import skimage.transform as st
 
-id_feature_dir = '/usr/local/extstore01/zhouhan/Tempuckey/tempuckey_msrvtt/msrvtt_eval/FeatureData'
+
+train_id_feature_dir = '.\\msrvtt\msrvtt_train\FeatureData\\'
+test_id_feature_dir = '.\\msrvtt\msrvtt_test\FeatureData\\'
+eval_id_feature_dir = '.\\msrvtt\msrvtt_eval\FeatureData\\'
+
 def process(feat_dim, inputTextFiles, resultdir, overwrite):
     res_binary_file = os.path.join(resultdir, 'feature.bin')
     res_id_file = os.path.join(resultdir, 'id.txt')
@@ -74,8 +78,22 @@ def process(feat_dim, inputTextFiles, resultdir, overwrite):
     fw.close() 
     print ('%d lines parsed, %d ids,  %d failed ->  %d unique ids' % (count_line, len(processed), failed, len(imset)))
 
-txt_file = os.path.join(id_feature_dir, 'id.feature.txt')
-res_txt_file =[]
-res_txt_file.append(txt_file)
-process(0,res_txt_file,id_feature_dir,False)
+
+train_txt_file = os.path.join(train_id_feature_dir, 'id.feature.txt')
+res_train_test_txt_file =[]
+res_train_test_txt_file.append(train_txt_file)
+
+test_txt_file = os.path.join(test_id_feature_dir, 'id.feature.txt')
+res_test_txt_file =[]
+res_test_txt_file.append(test_txt_file)
+
+eval_txt_file = os.path.join(eval_id_feature_dir, 'id.feature.txt')
+res_eval_txt_file =[]
+res_eval_txt_file.append(eval_txt_file)
+
+
+
+process(0,res_train_test_txt_file,train_id_feature_dir,False)
+process(0,res_test_txt_file,test_id_feature_dir,False)
+process(0,res_eval_txt_file,eval_id_feature_dir,False)
 
