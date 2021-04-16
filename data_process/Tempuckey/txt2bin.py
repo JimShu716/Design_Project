@@ -21,9 +21,9 @@ from tensorflow.keras.applications.resnet50 import preprocess_input
 import skimage.transform as st
 
 
-train_id_feature_dir = '.\\msrvtt\msrvtt_train\FeatureData\\'
-test_id_feature_dir = '.\\msrvtt\msrvtt_test\FeatureData\\'
-eval_id_feature_dir = '.\\msrvtt\msrvtt_eval\FeatureData\\'
+train_id_feature_dir = './feature_tempuckey/msrvtt_train/FeatureData/'
+test_id_feature_dir = './feature_tempuckey/msrvtt_test/FeatureData/'
+eval_id_feature_dir = './feature_tempuckey/msrvtt_eval/FeatureData/'
 
 def process(feat_dim, inputTextFiles, resultdir, overwrite):
     res_binary_file = os.path.join(resultdir, 'feature.bin')

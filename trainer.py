@@ -35,6 +35,7 @@ def parse_args():
     # Hyper Parameters
     parser = argparse.ArgumentParser()
     parser.add_argument('--logtimestamp',type=str,default="none",help = 'name of logs and plots')
+    parser.add_argument('--temperature',type=float,default=0.6,help = 'temperature of exp function')
     parser.add_argument('--rootpath', type=str, default=ROOT_PATH,
                         help='path to datasets. (default: %s)'%ROOT_PATH)
     parser.add_argument('trainCollection', type=str, help='train collection')
