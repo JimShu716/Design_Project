@@ -150,7 +150,7 @@ class ContrastiveLoss(nn.Module):
         else:
             raise NotImplemented
 
-    def forward(self, s, im, temperature=0.75, alpha=0, cap_ids=None):
+    def forward(self, s, im, temperature=0.6, alpha=0, cap_ids=None):
         """
             s: a 2d tensor with a shape of (batch_size, feature_size) Note: for original dual encoder, it is (batch_size, 2048)
             im: a 2d tensor with a shape of (batch_size, feature_size) Note: for original dual encoder, it is (batch_size, 2048)

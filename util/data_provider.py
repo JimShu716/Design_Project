@@ -38,8 +38,8 @@ def read_video_ids(cap_file):
     video_ids_list = []
     with open(cap_file, 'r') as cap_reader:
         for line in cap_reader.readlines():
-            #if len(line.strip().split(' ')) < 2:
-             #   continue
+            if len(line.strip().split(' ')) < 2:
+                continue
             cap_id, caption = line.strip().split(' ', 1)
             video_id = getVideoId(cap_id)
             if video_id not in video_ids_list:
@@ -153,8 +153,8 @@ class Dataset4DualEncoding(data.Dataset):
         self.video2frames = video2frames
         with open(cap_file, 'r') as cap_reader:
             for line in cap_reader.readlines():
-                #if len(line.strip().split(' ')) < 2:
-                 #   continue
+                if len(line.strip().split(' ')) < 2:
+                    continue
                 cap_id, caption = line.strip().split(' ', 1)
                 video_id = getVideoId(cap_id)
                 self.captions[cap_id] = caption
@@ -244,8 +244,8 @@ class TxtDataSet4DualEncoding(data.Dataset):
         self.cap_ids = []
         with open(cap_file, 'r') as cap_reader:
             for line in cap_reader.readlines():
-                #if len(line.strip().split(' ')) < 2:
-                 #   continue
+                if len(line.strip().split(' ')) < 2:
+                    continue
                 cap_id, caption = line.strip().split(' ', 1)
                 self.captions[cap_id] = caption
                 self.cap_ids.append(cap_id)
@@ -312,7 +312,7 @@ def get_train_data_loaders(cap_files, visual_feats, vocab, bow2vec, batch_size=1
 
     data_loaders = {x: torch.utils.data.DataLoader(dataset=dset[x],
                                     batch_size=batch_size,
-                                    shuffle=False,#(x=='train'),
+                                    shuffle=(x=='train'),
                                     pin_memory=True,
                                     num_workers=num_workers,
                                     collate_fn=collate_frame_gru_fn)
