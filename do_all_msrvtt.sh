@@ -1,9 +1,9 @@
-#trainCollection=msrvtt_train
-#valCollection=msrvtt_eval
-#testCollection=msrvtt_test
-trainCollection=msrvtt10ktrain
-valCollection=msrvtt10kval
-testCollection=msrvtt10ktest
+trainCollection=msrvtt_train
+valCollection=msrvtt_eval
+testCollection=msrvtt_test
+#trainCollection=msrvtt10ktrain
+#valCollection=msrvtt10kval
+#testCollection=msrvtt10ktest
 concate=full
 
 # Generate a vocabulary on the training set
@@ -21,7 +21,7 @@ CUDA_VISIBLE_DEVICES=$gpu python trainer.py $trainCollection $valCollection $tes
                                             --batch_size 128 \
                                             --loss_fun cont \
                                             --measure exp \
-                                            --n_caption 20 \
+                                            --n_caption 1 \
 
 # evaluation (Notice that a script file do_test_${testCollection}.sh will be automatically generated when the training process ends.)
 ./do_test_dual_encoding_${testCollection}.sh

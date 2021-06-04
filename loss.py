@@ -151,14 +151,13 @@ class ContrastiveLoss(nn.Module):
         else:
             raise NotImplemented
 
-    def forward(self, s, im, temperature=self.temperature, alpha=0, cap_ids=None):
+    def forward(self, s, im, alpha=0, cap_ids=None):
         """
             s: a 2d tensor with a shape of (batch_size, feature_size) Note: for original dual encoder, it is (batch_size, 2048)
             im: a 2d tensor with a shape of (batch_size, feature_size) Note: for original dual encoder, it is (batch_size, 2048)
             tempurature: used for simliarity
         """
-
-        scores = self.sim(im, s, t=temperature)
+        scores = self.sim(im, s, t=self.temperature)
         batch_size = scores.shape[0]       
         mask = np.zeros([batch_size,batch_size])
         
@@ -239,7 +238,7 @@ class ContrastiveLoss(nn.Module):
             pos_score = match_s.mean() + match_im.mean()
             
         
-        loss = -torch.log(pos_score /(pos_score+neg_score))
+        loss = torch.log(neg_score /(pos_score+neg_score))
 
         return loss, pos_score, neg_score
 

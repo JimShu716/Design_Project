@@ -361,7 +361,7 @@ class Dual_Encoding(BaseModel):
                                             direction=opt.direction)
         elif opt.loss_fun == 'cont':
             
-            self.criterion = ContrastiveLoss(measure=opt.measure,cost_styleopt.cost_style, direction=opt.direction, temperature = opt.temperature)
+            self.criterion = ContrastiveLoss(measure=opt.measure,cost_style=opt.cost_style, direction=opt.direction)
            
 
         params = list(self.text_encoding.parameters())
